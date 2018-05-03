@@ -1,9 +1,0 @@
-method A{
-
-
-
-sysout.print("DOREMOn");
-
-
-
-}
