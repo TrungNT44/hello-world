@@ -1,9 +1,7 @@
+method A{
 
-master
-fuck u trung rua, qua ta,asdasdasdasd
 
-sad
+sysout.print("go to the zoo");
 
-level
 
-max
+}
