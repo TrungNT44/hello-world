@@ -2,7 +2,7 @@ method A{
 
 
 
-sysout.print("go to the sky");
+sysout.print("go to hell");
 
 
 
