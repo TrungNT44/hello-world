@@ -1,8 +1,8 @@
 method A{
 
 
+sysout.print("meo choi lfalf ddsdsdsds");
 
-sysout.print("fuck 1231231 3");
 
 sysout.print("go to hell");
 
