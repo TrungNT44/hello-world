@@ -1,0 +1,12 @@
+method A{
+
+
+sysout.print("abcasdasdasd asdasd");
+
+
+sysout.print("go to hell");
+
+sysout.print("meo choi");
+
+
+}
