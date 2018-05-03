@@ -1,7 +1,7 @@
 method A{
 
 
-sysout.print("meo choi lfalf ddsdsdsds");
+sysout.print("abcasdasdasd asdasd");
 
 
 sysout.print("go to hell");
