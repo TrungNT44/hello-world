@@ -2,7 +2,7 @@ method A{
 
 
 
-sysout.print("meo choi lfalf ddsdsdsds");
+sysout.print("DOREMOn");
 
 sysout.print("go to hell");
 
