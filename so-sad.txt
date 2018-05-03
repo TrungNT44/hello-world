@@ -1,7 +1,7 @@
 method A{
 
 
-sysout.print("go to the zoo");
+sysout.print("Make Color thi sao");
 
 
 }
