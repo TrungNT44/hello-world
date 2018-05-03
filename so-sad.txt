@@ -2,8 +2,10 @@ method A{
 
 
 
+
 sysout.print("go to hell");
 
+sysout.print("meo choi");
 
 
 }
