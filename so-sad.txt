@@ -2,7 +2,7 @@ method A{
 
 
 
-sysout.print("DOREMOn");
+sysout.print("fuck 1231231 3");
 
 sysout.print("go to hell");
 
