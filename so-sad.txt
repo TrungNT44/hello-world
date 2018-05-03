@@ -1,7 +1,11 @@
 method A{
 
 
+
 sysout.print("go to the sky");
+
+sysout.print("Make Color thi sao");
+
 
 
 }
