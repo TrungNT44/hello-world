@@ -1,0 +1,39 @@
+﻿@{
+    ViewBag.Title = "Report Examples";
+}
+<h2>Report Examples</h2>
+<div ng-controller="ReportExampleController" ng-cloak>
+    <div class="ibox-content" style="padding-bottom: 0">
+        <div class="row">
+            <form method="get" class="form-horizontal" style="padding-bottom: 0">
+                <div>
+                    <div class="row">
+                        <div class="col-xs-3" style="width: 350px">
+                            <div id="sandbox-container">
+                                <label class="control-label">
+                                    Date Range
+                                </label>
+                                <div class="input-daterange input-group" id="datepicker">
+                                    <span class="input-group-addon" style="padding-bottom: 0">From</span>
+                                    <input type="text" class="input-sm form-control" name="from" ng-model="model.input.dateRangeFromQuery" id="fromDate">
+                                    <span class="input-group-addon" style="padding-bottom: 0">To</span>
+                                    <input type="text" class="input-sm form-control" name="to" ng-model="model.input.dateRangeToQuery" id="toDate">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-3">
+                            <br />
+                            <button class="btn btn-primary" style="margin-top: 7px" ng-click="searchData()">&nbsp;&nbsp;Search&nbsp;&nbsp;</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="ibox float-e-margins">
+        @*@Html.Partial("~/Areas/Production/Views/Partials/Test/Partial1.cshtml")
+        @Html.Partial("~/Areas/Production/Views/Partials/Test/Partial2.cshtml")*@
+    </div>
+</div>
+@Html.Partial("~/Areas/Production/Views/Reports/Partial/RpExampleDialog.cshtml")
+@Html.Partial("ProductionPartial")

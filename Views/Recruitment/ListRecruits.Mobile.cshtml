@@ -1,0 +1,89 @@
+﻿@using Med.Web.Extensions
+@{
+    ViewBag.Title = "Tiện ích hỗ  trợ đào và tuyển dụng nhân viên";
+}
+<h4><b>@ViewBag.Title</b></h4>
+<div ng-controller="ListRecruitController">
+    <form role="form" class="form-horizontal">       
+        <div class="row">
+            <div class="col-md-8">
+                <div class="input-group">
+                    <input type="text" ng-model="InputData.TieuDe" ng-keypress="SubmitSearch($event);" class="form-control" placeholder="Tìm tin tuyển dụng theo tiêu đề..." />
+                    <span class="input-group-btn">
+                        <a class="btn btn-default btn-finduser" ng-click="FindRecruit()">Tìm</a>
+                        <span class="btn-separator"></span>
+                        <a href="/Recruitment/CreateRecruit" class="btn btn-primary">Thêm mới</a>
+                    </span>
+                </div>
+                <br />
+                <table tr-ng-grid="" items="model.items"
+                       locale="en"
+                       @*class="table table-striped table-bordered table-hover"*@
+                       class="table"
+                       selection-mode="None"
+                       current-page="setCurrentPage"
+                       enable-filtering="false"
+                       enable-sorting="false"
+                       page-items="model.pageSize" total-items="model.totalItems"
+                       on-data-required="onServerSideItemsRequested(currentPage, pageItems, filterBy, filterByFields, orderBy, orderByReverse)">
+                    <thead>
+                        <tr>
+                            <th width="3%" display-name="#"></th>
+                            <th display-name="Tiêu đề"></th>
+                            @*<th display-name="Nội dung"></th>*@
+                            <th width="10%" display-name="Ngày đăng"></th>
+                            @*<th width="10%"  display-name="Ngày hết hạn"></th>*@
+                            <th width="25%"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><div>{{gridItem.STT}}</div></td>
+                            <td><div>{{gridItem.TieuDe}}</div></td>
+                            @*<td><div>{{gridItem.NoiDung}}</div></td>*@
+                            <td><div>{{gridItem.NgayDang_View}}</div></td>
+                            @*<td><div>{{gridItem.NgayHetHan_View}}</div></td>*@
+                            <td>
+                                <div>
+                                    @*<a href="/Recruitment/ViewRecruit/{{gridItem.IdTinTuyenDung}}">Xem</a>*@
+                                    <a href="/Recruitment/UpdateRecruit/{{gridItem.IdTinTuyenDung}}"><i class="fa fa-pencil fa-fw"></i></a>
+                                    | <a href="/Recruitment/DeleteRecruit/{{gridItem.IdTinTuyenDung}}"><i class="fa fa-trash-o fa-fw"></i></a>
+                                    | <a ng-show="gridItem.HoatDong" href="javascript:;" ng-click="ActiveRecruit(gridItem.IdTinTuyenDung)"><i class="fa fa-level-up"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-md-4" style="font-size:16px; text-align:justify">
+                <i class="fa fa-user-plus"></i> Nhà thuốc được đăng tin tuyển miễn phí lên <a href="http://webnhathuoc.com/home/tuyen-dung-nha-thuoc/" target='_blank' width='500px' height='500px'><b>trang tin tuyển dụng tổng hợp</b></a> của <b>WEB NHÀ THUỐC</b> thông qua tiện ích này <br />
+                <br />
+                <i class="fa fa-file-pdf-o"></i> Tài liệu hỗ trợ tuyển dụng và đào tạo nhân viên nhà thuốc: <br>
+                1. <a href="~/DownloadFile/Docs/tddt_chunhathuoc.pdf" target='_blank'><b>Tài liệu hướng dẫn cho chủ nhà thuốc</b></a> <br>
+                2. <a href="~/DownloadFile/Docs/knbh_nhanvien.pdf" target='_blank'><b>Tài liệu kỹ năng bán hàng cho nhân viên</b></a><br>
+                3. <a href="~/DownloadFile/Docs/kngt_nhanvien.pdf" target='_blank'><b>Tài liệu kỹ năng giao tiếp cho nhân viên</b></a> <br />
+                <br />
+                <i class="fa fa-hand-o-right"></i> Nhà thuốc sẽ được <b>giới thiệu miễn phí một ứng viên</b> khi đã là khách hàng. Ngoài ra, chúng tôi còn có dịch vụ tìm ứng viên theo yêu cầu của nhà thuốc có mất chi phí. Liên hệ theo số điện thoại/Zalo:<b> 0989199533</b>
+                <br />
+            </div>
+        </div>
+        
+       
+    </form>
+</div>
+
+ <!--Start of Tawk.to Script-->
+<script type="text/javascript">
+    var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+    (function () {
+        var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+        s1.async = true;
+        s1.src = 'https://embed.tawk.to/59267e1db3d02e11ecc66c2f/default';
+        s1.charset = 'UTF-8';
+        s1.setAttribute('crossorigin', '*');
+        s0.parentNode.insertBefore(s1, s0);
+    })();
+</script>
+
+<!--End of Tawk.to Script-->

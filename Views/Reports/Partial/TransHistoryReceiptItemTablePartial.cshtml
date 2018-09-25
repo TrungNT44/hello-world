@@ -1,0 +1,114 @@
+﻿<div class="ibox float-e-margins" ng-controller="TransHistoryReceiptItemTableController" ng-cloak>    
+    <div class="ibox-content">
+        
+        <table tr-ng-grid="" items="model.items"
+               display-total-items-count="false"
+               id="table-id-trans-history-receipt"
+               locale="en"
+               class="table table-striped table-responsive table-bordered table-hover"
+               selection-mode="None"
+               current-page="setCurrentPage"
+               enable-filtering="false"
+               enable-sorting="false"
+               page-items="model.pageSize" total-items="model.totalItems"
+               on-data-required="onServerSideItemsRequested(currentPage, pageItems, filterBy, filterByFields, orderBy, orderByReverse)">
+            <thead>
+                <tr>
+                    <th display-name="STT"></th>
+                    <th field-name="ItemDate" display-name="Ngày" enable-sorting="true"></th>
+                    <th field-name="ItemNumber" display-name="Số phiếu" enable-sorting="true"></th>
+                    <th field-name="DrugCode" display-name="Mã Thuốc" enable-sorting="true"></th>
+                    <th field-name="DrugName" display-name="Tên Thuốc" enable-sorting="true"></th>
+                    <th display-name="Đơn Vị"></th>
+                    <th field-name="Quantity" display-name="Số lượng" enable-sorting="true"></th>
+                    <th field-name="Price" display-name="Đơn giá" enable-sorting="true"></th>
+                    <th field-name="Amount" display-name="Thành tiền" enable-sorting="true"></th>                    
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <!--STT-->
+                    <td>
+                        @*<div data-app-module-row-number></div>*@
+                        <div>
+                            {{gridItem.Order}}
+                        </div>
+                    </td>
+
+                    <!--Ngày-->
+                    <td field-name="ItemDate">
+                        <div>
+                            {{gridItem.ItemDate |appDate}}
+                        </div>
+                    </td>
+
+                    <!--Số phiếu-->
+                    <td field-name="ItemNumber">
+                        <div>
+                            <a href="/PhieuNhaps/Details/{{gridItem.ItemId}}" target="_blank">
+                                {{gridItem.ItemNumber}}
+                            </a>
+                        </div>
+                    </td>
+
+                    <!--Mã Thuốc-->
+                    <td field-name="DrugCode">                       
+                        <div>
+                            {{gridItem.DrugCode}}
+                        </div>
+                    </td>
+
+                    <!--Tên Thuốc-->
+                    <td field-name="DrugName">                        
+                        <div>
+                            {{gridItem.DrugName}}
+                        </div>
+                    </td>
+
+                    <!--Đơn Vị-->
+                    <td>                        
+                        <div>
+                            {{gridItem.UnitName}}
+                        </div>
+                    </td>
+                    
+                    <!--Số lượng-->
+                    <td field-name="Quantity">
+                        <div class="number-value">
+                            {{gridItem.Quantity | number:0}}
+                        </div>
+                    </td>
+
+                    <!--Đơn giá-->
+                    <td field-name="Price">
+                        <div class="number-value">
+                            {{gridItem.Price | number:0}}
+                        </div>
+                    </td>
+
+                    <!--Thành tiền-->
+                    <td field-name="Amount">
+                        <div class="number-value">
+                            {{gridItem.Amount | number:0}}
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td align="center">
+                        <span class="form-group pull-left page-size">
+                            <select id="ddlPageSize" class="form-control"
+                                    ng-model="model.pageSize"
+                                    ng-options="item.pageSizeKey as item.pageSizeValue for item in pageSizeList"
+                                    ng-change="changePageSize()"></select>
+                            <span class="page-size-label">&#160;&#160;Dòng / Trang</span>
+                        </span>
+                        <span tr-ng-grid-pager="" style="height:40px;"></span>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    <div elem-ready="isReady()"></div>
+</div>

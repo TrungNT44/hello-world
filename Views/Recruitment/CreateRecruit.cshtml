@@ -1,0 +1,183 @@
+﻿@using System.Web.Optimization;
+@{
+    ViewBag.Title = "Tạo mới tin tuyển dụng";
+}
+
+<h4><b>Tạo mới tin tuyển dụng</b></h4>
+<div ng-controller="RecruitController">
+    <form role="form" name="RecruitForm" class="form-horizontal" novalidate>
+        <hr style="margin-top:0px" />
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="col-md-2 control-label">Nhà thuốc<span style="color:red">* </span></label>
+                    <div class="col-md-4">
+                        <select ng-disabled="IsAdmin" required name="NhaThuoc" class="form-control" ng-change="DDL_DrugStoresChange()" ng-options="nhathuoc as nhathuoc.TenNhaThuoc for nhathuoc in ArrNhaThuocs" ng-model="InputData.NhaThuoc">
+                            <option value="">--Chọn nhà thuốc--</option>
+                        </select>
+                        <span style="color:red" ng-show="submited|| (RecruitForm.NhaThuoc.$touched && RecruitForm.NhaThuoc.$invalid)">
+                            <span ng-show="RecruitForm.NhaThuoc.$error.required">Chọn nhà thuốc</span>
+                        </span>
+                    </div>
+                    <label class="col-md-2 control-label">Tên hiển thị<span style="color:red">* </span></label>
+                    <div class="col-md-4">
+                        <input required name="TenNhaThuoc" type="text" ng-model="InputData.TenNhaThuoc" class="form-control" />
+                        <span style="color:red" ng-show="submited|| (RecruitForm.TenNhaThuoc.$touched && RecruitForm.TenNhaThuoc.$invalid)">
+                            <span ng-show="RecruitForm.TenNhaThuoc.$error.required">Nhập tên nhà thuốc</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="col-md-2 control-label">Tỉnh thành<span style="color:red">* </span></label>
+                    <div class="col-md-4">
+                        <select name="TinhThanh" required class="form-control" ng-model="InputData.IdTinhThanh">
+                            <option value="">--Chọn tỉnh thành--</option>
+                            <option ng-repeat="tinhthanh in ArrTinhThanhs" value="{{tinhthanh.IdTinhThanh}}">{{tinhthanh.TenTinhThanh}}</option>
+                        </select>
+                        <span style="color:red" ng-show="submited|| (RecruitForm.TinhThanh.$touched && RecruitForm.TinhThanh.$invalid)">
+                            <span ng-show="RecruitForm.TinhThanh.$error.required">Chọn tỉnh thành</span>
+                        </span>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+       
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="col-md-2 control-label">Địa chỉ<span style="color:red">* </span></label>
+                    <div class="col-md-10">
+                        <input type="text" required name="DiaChi" rows="3" ng-model="InputData.DiaChiNhaTuyenDung" class="form-control" />
+                        <span style="color:red" ng-show="submited|| (RecruitForm.DiaChi.$touched && RecruitForm.DiaChi.$invalid)">
+                            <span ng-show="RecruitForm.DiaChi.$error.required">Nhập địa chỉ</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="col-md-2 control-label">Ngày đăng<span style="color:red">* </span></label>                   
+                    <div class="col-md-4">
+                        <div class="input-group">
+
+                            <input type="text" readonly="readonly" required name="NgayDang" ng-model="InputData.NgayDang_View" class="input-datetime form-control text-box single-line" />
+                            <span class="input-group-btn">
+                                <button class="btn btn-secondary" onclick="RecruitForm.NgayDang.focus()" type="button"><i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                        </div>
+                        <span style="color:red" ng-show="submited|| (RecruitForm.NgayDang.$touched && RecruitForm.NgayDang.$invalid)">
+                            <span ng-show="RecruitForm.NgayDang.$error.required">Nhập ngày đăng</span>
+                        </span>
+                    </div>
+                    <label class="col-md-2 control-label">Ngày hết hạn<span style="color:red">* </span></label>
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <input type="text" readonly="readonly" required name="NgayHetHan" ng-model="InputData.NgayHetHan_View" class="input-datetime form-control text-box single-line"  />
+                            <span class="input-group-btn">
+                                <button class="btn btn-secondary" onclick="RecruitForm.NgayHetHan.focus()" type="button"><i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                        </div>
+                        <span style="color:red" ng-show="submited|| (RecruitForm.NgayHetHan.$touched && RecruitForm.NgayHetHan.$invalid)">
+                            <span ng-show="RecruitForm.NgayHetHan.$error.required">Nhập ngày hết hạn</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="col-md-2 control-label">Tiêu đề<span style="color:red">* </span></label>
+                    <div class="col-md-10">
+                        <input required name="TieuDe" type="text" ng-model="InputData.TieuDe" class="form-control" />
+                        <span style="color:red" ng-show="submited|| (RecruitForm.TieuDe.$touched && RecruitForm.TieuDe.$invalid)">
+                            <span ng-show="RecruitForm.TieuDe.$error.required">Nhập tiêu đề</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="col-md-2 control-label">Nội dung<span style="color:red">* </span></label>
+                    <div class="col-md-10">
+                        <textarea required name="NoiDung" rows="3" ng-model="InputData.NoiDung" class="form-control"></textarea>
+                        <span style="color:red" ng-show="submited|| (RecruitForm.NoiDung.$touched && RecruitForm.NoiDung.$invalid)">
+                            <span ng-show="RecruitForm.NoiDung.$error.required">Nhập nội dung</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="col-md-2 control-label">Liên hệ<span style="color:red">* </span></label>
+                    <div class="col-md-10">
+                        <input type="text" required name="LienHe" rows="3" ng-model="InputData.LienHe" class="form-control" />
+                        <span style="color:red" ng-show="submited|| (RecruitForm.LienHe.$touched && RecruitForm.LienHe.$invalid)">
+                            <span ng-show="RecruitForm.LienHe.$error.required">Nhập liên hệ</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="col-md-2 control-label">Liên kết</label>
+                    <div class="col-md-10">
+                        <input type="text" ng-model="InputData.LienKet" class="form-control" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*<div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="col-md-2 control-label">Hoạt động</label>
+                    <div class="col-md-10">
+                        <input type="checkbox" ng-model="InputData.HoatDong" class="form-control" />
+                    </div>
+                </div>
+            </div>
+        </div>*@
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="button" onclick="window.location.href='/Recruitment/ListRecruits';" value="Quay lại" class="btn btn-default">
+                        <span class="btn-separator"></span>
+                        <input type="button" ng-click="Create(RecruitForm.$valid)" value="Thêm mới" class="btn btn-primary">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/datepicker-vi.js"></script>
+    <script type="text/javascript">
+        var idTuyenDung = null;
+        var permission = @ViewBag.IsAdmin;
+        var idNhaThuoc = '@ViewBag.DrugStoreCode';
+        $(document).ready(function () {
+            $(".input-datetime").datepicker({
+                dateFormat: "dd/mm/yy",
+                changeMonth: true,
+                changeYear: true
+            });
+        });
+    </script>
+}

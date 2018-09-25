@@ -1,0 +1,200 @@
+﻿@using Med.Web.Extensions;
+
+@{
+    ViewBag.Title = "BÁO CÁO THEO KHO HÀNG";
+}
+<div ng-controller="WarehouseReportController" ng-cloak>
+    <div class="report-title">
+        <div class="print-date">@DateTime.Now.ToString("dd/MM/yyyy")</div>
+        <div style="font-size: 30px; text-align: center;color: green;padding: 0px"><b>@ViewBag.Title</b></div>
+    </div>
+    <br/>
+    <br/>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 baocao-filter">
+                <fieldset>
+                    <div report-group-type-filter group-filter-title="Theo kho hàng" group-filter-type="groupFilterType" 
+                         show-group-filter-type ="true"
+                         filter-item-type="filterItemType" selected-item-id="selectedItemId" 
+                         filter-by-name-for-drug="true" drug-ids="drugIds"></div>
+                </fieldset>
+                <br/>
+                <fieldset>
+                    <div report-date-rage-filter 
+                         display-data-table-id="table-id-warehouse"
+                         excel-file-name ="WarehouseReport.xls"
+                         display-data-callback="onDisplayReportData" 
+                         supress-export="false" supress-print="true"
+                         call-callback-after-init="true"
+                        ></div>
+                </fieldset>
+            </div>          
+           
+            <div class="col-md-9" style="font-size:smaller">
+                <div class="form-group">
+                    <div class="baocao-container">
+                        <div class="print-header">
+                            <table>
+                                <tr>
+                                    <td>Thuốc: <span id="user-filter"></span></td>
+                                    <td>Kỳ báo cáo: <span id="report-period"></span></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="pull-right">
+                            <table>
+                                <tr>
+                                    <td>Tổng tồn ĐK: <strong style="color:red"> {{model.FirsInventoryValueTotal | number:0}}</strong> </td>
+                                    <td><span class="btn-separator"></span></td>
+                                    <td>Tổng nhập: <strong style="color:red"> {{model.ReceiptValueTotal | number:0}}</strong> </td>
+                                    <td><span class="btn-separator"></span></td>
+                                    <td>Tổng xuất: <strong style="color:red"> {{model.DeliveryValueTotal | number:0}}</strong> </td>
+                                    <td><span class="btn-separator"></span></td>
+                                    <td>Tổng tồn CK: <strong style="color:red"> {{model.LastInventoryValueTotal | number:0}}</strong> </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <table tr-ng-grid="" items="model.items"
+                               display-total-items-count="false"
+                               id="table-id-warehouse"
+                               locale="en"
+                               class="table table-striped table-responsive table-bordered table-hover"
+                               selection-mode="None"
+                               current-page="setCurrentPage"
+                               enable-filtering="false"
+                               enable-sorting="false"
+                               page-items="model.pageSize" total-items="model.totalItems"
+                               on-data-required="onServerSideItemsRequested(currentPage, pageItems, filterBy, filterByFields, orderBy, orderByReverse)"
+                               >
+                            <thead>
+                                <tr>
+                                    <th display-name="STT"></th>
+                                    <th field-name="DrugCode" display-name="Mã Thuốc" enable-sorting="true"></th>
+                                    <th field-name="DrugName" display-name="Tên Thuốc" enable-sorting="true"></th>
+                                    <th display-name="Đơn Vị"></th>
+                                    <th field-name="FirstInventoryQuantity" display-name="Tồn đầu" enable-sorting="true"></th>
+                                    <th field-name="FirstInventoryValue" display-name="Tổng giá trị" enable-sorting="true"></th>
+                                    <th field-name="ReceiptInventoryQuantityInPeriod" display-name="Nhập" enable-sorting="true"></th>
+                                    <th field-name="ReceiptInventoryValueInPeriod" display-name="Tổng giá trị" enable-sorting="true"></th>
+                                    <th field-name="DeliveryInventoryQuantityInPeriod" display-name="Xuất" enable-sorting="true"></th>
+                                    <th field-name="DeliveryInventoryValueInPeriod" display-name="Tổng giá trị" enable-sorting="true"></th>
+                                    <th field-name="LastInventoryQuantity" display-name="Tồn cuối" enable-sorting="true"></th>
+                                    <th field-name="LastInventoryValue" display-name="Tổng giá trị" enable-sorting="true"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="{{getItemBackground(gridItem)}}">
+                                    <!--STT-->
+                                    <td><div data-app-module-row-number></div></td>
+                                    <td field-name="DrugCode">
+                                        <!--Mã Thuốc-->
+                                        <div>
+                                            
+                                            @*@Html.ActionLink("LS", "DrugTransHistories", "Report", new { drugId = item.ThuocId }, new { target = "_blank" })*@
+                                            <a href="/Report/DrugTransHistories?drugId={{gridItem.DrugId}}" target="_blank">
+                                                {{gridItem.DrugCode}}
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td field-name="DrugName">
+                                        <!--Tên Thuốc-->
+                                        <div>
+                                            {{gridItem.DrugName}}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <!--Đơn Vị-->
+                                        <div>
+                                            {{gridItem.DrugRetailUnitName}}
+                                        </div>
+                                    </td>
+                                    <td field-name="FirstInventoryQuantity">
+                                        <!--Tồn đầu-->
+                                        <div class="number-value">
+                                            {{gridItem.FirstInventoryQuantity | number}}
+                                        </div>
+                                    </td>
+                                    <td field-name="FirstInventoryValue">
+                                        <!--Tổng giá trị-->
+                                        <div class="number-value">
+                                            {{gridItem.FirstInventoryValue | number:0}}
+                                        </div>
+                                    </td>
+                                    <td field-name="ReceiptInventoryQuantityInPeriod">
+                                        <!--Nhập-->
+                                        <div class="number-value">
+                                            {{gridItem.ReceiptInventoryQuantityInPeriod | number}}
+                                        </div>
+                                    </td>
+                                    <td field-name="ReceiptInventoryValueInPeriod">
+                                        <!--Tổng giá trị-->
+                                        <div class="number-value">
+                                            {{gridItem.ReceiptInventoryValueInPeriod | number:0}}
+                                        </div>
+                                    </td>
+                                    <td field-name="DeliveryInventoryQuantityInPeriod">
+                                        <!--Xuất-->
+                                        <div class="number-value">
+                                            {{gridItem.DeliveryInventoryQuantityInPeriod | number}}
+                                        </div>
+                                    </td>
+                                    <td field-name="DeliveryInventoryValueInPeriod">
+                                        <!--Tổng giá trị-->
+                                        <div class="number-value">
+                                            {{gridItem.DeliveryInventoryValueInPeriod | number:0}}
+                                        </div>
+                                    </td>
+                                    <td field-name="LastInventoryQuantity">
+                                        <!--Tồn cuối-->
+                                        <div class="number-value">
+                                            {{gridItem.LastInventoryQuantity | number}}
+                                        </div>
+                                    </td>
+                                    <td field-name="LastInventoryValue">
+                                        <!--Tổng giá trị-->
+                                        <div class="number-value">
+                                            {{gridItem.LastInventoryValue | number:0}}
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td align="center">
+                                        <span class="form-group pull-left page-size">
+                                            <select id="ddlPageSize" class="form-control"
+                                                    ng-model="model.pageSize"
+                                                    ng-options="item.pageSizeKey as item.pageSizeValue for item in pageSizeList"
+                                                    ng-change="changePageSize()"></select>
+                                            <span class="page-size-label">&#160;&#160;Dòng / Trang</span>
+                                        </span>
+                                        <span tr-ng-grid-pager="" style="height:40px;"></span>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <div class="pull-right">
+                            <table>
+                                <tr>
+                                    <td>Tổng tồn ĐK: <strong style="color:red"> {{model.FirsInventoryValueTotal | number:0}}</strong> </td>
+                                    <td><span class="btn-separator"></span></td>
+                                    <td>Tổng nhập: <strong style="color:red"> {{model.ReceiptValueTotal | number:0}}</strong> </td>
+                                    <td><span class="btn-separator"></span></td>
+                                    <td>Tổng xuất: <strong style="color:red"> {{model.DeliveryValueTotal | number:0}}</strong> </td>
+                                    <td><span class="btn-separator"></span></td>
+                                    <td>Tổng tồn CK: <strong style="color:red"> {{model.LastInventoryValueTotal | number:0}}</strong> </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <br />
+    <br />
+</div>
+@Html.Partial("~/Areas/Common/Views/Filter/ReportDateRageFilterControl.cshtml")
+@Html.Partial("~/Areas/Common/Views/Filter/ReportGroupTypeFilterControl.cshtml")

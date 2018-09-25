@@ -1,0 +1,74 @@
+﻿@using Med.Web.Extensions;
+
+@{
+    ViewBag.Title = "TRA CỨU LỊCH SỬ GIAO DỊCH";
+}
+<script>   
+    var viewModel = @Html.Raw(ViewBag.ViewModel);
+</script>
+<div ng-controller="TransHistoryReportController" ng-cloak>
+    <div class="report-title">
+        <div class="print-date">@DateTime.Now.ToString("dd/MM/yyyy")</div>
+        @*<div style="font-size: 30px; text-align: center;color: green;padding: 0px"><b>@ViewBag.Title</b></div>*@
+    </div>
+    <br/>
+    <br/>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 baocao-filter">
+                <fieldset>
+                    <div report-group-type-filter group-filter-title="Hàng hoá đã giao dịch" group-filter-type="2" 
+                         disable-group-filter-type = "true"
+                         show-group-filter-type ="true"
+                         filter-item-type="filterItemType" selected-item-id="selectedItemId" 
+                         only-single-drug-item="true"
+                         default-selected-drug-item="defaultSelectedDrugItem"
+                         filter-by-name-for-drug="true" drug-ids="drugIds"></div>
+                </fieldset>
+                <br/>
+                <fieldset>
+                    <div report-date-rage-filter
+                         display-data-table-id={{getTableId()}}
+                         excel-file-name="DrugTransactionHistoryReport.xls"
+                         display-data-callback="onDisplayReportData"
+                         supress-export="true" supress-print="true"
+                         call-callback-after-init="false"
+                         filter-type="filterType"></div>
+                </fieldset>
+            </div>          
+           
+            <div class="col-md-9" style="font-size:smaller">
+                <div class="form-group">
+                    <div class="baocao-container">
+                        <div class="ibox float-e-margins">
+                            <div class="tabs-container">
+                                <ul class="nav nav-tabs">
+                                    <li ng-if="hasViewReceiptNotePrivilage" ng-class="isShow(0)?'active':''"><a data-toggle="tab" ng-click="showTabContent(0)">Nhập Hàng&nbsp;<span class="label label-info pull-right">{{ReceiptTransHistoryCount}}</span></a></li>
+                                    <li ng-if="hasViewDeliveryNotePrivilage" ng-class="isShow(1)?'active':''"><a data-toggle="tab" ng-click="showTabContent(1)">Xuất Hàng&nbsp;<span class="label label-info pull-right">{{DeliveryTransHistoryCount}}</span></a></li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div ng-if="hasViewReceiptNotePrivilage" id="#ActivePage=0" ng-class="isShow(0)?'tab-pane active':'tab-pane'">
+                                        <div class="panel-body">
+                                            @Html.Partial("~/Areas/Production/Views/Reports/Partial/TransHistoryReceiptItemTablePartial.cshtml")
+                                        </div>
+                                    </div>
+                                    <div ng-if="hasViewDeliveryNotePrivilage" id="#ActivePage=1" ng-class="isShow(1)?'tab-pane active':'tab-pane'">
+                                        <div class="panel-body">
+                                            @Html.Partial("~/Areas/Production/Views/Reports/Partial/TransHistoryDeliveryItemTablePartial.cshtml")
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <br />
+    <br />
+    <div elem-ready="isReady()"></div>
+</div>
+@Html.Partial("~/Areas/Common/Views/Filter/ReportDateRageFilterControl.cshtml")
+@Html.Partial("~/Areas/Common/Views/Filter/ReportGroupTypeFilterControl.cshtml")
