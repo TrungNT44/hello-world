@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{78334A83-DD1D-4987-B949-8DC1440E63EB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Med.Service.Impl</RootNamespace>
+    <AssemblyName>Med.Service.Impl</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="App.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AppFrameworks\App.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="App.Configuration, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AppFrameworks\App.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="App.Constants, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AppFrameworks\App.Constants.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AppFrameworks\Castle.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\..\..\AppFrameworks\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\..\..\AppFrameworks\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Hangfire.Core, Version=1.6.19.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AppFrameworks\Hangfire.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AppFrameworks\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AppFrameworks\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Transactions" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Admin\AdminService.cs" />
+    <Compile Include="Background\BackgroundService.cs" />
+    <Compile Include="Bootstrap.cs" />
+    <Compile Include="Common\InventoryAdjustmentService.cs" />
+    <Compile Include="Common\InOutCommingNoteService.cs" />
+    <Compile Include="Common\NotificationBaseService.cs" />
+    <Compile Include="Common\DataFilterService.cs" />
+    <Compile Include="Common\CommonService.cs" />
+    <Compile Include="Common\FileService.cs" />
+    <Compile Include="Common\LanguageService.cs" />
+    <Compile Include="Delivery\DeliveryNoteService.cs" />
+    <Compile Include="Drug\InventoryService.cs" />
+    <Compile Include="Drug\DrugStoreService.cs" />
+    <Compile Include="Drug\DrugManagementService.cs" />
+    <Compile Include="Log\AuditLogService.cs" />
+    <Compile Include="Notifications\NotificationService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Receipt\ReceiptNoteService.cs" />
+    <Compile Include="Recruitment\RecruitService.cs" />
+    <Compile Include="Registration\UserService.cs" />
+    <Compile Include="Report\CustomizeReportService.cs" />
+    <Compile Include="Report\TransactionReportService.cs" />
+    <Compile Include="Report\ReportGenDataService.cs" />
+    <Compile Include="Report\DrugWarehouseReportService.cs" />
+    <Compile Include="Report\RevenueDrugSynthesisReportService.cs" />
+    <Compile Include="Report\SynthesisReportService.cs" />
+    <Compile Include="Report\ReportService.cs" />
+    <Compile Include="System\AppSettingService.cs" />
+    <Compile Include="System\SystemService.cs" />
+    <Compile Include="Utilities\UtilitiesService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Med.Common\Med.Common.csproj">
+      <Project>{025E1905-EFFA-41CA-BA12-718BD1262F37}</Project>
+      <Name>Med.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Med.DbContext\Med.DbContext.csproj">
+      <Project>{117f80a1-a85b-4431-8a88-39e40b774d76}</Project>
+      <Name>Med.DbContext</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Med.Entity\Med.Entity.csproj">
+      <Project>{d0a01338-b0f9-4fbe-a7ec-f6d22b0a9629}</Project>
+      <Name>Med.Entity</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Med.Repository\Med.Repository.csproj">
+      <Project>{1613b9fd-4f25-4509-98ce-ef318c05ba68}</Project>
+      <Name>Med.Repository</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Med.ServiceModel\Med.ServiceModel.csproj">
+      <Project>{089591ef-1004-4800-8bc6-30c89d26bf08}</Project>
+      <Name>Med.ServiceModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Med.Service\Med.Service.csproj">
+      <Project>{3fc0ec17-c99e-4b23-8abd-019619b4be48}</Project>
+      <Name>Med.Service</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Security\" />
+    <Folder Include="Setting\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

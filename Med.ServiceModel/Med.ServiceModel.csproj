@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{089591EF-1004-4800-8BC6-30C89D26BF08}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Med.ServiceModel</RootNamespace>
+    <AssemblyName>Med.ServiceModel</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="App.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AppFrameworks\App.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="App.Constants, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AppFrameworks\App.Constants.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Admin\RolePermissionResponse.cs" />
+    <Compile Include="Admin\UserAccount.cs" />
+    <Compile Include="CacheObjects\CacheDrug.cs" />
+    <Compile Include="Common\DrugStoreInfo.cs" />
+    <Compile Include="Drug\ItemInfoCandidate.cs" />
+    <Compile Include="Drug\DrugPriceModel.cs" />
+    <Compile Include="Drug\DrugInventoryInfo.cs" />
+    <Compile Include="Drug\NoteItemQuantity.cs" />
+    <Compile Include="Inventory\InventoryDetailModel.cs" />
+    <Compile Include="InOutComming\InOutCommingNoteModel.cs" />
+    <Compile Include="InOutComming\ReceiverDebtInfo.cs" />
+    <Compile Include="Common\StaffInfo.cs" />
+    <Compile Include="Common\BaseItem.cs" />
+    <Compile Include="Common\GroupFilterData.cs" />
+    <Compile Include="Common\GroupFilterItem.cs" />
+    <Compile Include="Common\FilterObject.cs" />
+    <Compile Include="Common\BaseFilterObject.cs" />
+    <Compile Include="Common\MinModifiedDateItem.cs" />
+    <Compile Include="Common\BaseNoteItemInfo.cs" />
+    <Compile Include="Common\ReceiptNoteItemInfo.cs" />
+    <Compile Include="Common\DeliveryNoteItemInfo.cs" />
+    <Compile Include="Delivery\DrugUnit.cs" />
+    <Compile Include="Delivery\DrugDeliveryItem.cs" />
+    <Compile Include="Delivery\DrugDeliveryInfo.cs" />
+    <Compile Include="Drug\CreateReserveItem.cs" />
+    <Compile Include="Drug\CreateReserveResponse.cs" />
+    <Compile Include="Drug\DrugStoreInfo.cs" />
+    <Compile Include="Drug\DrugInfo.cs" />
+    <Compile Include="Drug\GroupDrugInfo.cs" />
+    <Compile Include="Drug\ProviderInfo.cs" />
+    <Compile Include="Log\HistoryBase.cs" />
+    <Compile Include="Log\NoteHistoryModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Recruitment\ListRecruitsResponse.cs" />
+    <Compile Include="Registration\UserQuickProfile.cs" />
+    <Compile Include="Registration\UserSignInRequest.cs" />
+    <Compile Include="Registration\UserSignInResponse.cs" />
+    <Compile Include="Report\CustomizeReportItem.cs" />
+    <Compile Include="Report\DrugTransHistoryResponse.cs" />
+    <Compile Include="Report\DrugTransHistoryItem.cs" />
+    <Compile Include="Report\ReportByGoodsItem.cs" />
+    <Compile Include="Report\ReportByResponse.cs" />
+    <Compile Include="Report\ReportByBaseItem.cs" />
+    <Compile Include="Report\DrugWarehouseItem.cs" />
+    <Compile Include="Report\InOutCommingValueSummary.cs" />
+    <Compile Include="Report\DrugWarehouseSynthesis.cs" />
+    <Compile Include="Report\DrugWarehouseResponse.cs" />
+    <Compile Include="Report\SynthesisReportResponse.cs" />
+    <Compile Include="Report\RevenueDrugSynthesisResponse.cs" />
+    <Compile Include="Report\RevenueDrugItem.cs" />
+    <Compile Include="Request\FilterRequestModel.cs" />
+    <Compile Include="Request\SearchRequestModel.cs" />
+    <Compile Include="Request\GetCanhBaoHangHetHanRequestModel.cs" />
+    <Compile Include="Request\ReportRequestModel.cs" />
+    <Compile Include="Request\RequestModel.cs" />
+    <Compile Include="Response\PagingResultModel.cs" />
+    <Compile Include="Response\ResponseModel.cs" />
+    <Compile Include="System\SystemMessageResponse.cs" />
+    <Compile Include="Utilities\CanhBaoHetHanItem.cs" />
+    <Compile Include="Utilities\CanhBaoHetHanResponse.cs" />
+    <Compile Include="Utilities\NearExpiredDrugItem.cs" />
+    <Compile Include="Utilities\NegativeRevenueItem.cs" />
+    <Compile Include="Utilities\NearExpiredDrugResponse.cs" />
+    <Compile Include="Utilities\NegativeRevenueResponse.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Med.Common\Med.Common.csproj">
+      <Project>{025e1905-effa-41ca-ba12-718bd1262f37}</Project>
+      <Name>Med.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Med.Entity\Med.Entity.csproj">
+      <Project>{d0a01338-b0f9-4fbe-a7ec-f6d22b0a9629}</Project>
+      <Name>Med.Entity</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Receipt\" />
+    <Folder Include="Security\" />
+    <Folder Include="Setting\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
