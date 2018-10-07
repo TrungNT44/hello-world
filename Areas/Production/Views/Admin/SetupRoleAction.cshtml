@@ -1,0 +1,45 @@
+﻿@using Med.Web.Data.Session;
+
+@{
+    ViewBag.Title = "Thiết lập vai trò truy cập";
+}
+@section scripts{
+    <script>
+        var roles=@Html.Raw(ViewBag.Roles);
+        var permissions = @Html.Raw(ViewBag.Permissions);
+        $(document).ready(function () {
+            $("#selectedRoleId").select2({
+                placeholder: "Chọn vai trò...",
+                width: 300,
+                allowClear: true
+            });
+
+        })
+    </script>
+}
+
+<div ng-controller="SetupRoleActionController" ng-cloak>    
+    <div class="row">
+        <h1>Thiết lập quyền truy cập tài nguyên theo vai trò</h1>
+        <div class="col-xs-12">
+            <select ng-options="s.RoleId as s.RoleName for s in roles" ng-model="selectedRoleId" class="borderless no-padding" id="selectedRoleId"></select>
+        </div>
+    </div>
+    <hr />
+
+    <br />
+    <div class="row">
+        <div data-role-action-directive role-id="selectedRoleId" edit-able="true"></div>
+    </div>
+    <hr />
+
+    <br /> 
+@if (MedSessionManager.IsSystemAdmin())
+{
+    <button type="button" ng-click="pushRemainResourcesToDB()" class="btn btn-warning" ng-disabled="isPushingRemainResources">
+        Push Remain Resources To DB
+    </button>
+}    
+</div>
+
+@Html.Partial("~/Areas/Production/Views/Admin/Partial/RoleAction.cshtml")

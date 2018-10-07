@@ -1,0 +1,86 @@
+﻿<script type="text/ng-template" id="/tplReportGroupTypeFilterControl.html">
+    <div  ng-show="!singleMode && !singleModeWithTitle">
+        <fieldset>
+            <legend><b>{{groupFilterTitle}}</b></legend>
+            <div>
+                <div>
+                    <div id="groupTypeContainerId" ng-show="showGroupFilterType">
+                        <select id="ddlGroupType" class="form-control"
+                                ng-model="groupFilterType"
+                                ng-disabled="disableGroupFilterType"
+                                ng-options="item.groupTypeId as item.groupTypeName for item in groupTypes"
+                                ng-change="onGroupTypeChanged()"></select>
+                        <br />
+                    </div>                    
+                    <div ng-show="groupFilterType==1" id="filterByGroupId">
+                        @*REPORT_FILTER_TYPE_BY_GROUP*@
+                        @*<select id="ddlFilterByGroupItems" class="form-control"
+                                ng-model="selectedItemId"
+                                ng-options="item.ItemId as item.ItemName for item in filterByGroupItems">
+                        </select>*@
+                        <ui-select ng-model="selectedItem" theme="selectize" on-select="onItemChanged($item)">
+                            <ui-select-match placeholder="Chọn hoặc gõ vào để tìm...">{{$select.selected.ItemName}}</ui-select-match>
+                            <ui-select-choices repeat="item in filterByGroupItems | filter: $select.search">
+                                @*<span ng-bind-html="item.ItemCode | highlight: $select.search"></span>*@
+                                <small ng-bind-html="item.ItemName | highlight: $select.search"></small>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                    <div ng-show="groupFilterType==2 && !filterByNameForDrug">
+                        @*REPORT_FILTER_TYPE_BY_NAME*@
+                        @*<select id="ddlFilterByNameItems" class="form-control"
+                                ng-model="selectedItemId"
+                                ng-options="item.ItemId as item.ItemName for item in filterByNameItems">
+                        </select>*@
+                        <ui-select ng-model="selectedItem" theme="selectize" on-select="onItemChanged($item)">
+                            <ui-select-match placeholder="Chọn hoặc gõ vào để tìm...">{{$select.selected.ItemName}}</ui-select-match>
+                            <ui-select-choices repeat="item in filterByNameItems | filter: $select.search">
+                                @*<span ng-bind-html="item.ItemCode | highlight: $select.search"></span>*@
+                                <small ng-bind-html="item.ItemName | highlight: $select.search"></small>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                    
+                    <div ng-if="groupFilterType==2 && filterByNameForDrug" id="drugSearchControlId">
+                        @*REPORT_FILTER_TYPE_BY_NAME*@
+                        <div drug-search-filter 
+                             only-single-drug-item="onlySingleDrugItem",
+                             default-selected-drug-item="defaultSelectedDrugItem"
+                             select-changed-callback="onDrugSelectChanged">
+
+                        </div>
+                    </div>                   
+                </div>
+            </div>
+        </fieldset>        
+    </div>
+    <div ng-show="singleModeWithTitle">
+        <fieldset>
+            <legend><b>{{groupFilterTitle}}</b></legend>
+            <div>
+                <div>
+                    <ui-select ng-model="selectedItem" theme="selectize" on-select="onItemChanged($item)"
+                               ng-disabled="disabledMode">
+                        <ui-select-match placeholder="Chọn hoặc gõ vào để tìm...">{{$select.selected.ItemName}}</ui-select-match>
+                        <ui-select-choices repeat="item in filterByNameItems | filter: $select.search">
+                            @*<span ng-bind-html="item.ItemCode | highlight: $select.search"></span>*@
+                            <small ng-bind-html="item.ItemName | highlight: $select.search"></small>
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    @*<select id="ddlFilterByNameItems" class="form-control" ng-show="singleMode"
+            ng-model="selectedItemId"
+            ng-options="item.ItemId as item.ItemName for item in filterByNameItems"></select>*@
+    <ui-select ng-model="selectedItem" theme="selectize" on-select="onItemChanged($item)" ng-show="singleMode"
+               ng-disabled="disabledMode">
+        <ui-select-match placeholder="Chọn hoặc gõ vào để tìm...">{{$select.selected.ItemName}}</ui-select-match>
+        <ui-select-choices repeat="item in filterByNameItems | filter: $select.search">
+            @*<span ng-bind-html="item.ItemCode | highlight: $select.search"></span>*@
+            <small ng-bind-html="item.ItemName | highlight: $select.search"></small>
+        </ui-select-choices>
+    </ui-select>
+</script>
+@Html.Partial("~/Areas/Common/Views/Filter/DrugSearchFilterControl.cshtml")

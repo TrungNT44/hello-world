@@ -1,0 +1,77 @@
+﻿<script type="text/ng-template" id="/tplRoleAction.html">
+    <div id="role-action-dialog" ng-show="true">
+        <h3>
+            Tài nguyên kết hợp với vai trò: {{role.RoleName}}
+        </h3>
+        <div class="panel">
+            <table tr-ng-grid=""
+                   items="roleActions"
+                   locale="en"
+                   class="table table-striped table-bordered table-hover "
+                   selection-mode="None"
+                   current-page="setCurrentPage"
+                   enable-filtering="false"
+                   enable-sorting="false"
+                   page-items="false">
+                <thead>
+                    <tr>
+                        <th field-name="ResourceName" display-name="Tên tài nguyên" enable-sorting="true" enable-filtering="true"></th>
+                        <th field-name="Permission" display-name="Quyền"></th>
+                        <th field-name="Action" display-name="#"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td field-name="ResourceName">
+                            <span>{{::gridItem.ResourceName}}</span>
+                        </td>
+                        <td field-name="Permission">
+                            <select class="form-control m-b selectedHightLight" ng-options="p.PermissionId as p.PermissionName for p in permissions"
+                                    ng-model="gridItem.PermissionId" ng-change="updatePermisson(gridItem)"></select>
+                        </td>
+                        <td field-name="Action">
+                            <a href="javascript: " ng-show="{{editAble}}" ng-click="deleteAction(gridItem)">
+                                <img class="bin" ng-src="{{getDeleteIconSrc()}}" alt="delete" />
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div ng-show="{{editAble}}">
+            <fieldset style="padding: 1em; font: 100%; color: Black; border-color: Black; border-style: solid;
+                        border-width: thin; border-color: Silver; width: 50%">
+                <legend><strong>Thêm tài nguyên cho vai trò</strong></legend>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <label class="control-label">
+                            Tài nguyên:
+                        </label>
+                        <ui-select ng-model="selectedAction.selected" theme="select2"
+                                   on-select="onSelectAction(selectedAction.selected)"
+                                   ng-disabled="disabled" style="min-width: 100%;" title="Chọn quyền truy cập tài nguyên">
+                            <ui-select-match placeholder="Chọn tài nguyên trong danh sách...">{{$select.selected.ResourceName}}</ui-select-match>
+                            <ui-select-choices repeat="action in actions | propsFilter: {ResourceName: $select.search}" position='down'>
+                                <div ng-bind-html="action.ResourceName | highlight: $select.search"></div>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <label class="control-label">
+                            Quyền truy cập:
+                        </label>
+                        <select class="form-control m-b selectedHightLight" ng-options="p.PermissionId as p.PermissionName for p in permissions"
+                                ng-model="selectedPermissionId"></select>
+                    </div>
+                    <div class="col-xs-6" style="margin-top: 20px">
+                        <button class="btn btn-primary" type="button" ng-disabled="isAddActionDisabled()" ng-click="addAction(selectedAction.selected)">Thêm quyền</button>
+                    </div>
+                </div>
+
+            </fieldset>
+        </div>
+    </div>
+</script>

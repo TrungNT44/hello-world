@@ -1,0 +1,27 @@
+﻿<div class="modal inmodal" tabindex="-1" role="dialog" aria-hidden="false"
+     ng-controller="noticeDialogController"
+     id="noticeDialog"
+     data-backdrop="static">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" ng-click="onClose()"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">{{model.title}}</h4>
+            </div>
+            <div class="modal-body">
+                <p style="word-wrap: break-word">
+                    {{model.content}}
+                </p>
+            </div>
+
+            <div class="modal-footer" ng-if="model.type=='confirm'">
+                <button type="button" class="btn btn-white" ng-click="onClose()">Cancel</button>
+                <button type="button" class="btn btn-primary" ng-click="onConfirm()">Confirm</button>
+            </div>
+
+            <div class="modal-footer" ng-if="model.type=='alert'">
+                <button type="button" class="btn btn-primary" ng-click="onOK()">OK</button>
+            </div>
+        </div>
+    </div>
+</div>

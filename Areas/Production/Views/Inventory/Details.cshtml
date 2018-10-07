@@ -1,0 +1,233 @@
+﻿
+@{
+    ViewBag.Title = "Phiếu kiểm kê chi tiết";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<script>
+    var viewModel = @Html.Raw(ViewBag.ViewModel);
+</script>
+
+<title>Phiếu kiểm kê chi tiết</title>
+
+<link href="~/Content/baocao.css" rel="stylesheet" />
+
+<div class="row" ng-controller="DetailInventoryController">
+    <div class="col-md-3">
+        <b style="font-size: 20px">PHIẾU KIỂM KÊ CHI TIẾT</b>
+        <table>
+
+            <tr>
+                <td>
+                    <label>Mã phiếu: </label>
+                </td>
+                <td>&nbsp;&nbsp;&nbsp;{{InventoryModel.Id}}</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <label>Người lập: </label>
+                </td>
+                <td>&nbsp;&nbsp;&nbsp;{{InventoryModel.FullName}}</td>
+
+            </tr>
+
+            <tr>
+                <td>
+                    <label>Ngày tạo: </label>
+                </td>
+                <td>
+                    &nbsp;&nbsp;&nbsp;{{InventoryModel.CreateTime | date:'dd/MM/yyyy'}}
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <label>Cân kho: </label>
+                </td>
+                <td ng-if="InventoryModel.DaCanKho" style="text-align : left">
+                    &nbsp;&nbsp;&nbsp;
+                    <i class="glyphicon-check glyphicon text-success"></i>
+                </td>
+                <td ng-if="!InventoryModel.DaCanKho" style="text-align : left">
+                    &nbsp;&nbsp;&nbsp;
+                    <i class="glyphicon-remove glyphicon text-danger"></i>
+                </td>
+            </tr>
+        </table>
+
+        <br />
+        <div>
+
+            <div ng-if="!InventoryModel.DaCanKho">
+                <a class="btn btn-default" href="/Inventory/Edit/{{InventoryModel.Id}}">Sửa/Cân kho</a>
+                <br /> <br />
+            </div>
+
+            <a class="btn btn-default" href="/Inventory/Index">Quay lại</a>
+            <span class="btn-separator"></span>
+            <a class="btn btn-default" href="/Inventory/In/{{InventoryModel.Id}}" target="_blank">In</a>
+            <span class="btn-separator"></span>
+
+            <a class="btn btn-default btn-danger" href="/Inventory/Delete/{{InventoryModel.Id}}">Xóa</a>
+
+        </div>
+    </div>
+
+
+    <div class="col-md-9 baocao-container">
+        <div>
+            <fieldset>
+                <legend>Danh sách thuốc</legend>
+                <table tr-ng-grid="" items="InventoryModel.MedicineList"
+                       display-total-items-count="false"
+                       id="table-id-delivery-note-with-barcode"
+                       locale="en"
+                       class="table table-striped table-responsive table-bordered table-hover"
+                       selection-mode="None"
+                       current-page="setCurrentPage"
+                       enable-filtering="false"
+                       enable-sorting="false"
+                       page-items="model.pageSize" total-items="InventoryModel.MedicineList.length">
+                    <thead>
+                        <tr>
+                            <th style="width: 6%" class="header-bg" display-name="STT"></th>
+                            <th field-name="TenNhomThuoc" style="width: 18%" class="header-bg" display-name="Nhóm Thuốc" enable-sorting="true"></th>
+                            <th field-name="MaThuoc" style="width: 12%" class="header-bg" display-name="Mã Thuốc" enable-sorting="true"></th>
+                            <th field-name="TenThuoc" style="width: 23%" class="header-bg" display-name="Tên Thuốc" enable-sorting="true"></th>
+                            <th field-name="TonKho" style="width: 14%" class="header-bg" display-name="SL hệ thống" enable-sorting="true"></th>
+                            <th field-name="ThucTe" style="width: 10%" class="header-bg" display-name="SL thực" enable-sorting="true"></th>
+                            <th field-name="Chenhlech" style="width: 10%" class="header-bg" display-name="Chênh lệch" enable-sorting="false"></th>
+                            <th style="width: 5%" class="header-bg" display-name="Giá/Lô/Hạn dùng"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body-id-delivery-note-with-barcode">
+                        <tr class="tr-barcode">
+                            <!--STT-->
+                            <td>
+                                <div>
+                                    {{gridOptions.currentPage * model.pageSize + $index + 1}}
+                                </div>
+                            </td>
+                            <!--Tên nhóm thuốc-->
+                            <td field-name="TenNhomThuoc">
+                                <div>
+                                    {{gridItem.TenNhomThuoc}}
+                                </div>
+                            </td>
+
+                            <!--Mã Thuốc-->
+                            <td field-name="MaThuoc">
+                                <div>
+                                    {{gridItem.MaThuoc}}
+                                </div>
+                            </td>
+
+                            <!--Tên thuốc-->
+                            <td field-name="TenThuoc">
+                                <div>
+
+                                    {{gridItem.TenThuoc}}
+                                </div>
+                            </td>
+
+                            <!--Số Lượng hệ thống-->
+                            <td field-name="TonKho">
+                                <div style="text-align:right">
+
+                                    {{gridItem.TonKho}} {{gridItem.TenDonViTinh}}
+                                </div>
+                            </td>
+
+                            <!--Số Lượng thực tế-->
+                            <td field-name="ThucTe">
+                                <div style="text-align:right">
+                                    {{gridItem.ThucTe | DrugQuantityFilter:1}}
+                                </div>
+                            </td>
+
+
+                            <!--Chênh lệch-->
+                            <td field-name="Chenhlech">
+                                <div style="text-align:right">
+                                    {{gridItem.TonKho - gridItem.ThucTe | DrugQuantityFilter:1}}
+                                </div>
+                            </td>
+
+                            <!-- Ô cập nhật giá/lô/hạn dùng-->
+                            <td>
+                                <div style="text-align:center">
+                                    <a href="#" id="" ng-click="updateDrug(gridItem)" title="Cập nhật giá/lô/hạn dùng"><i class="fa fa-calendar" aria-hidden="true"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td align="center">
+                                <span class="form-group pull-left page-size">
+                                    <select id="ddlPageSize" class="form-control"
+                                            ng-model="model.pageSize"
+                                            ng-options="item.pageSizeKey as item.pageSizeValue for item in pageSizeList"
+                                            ng-change="changePageSize()"></select>
+                                    <span class="page-size-label">&#160;&#160;Dòng / Trang</span>
+                                </span>
+                                <span tr-ng-grid-pager="" style="height:40px;"></span>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </fieldset>
+        </div>
+
+        <br />
+
+        <div ng-if="InventoryModel.DaCanKho">
+            <fieldset>
+                <legend>Phiếu nhập/xuất sau cân kho</legend>
+                <div>
+                    <table class="table table-responsive table-bordered" id="tbl">
+                        <thead>
+                            <tr>
+                                <th style="background-color:darkgray">#</th>
+                                <th style="background-color:darkgray">Số phiếu</th>
+                                <th style="background-color:darkgray">Loại phiếu</th>
+                                <th style="text-align: right; background-color:darkgray">
+                                    Số lượng mặt hàng
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="phieuCanKhoItem in InventoryModel.PhieuCanKhoChiTiet">
+                                <td>{{$index + 1}}</td>
+                                <td>
+                                    <div ng-if="phieuCanKhoItem.SoLuong <= 0 ">
+                                        <label>N/A</label>
+                                    </div>
+
+                                    <div ng-if="phieuCanKhoItem.LoaiPhieu == 1 && phieuCanKhoItem.SoLuong > 0 ">
+                                        <a href="/PhieuNhaps/Details/{{phieuCanKhoItem.MaPhieu}}" target="_blank">{{phieuCanKhoItem.SoPhieu}}</a>
+
+                                    </div>
+
+                                    <div ng-if="phieuCanKhoItem.LoaiPhieu == 2 && phieuCanKhoItem.SoLuong > 0 ">
+                                        <a href="/PhieuXuats/Details/{{phieuCanKhoItem.MaPhieu}}" target="_blank">{{phieuCanKhoItem.SoPhieu}}</a>
+
+                                    </div>
+                                </td>
+                                <td>
+                                    <span ng-if="phieuCanKhoItem.LoaiPhieu == 1">Phiếu Nhập</span>
+                                    <span ng-if="phieuCanKhoItem.LoaiPhieu == 2">Phiếu Xuất</span>
+                                </td>
+                                <td style="text-align: right"><span class="chenhlech">{{phieuCanKhoItem.SoLuong}}</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("~/Areas/Production/Views/Inventory/Partial/UpdateInventoryItemDialog.cshtml")

@@ -1,0 +1,27 @@
+﻿<div class="modal fade inmodal" id="warehouse-transition-dialog" ng-controller="WarehouseTransitionDialogController" tabindex='-1' ng-cloak>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Đóng"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"> Chuyển kho cho hàng hoá</h4>
+            </div>
+            <div class="modal-body form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-5">Chọn nhà thuốc chuyển đến</label>
+                    <div class="col-sm-7">
+                        <ui-select ng-model="selectedDrugStore" theme="selectize" on-select="onDrugStoreItemChanged($item)">
+                            <ui-select-match placeholder="Chọn hoặc gõ vào để tìm...">{{$select.selected.DrugStoreName}}</ui-select-match>
+                            <ui-select-choices repeat="item in drugStores | filter: $select.search">
+                                <small ng-bind-html="item.DrugStoreName | highlight: $select.search"></small>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>               
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" ng-click="transit()">Chuyển kho</button>&nbsp;&nbsp;&nbsp;
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

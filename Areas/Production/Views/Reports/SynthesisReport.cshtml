@@ -1,0 +1,119 @@
+﻿@using Med.Web.Extensions;
+
+@{
+    ViewBag.Title = "BÁO CÁO TỔNG HỢP";
+}
+<div ng-controller="SynthesisReportController" ng-cloak>
+    <div class="report-title">
+        <div style="font-size: 30px; text-align: center;color: green;padding: 0px"><b>@ViewBag.Title</b></div>
+    </div>
+    <br/>
+    <br/>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 baocao-filter">
+                <div report-date-rage-filter display-data-callback="onDisplayReportData" 
+                     supress-export="true" supress-print="true"
+                     call-callback-after-init="true"></div>
+            </div>  
+            <div class="col-md-9">
+                <div class="baocao-container">
+                    <div class="col-md-6">
+                        <table class="table-bcth">
+                            <tr>
+                                <td class="title"> I.1. Tổng giá trị nhập kho</td>
+                                <td class="value">{{reportData.ReceiptValueTotal | number:0}}</td>
+                            </tr>
+                            <tr>
+                                <td class="title"> I.2. Tổng giá trị xuất kho</td>
+                                <td class="value">{{reportData.DeliveryValueTotal | number:0}}</td>
+
+                            </tr>
+                            <tr>
+                                <td class="title"> I.3. Tổng giá trị kho hàng</td>
+                                <td class="value">{{reportData.WarehousingValueTotal | number:0}}</td>
+                            </tr>
+                            <tr>
+                                <td class="title"> I.4. Tổng nợ khách hàng</td>
+                                <td class="value">{{reportData.DeliveryDueFromCustomersTotal | number:0}}</td>
+                            </tr>
+                            <tr>
+                                <td class="title sub"> + Nợ bán hàng</td>
+                                <td class="value sub">{{reportData.DeliveryDueTotal | number:0}}</td>
+                            </tr>
+                            <tr>
+                                <td class="title sub"> + Các khoản nợ khác</td>
+                                <td class="value sub">{{reportData.DeliveryOtherDueTotal | number:0}}</td>
+                            </tr>
+                            <tr>
+                                <td class="title"> I.5. Tổng nợ nhà cung cấp</td>
+                                <td class="value ">{{reportData.ReceiptDueFromSupplyersTotal | number:0}}</td>
+                            </tr>
+                            <tr>
+                                <td class="title sub "> + Nợ mua hàng</td>
+                                <td class="value sub ">{{reportData.ReceiptDueTotal | number:0}}</td>
+                            </tr>
+                            <tr>
+                                <td class="title sub"> + Các khoản nợ khác</td>
+                                <td class="value sub">{{reportData.ReceiptOtherDueTotal | number:0}}</td>
+                            </tr>
+                            <tr>
+                                <td class="title" style="background-color:darkgray"><b>TÀI SẢN HIỆN CÓ (I.3 + I.4 - I.5)</b></td>
+                                <td class="value" style="background-color:darkgray"><b>{{reportData.ExistingAssetsTotal | number:0}}</b></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table-bcth">
+                            <tr>
+                                <td class="title"> II.1. Tổng thu</td>
+                                <td class="value">{{reportData.RevenueTotal | number:0}}</td>
+                            </tr>
+                            <tr>
+                                <td class="title sub"> + Bán hàng hóa/dịch vụ</td>
+                                <td class="value sub">{{reportData.DeliveryIncomingTotal | number:0}}</td>
+                            </tr>
+                            <tr>
+                                <td class="title sub "> + Các nguồn thu khác</td>
+                                <td class="value sub ">{{reportData.OtherIncommingTotal | number:0}}</td>
+                            </tr>
+                            <tr>
+                                <td class="title"> II.2. Tổng chi</td>
+                                <td class="value">{{reportData.ExpenditureTotal | number:0}}</td>
+                            </tr>
+                            <tr>
+                                <td class="title sub"> + II.2.1. Mua hàng hóa/ dịch vụ</td>
+                                <td class="value sub">{{reportData.ReceiptOutcomingTotal | number:0}}</td>
+                            </tr>
+                            <tr>
+                                <td class="title sub"> + II.2.2. Chi phí kinh doanh</td>
+                                <td class="value sub">{{reportData.BusinessCostsTotal | number:0}}</td>
+                            </tr>
+                            <tr>
+                                <td class="title sub"> + II.2.3. Các khoản chi khác</td>
+                                <td class="value sub">{{reportData.OtherOutcomingTotal | number:0}}</td>
+                            </tr>
+                            <tr>
+                                <td class="title"> II.3. Lãi gộp</td>
+                                <td class="value">{{reportData.GrossProfitTotal | number:0}}</td>
+                            </tr>
+                            <tr>
+                                <td class="title"> II.4. Lãi ròng (II.3 - II.2.2 - II.2.3)</td>
+                                <td class="value">{{reportData.NetInterestTotal | number:0}}</td>
+                            </tr>
+                            <tr>
+                                <td class="title" style="background-color:darkgray"><b>QUỸ TIỀN MẶT (II.1 - II.2)</b></td>
+                                <td class="value" style="background-color:darkgray"><b>{{reportData.CashFundTotal | number:0}}</b></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <br />
+    <br />
+</div>
+@Html.Partial("~/Areas/Common/Views/Filter/ReportDateRageFilterControl.cshtml")
