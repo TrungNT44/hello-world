@@ -71,6 +71,8 @@
     <Compile Include="Drug\IDrugManagementService.cs" />
     <Compile Include="Drug\IInventoryService.cs" />
     <Compile Include="Drug\IDrugStoreService.cs" />
+    <Compile Include="Helpers\ReportServiceHelper.cs" />
+    <Compile Include="Helpers\NoteServiceHelper.cs" />
     <Compile Include="Log\IAuditLogService.cs" />
     <Compile Include="Notifications\INotificationService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -80,12 +82,14 @@
     <Compile Include="Report\ICustomizeReportService.cs" />
     <Compile Include="Report\IReportGenDataService.cs" />
     <Compile Include="Report\IDrugWarehouseReportService.cs" />
+    <Compile Include="Report\IReportHelperService.cs" />
     <Compile Include="Report\ITransactionReportService.cs" />
     <Compile Include="Report\IRevenueDrugSynthesisReportService.cs" />
     <Compile Include="Report\ISynthesisReportService.cs" />
     <Compile Include="Report\IReportService.cs" />
     <Compile Include="System\IAppSettingService.cs" />
     <Compile Include="System\ISystemService.cs" />
+    <Compile Include="Utilities\ICleanUpService.cs" />
     <Compile Include="Utilities\IUtilitiesService.cs" />
   </ItemGroup>
   <ItemGroup>

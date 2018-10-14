@@ -1,0 +1,35 @@
+﻿<style type="text/css">
+    .ui-select-choices {
+        width: auto !important;
+    }
+</style>
+<script type="text/ng-template" id="/tplDrugSearchFilterControl.html">
+    <div>
+        <ui-select ng-model="data.selected" multiple theme="bootstrap" on-select="onUpdated($item)" on-remove="onUpdated($item)" id="drugSearchId">
+            <ui-select-match placeholder="Nhập mã, mã vạch hoặc tên thuốc">
+                {{$item.DrugCode}}
+            </ui-select-match>
+            <ui-select-choices refresh="fetch($select)"
+                               refresh-delay="500"
+                               repeat="item in items | filter: $select.search">
+                {{item.FullInfo}}
+                @*<div ng-if="$index == $select.items.length-1">
+                    <button ng-if="!useNgMouseover"
+                            class="btn btn-xs btn-success"
+                            style="width: 100%; margin-top: 5px;"
+                            ng-click="fetch($select, $event);"
+                            ng-disabled="loading">
+                        Load more...
+                    </button>
+                    <button ng-if="useNgMouseover"
+                            class="btn btn-xs btn-danger"
+                            style="width: 100%; margin-top: 5px;"
+                            ng-mouseover="fetch($select, $event);"
+                            ng-disabled="loading">
+                        Mouse over load more...
+                    </button>
+                </div>*@
+            </ui-select-choices>
+        </ui-select>
+    </div>
+</script>

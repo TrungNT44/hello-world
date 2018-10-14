@@ -1,0 +1,9 @@
+﻿<div id="noticeViewContainer" ng-controller="noticeViewController" class="" ng-cloak>
+    <div ng-repeat="m in model.messages">
+        <div class="alert alert-{{(m.type)||'info'}} alert-dismissable fade in pull-right">
+            <button type="button" class="close" ng-click="removeNotice(m)">×</button>
+            <label>{{m.title}}</label>
+            {{m.content}}
+        </div>
+    </div>
+</div>

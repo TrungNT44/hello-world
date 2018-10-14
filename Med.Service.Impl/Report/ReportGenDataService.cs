@@ -176,7 +176,7 @@ namespace Med.Service.Impl.Report
                  ||
                  (modifiedReturnedToSupplyerItemIds.Contains(i.NoteItemId) &&
                   i.NoteTypeId == (int) NoteInOutType.ReturnToSupplier))
-                && i.RecordStatusId != (int) RecordStatus.Deleted)
+                && i.RecordStatusId != (byte) RecordStatus.Deleted)
                 .Select(i => new
                 {
                     ReturnedItemId = i.NoteItemId,
@@ -229,10 +229,13 @@ namespace Med.Service.Impl.Report
 
             RevertRefItems(effectedDeliveryItemIds, effectedReceiptItemIds, drugStoreCode);
 
-            reduceItemRepo.UpdateMany(i => effectedReduceItemIds.Contains(i.ReduceId), i => new ReduceNoteItem()
+            if (effectedReduceItemIds.Any())
             {
-                RecordStatusId = (int)RecordStatus.Deleted
-            });
+                reduceItemRepo.UpdateMany(i => effectedReduceItemIds.Contains(i.ReduceId), i => new ReduceNoteItem()
+                {
+                    RecordStatusId = (byte)RecordStatus.Deleted
+                });
+            }
           
             _revertedModifiedDeliveryItemIds = deliveryNoteItems.Where(i => i.IsModified).Select(i => i.NoteItemId).ToList();
             _revertedModifiedReceiptItemIds = receiptNoteItems.Where(i => i.IsModified).Select(i => i.NoteItemId).ToList();
@@ -290,12 +293,15 @@ namespace Med.Service.Impl.Report
                         i.NoteType == (int) NoteInOutType.Receipt && refFromDrugs.Contains(i.DrugId.Value)
                     select i.DrugId
                     ).Distinct().ToList();
-                deliveryItemRepo.UpdateMany(i => drugIdsWithRceiptNoteAtFirstTime.Contains(i.Thuoc_ThuocId) && i.NhaThuoc_MaNhaThuoc == drugStoreCode,
-                   i => new PhieuXuatChiTiet()
-                   {
-                       IsModified = true,
-                       RequestUpdateFromBkgService = true
-                   });
+                if (drugIdsWithRceiptNoteAtFirstTime.Any())
+                {
+                    deliveryItemRepo.UpdateMany(i => drugIdsWithRceiptNoteAtFirstTime.Contains(i.Thuoc_ThuocId) && i.NhaThuoc_MaNhaThuoc == drugStoreCode,
+                       i => new PhieuXuatChiTiet()
+                       {
+                           IsModified = true,
+                           RequestUpdateFromBkgService = true
+                       });
+                }
             }
 
             var receiptNoteTypeIds = new int[] { (int)NoteInOutType.InitialInventory, 
@@ -331,18 +337,25 @@ namespace Med.Service.Impl.Report
                 where
                     !i.IsModified && i.NoteItemDate >= minI.MinModifiedDate && deliveryNoteTypeIds.Contains(i.NoteType)
                 select i.NoteItemId).ToList();
-            deliveryItemRepo.UpdateMany(i => effectedDeliveryItemIdsByMinModifiedReceiptItems.Contains(i.MaPhieuXuatCt),
-                i => new PhieuXuatChiTiet()
-                {
-                    IsModified = true,
-                    RequestUpdateFromBkgService = true
-                });
-            receiptItemRepo.UpdateMany(i => effectedReceiptItemIdsByMinModifiedReceiptItems.Contains(i.MaPhieuNhapCt),
+            if (effectedDeliveryItemIdsByMinModifiedReceiptItems.Any())
+            {
+                deliveryItemRepo.UpdateMany(i => effectedDeliveryItemIdsByMinModifiedReceiptItems.Contains(i.MaPhieuXuatCt),
+                   i => new PhieuXuatChiTiet()
+                   {
+                       IsModified = true,
+                       RequestUpdateFromBkgService = true
+                   });
+            }
+
+            if (effectedReceiptItemIdsByMinModifiedReceiptItems.Any())
+            {
+                receiptItemRepo.UpdateMany(i => effectedReceiptItemIdsByMinModifiedReceiptItems.Contains(i.MaPhieuNhapCt),
                 i => new PhieuNhapChiTiet()
                 {
                     IsModified = true,
                     RequestUpdateFromBkgService = true
                 });
+            }
 
             var effectedDeliveryItemIdsByMinModifiedDeliveryItems = (from i in deliveryNoteItems
                 join minI in minModifiedDeliveryDrugItems
@@ -350,12 +363,16 @@ namespace Med.Service.Impl.Report
                 where
                     !i.IsModified && i.NoteItemDate >= minI.MinModifiedDate && deliveryNoteTypeIds.Contains(i.NoteType)
                 select i.NoteItemId).ToList();
-            deliveryItemRepo.UpdateMany(i => effectedDeliveryItemIdsByMinModifiedDeliveryItems.Contains(i.MaPhieuXuatCt),
-               i => new PhieuXuatChiTiet()
-               {
-                   IsModified = true,
-                   RequestUpdateFromBkgService = true
-               });
+            if (effectedDeliveryItemIdsByMinModifiedDeliveryItems.Any())
+            {
+                deliveryItemRepo.UpdateMany(i => effectedDeliveryItemIdsByMinModifiedDeliveryItems.Contains(i.MaPhieuXuatCt),
+                   i => new PhieuXuatChiTiet()
+                   {
+                       IsModified = true,
+                       RequestUpdateFromBkgService = true
+                   });
+            }
+            
             RevertAffectedNotesByModifiedNotes(drugStoreCode);
         }
 
@@ -374,11 +391,11 @@ namespace Med.Service.Impl.Report
 
             sqlBuilder.Length = 0;
             sqlBuilder.AppendFormat(
-                "DELETE ReduceNoteItem WHERE DrugStoreCode = {0};", drugStoreCode);
+                "UPDATE ReduceNoteItem SET RecordStatusId = 30 WHERE DrugStoreCode = {0};", drugStoreCode);
             sqlBuilder.AppendFormat(
-                "DELETE DeliveryNoteItemSnapshotInfo WHERE DrugStoreCode = {0};", drugStoreCode);
+                "UPDATE DeliveryNoteItemSnapshotInfo SET IsDeleted = 1 WHERE DrugStoreCode = {0};", drugStoreCode);
             sqlBuilder.AppendFormat(
-                    "DELETE ReceiptDrugPriceRef WHERE DrugStoreCode = {0};", drugStoreCode);
+                    "UPDATE ReceiptDrugPriceRef SET IsDeleted = 1 WHERE DrugStoreCode = {0};", drugStoreCode);
             reduceItemRepo.ExecuteSqlCommand(sqlBuilder.ToString());
         }
 
@@ -524,12 +541,6 @@ namespace Med.Service.Impl.Report
         #endregion
 
         #region Private Methods
-
-        private void UpdateRealQuantityOfDeliveryAndReceiptNoteItems(string drugStoreCode)
-        {
-            UpdateRealQuantity4DeliveryNoteItems(drugStoreCode);
-            UpdateRealQuantity4ReceiptNoteItems(drugStoreCode);  
-        }
         private void PreProcessDeliveryAndReceiptNotes(string drugStoreCode)
         {
             _revertedDeliveryItemIds.Clear();
@@ -537,13 +548,11 @@ namespace Med.Service.Impl.Report
 
             
             CreateInitialInventoryReceiptNote(drugStoreCode);
-            UpdatePreNoteItemDates(drugStoreCode);
-            UpdateRealQuantityOfDeliveryAndReceiptNoteItems(drugStoreCode);
+            UpdatePreNoteItemDates(drugStoreCode);       
             var receiptRefs = _dataFilterService.GetValidReceiptDrugPriceRefs(drugStoreCode);
             if (receiptRefs.Any())
             {
                 RevertReceiptDrugPriceRefsRelateModifiedReceipts(drugStoreCode);
-                UpdateRealQuantityOfDeliveryAndReceiptNoteItems(drugStoreCode);
             }
            
             ProcessReturnedDrugsFromCustomers(drugStoreCode);
@@ -570,7 +579,7 @@ namespace Med.Service.Impl.Report
                     LoaiXuatNhap_MaLoaiXuatNhap = (int)NoteInOutType.InitialInventory,
                     Created = MedConstants.InitialInventoryDeliveryNoteDate,
                     Modified = MedConstants.InitialInventoryDeliveryNoteDate,
-                    ReceiptNoteStatusId = (int)ReceiptNoteStatus.Activated
+                    RecordStatusID = (byte)RecordStatus.Activated
                 };
                 receiptNoteRepo.Add(receiptNote);
                 receiptNoteRepo.Commit();
@@ -633,7 +642,7 @@ namespace Med.Service.Impl.Report
                     MaPhieuXuatCt = c.NoteItemId,
                     PreNoteItemDate = c.PreNoteItemDate
                 }).ToList();
-                deliveryItemRepo.UpdateMany(updateCandidates, c => c.MaPhieuXuatCt, c => c.PreNoteItemDate);
+                deliveryItemRepo.UpdateMany(updateCandidates, c => c.PreNoteItemDate);
             }
 
             if (receiptItems.Any())
@@ -649,128 +658,9 @@ namespace Med.Service.Impl.Report
                     MaPhieuNhapCt = c.NoteItemId,
                     PreNoteItemDate = c.PreNoteItemDate
                 }).ToList();
-                receiptItemRepo.UpdateMany(updateCandidates, c => c.MaPhieuNhapCt, c => c.PreNoteItemDate);
+                receiptItemRepo.UpdateMany(updateCandidates, c => c.PreNoteItemDate);
             }
         }
-
-        private void UpdateRealQuantity4DeliveryNoteItems(string drugStoreCode)
-        {
-            LogHelper.Info("Update real quantity of delivery note items.");
-            IBaseRepository<PhieuXuat> deliveryNoteRepo = null;
-            var deliveryNotes = _dataFilterService.GetValidDeliveryNotes(drugStoreCode, out deliveryNoteRepo);
-            var deliveryItemRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuXuatChiTiet>>();
-            var drugs = _dataFilterService.GetValidDrugs(drugStoreCode);
-            var deliveryItems = (from d in deliveryNotes
-                join di in deliveryItemRepo.GetAll() on d.MaPhieuXuat equals di.PhieuXuat_MaPhieuXuat
-                join dr in drugs on di.Thuoc_ThuocId equals dr.ThuocId
-                where di.IsModified && di.SoLuong > 0 && di.NhaThuoc_MaNhaThuoc == drugStoreCode
-                select new ItemInfoCandidate
-                {
-                    NoteId = d.MaPhieuXuat,
-                    NoteItemId = di.MaPhieuXuatCt,
-                    Quantity = (double) di.SoLuong,
-                    DrugId = dr.ThuocId,
-                    ItemUnitId = di.DonViTinh_MaDonViTinh,
-                    RetailUnitId = dr.DonViXuatLe_MaDonViTinh,
-                    UnitId = dr.DonViThuNguyen_MaDonViTinh,
-                    Factors = dr.HeSo,
-                    NoteType = d.MaLoaiXuatNhap,
-                    NoteDate = d.NgayXuat,
-                    Price = (double)di.GiaXuat,
-                    VAT = (double)d.VAT,
-                    Discount = (double)di.ChietKhau,
-                    ReduceQuantity = di.ReduceQuantity??0
-                }).ToList();
-            if (!deliveryItems.Any()) return;
-           
-            var updateCands = new List<PhieuXuatChiTiet>();
-            foreach (var item in deliveryItems)
-            {
-                var factors = 1.0;
-                if (item.UnitId.HasValue && item.ItemUnitId == item.UnitId.Value && item.Factors > MedConstants.EspQuantity)
-                {
-                    factors = item.Factors;
-                }
-                item.RetailQuantity = item.Quantity * factors;
-                item.RetailPrice = item.Price / factors;
-               
-                updateCands.Add(new PhieuXuatChiTiet()
-                {
-                    MaPhieuXuatCt = item.NoteItemId,
-                    RetailQuantity = item.RetailQuantity,
-                    RetailPrice = item.RetailPrice,
-                    ReduceQuantity = 0,
-                    ReduceNoteItemIds = string.Empty,
-                    RequestUpdateFromBkgService = true,
-                    HandledStatusId = (int)NoteItemHandledStatus.None
-                });
-            }
-           
-            deliveryItemRepo.UpdateMany(updateCands, d => d.MaPhieuXuatCt, d => d.RetailQuantity, 
-                d => d.RetailPrice, d => d.ReduceQuantity, d => d.ReduceNoteItemIds, d => d.HandledStatusId,
-                d => d.RequestUpdateFromBkgService);
-        }
-
-        private void UpdateRealQuantity4ReceiptNoteItems(string drugStoreCode)
-        {
-            LogHelper.Info("Update real quantity of receipt note items.");
-            IBaseRepository<PhieuNhap> receiptNoteRepo = null;
-            var receiptNotes = _dataFilterService.GetValidReceiptNotes(drugStoreCode, out receiptNoteRepo);
-            var receiptItemRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuNhapChiTiet>>();
-            var drugs = _dataFilterService.GetValidDrugs(drugStoreCode);
-            var receiptItems = (from r in receiptNotes
-                join ri in receiptItemRepo.GetAll() on r.MaPhieuNhap equals ri.PhieuNhap_MaPhieuNhap
-                join dr in drugs on ri.Thuoc_ThuocId equals dr.ThuocId
-                where ri.IsModified && ri.NhaThuoc_MaNhaThuoc == drugStoreCode
-                select new ItemInfoCandidate
-                {
-                    NoteId = r.MaPhieuNhap,
-                    NoteItemId = ri.MaPhieuNhapCt,
-                    Quantity = (double) ri.SoLuong,
-                    DrugId = dr.ThuocId,
-                    ItemUnitId = ri.DonViTinh_MaDonViTinh,
-                    RetailUnitId = dr.DonViXuatLe_MaDonViTinh,
-                    UnitId = dr.DonViThuNguyen_MaDonViTinh,
-                    Factors = dr.HeSo,
-                    NoteType = r.LoaiXuatNhap_MaLoaiXuatNhap.Value,
-                    NoteDate = r.NgayNhap,
-                    Price = (double) ri.GiaNhap,
-                    VAT = (double) r.VAT,
-                    Discount = (double) ri.ChietKhau,
-                    ReduceQuantity = ri.ReduceQuantity ?? 0
-                }).ToList();
-            if (!receiptItems.Any()) return;
-
-            var updateCands = new List<PhieuNhapChiTiet>();
-            foreach (var item in receiptItems)
-            {
-                var factors = 1.0;
-                if (item.UnitId.HasValue && item.ItemUnitId == item.UnitId.Value && item.Factors > MedConstants.EspQuantity)
-                {
-                    factors = item.Factors;
-                }
-                item.RetailQuantity = item.Quantity * factors;
-                item.RetailPrice = item.Price / factors;
-               
-                updateCands.Add(new PhieuNhapChiTiet()
-                {
-                    MaPhieuNhapCt = item.NoteItemId,
-                    RetailQuantity = item.RetailQuantity,
-                    RemainRefQuantity = item.RetailQuantity,
-                    RetailPrice = item.RetailPrice,
-                    ReduceQuantity = 0,
-                    ReduceNoteItemIds = string.Empty,
-                    RequestUpdateFromBkgService = true,
-                    HandledStatusId = (int)NoteItemHandledStatus.None
-                });
-            }
-            
-            receiptItemRepo.UpdateMany(updateCands, d => d.MaPhieuNhapCt, d => d.RetailQuantity, 
-                d => d.RemainRefQuantity, d => d.RetailPrice, 
-                d => d.ReduceQuantity, d => d.ReduceNoteItemIds, d => d.HandledStatusId,
-                d => d.RequestUpdateFromBkgService);
-        }
-
         private List<int> ProcessReturnedDrugsFromCustomers(string drugStoreCode)
         {
             LogHelper.Info("Process returned drugs from customers.");
@@ -818,7 +708,7 @@ namespace Med.Service.Impl.Report
                     RequestUpdateFromBkgService = true
                 }).ToList();
 
-            receiptItemRepo.UpdateMany(updateItems, r => r.MaPhieuNhapCt, r => r.HandledStatusId, r => r.ReduceQuantity, r => r.RequestUpdateFromBkgService);
+            receiptItemRepo.UpdateMany(updateItems, r => r.HandledStatusId, r => r.ReduceQuantity, r => r.RequestUpdateFromBkgService);
 
             return affectedItemIds;
         }
@@ -876,10 +766,11 @@ namespace Med.Service.Impl.Report
                 {
                     ReduceNoteItemId = firstItem.DeliveryItemId,
                     ReduceQuantity = usedQuantity,
-                    RecordStatusId = (int)RecordStatus.Activated,
+                    RecordStatusId = (byte)RecordStatus.Activated,
                     NoteTypeId = (int)NoteInOutType.ReturnFromCustomer,
                     NoteItemId = item.NoteItemId,
-                    DrugStoreCode = drugStoreCode
+                    DrugStoreCode = drugStoreCode,
+                    DrugID = item.DrugId ?? 0,
                 });
                 quantity += usedQuantity;
                 affectedItemIds.Add(firstItem.DeliveryItemId);
@@ -904,7 +795,7 @@ namespace Med.Service.Impl.Report
                 var reduceItemRepo = IoC.Container.Resolve<BaseRepositoryV2<MedReportContext, ReduceNoteItem>>();
                 reduceItemRepo.InsertMany(reduceItems);
             }
-            deliveryItemRepo.UpdateMany(updateItems, d => d.MaPhieuXuatCt, d => d.RequestUpdateFromBkgService,
+            deliveryItemRepo.UpdateMany(updateItems, d => d.RequestUpdateFromBkgService,
                 d => d.IsModified, d => d.ReduceNoteItemIds, d => d.ReduceQuantity);
 
             return affectedItemIds;
@@ -956,7 +847,7 @@ namespace Med.Service.Impl.Report
                     RequestUpdateFromBkgService = true
                 }).ToList();
 
-            deliveryItemRepo.UpdateMany(updateItems, r => r.MaPhieuXuatCt, r => r.HandledStatusId,
+            deliveryItemRepo.UpdateMany(updateItems, r => r.HandledStatusId,
                 r => r.ReduceQuantity, r => r.RequestUpdateFromBkgService);
 
             return affectedItemIds;
@@ -1016,10 +907,11 @@ namespace Med.Service.Impl.Report
                 {
                     ReduceNoteItemId = firstItem.ReceiptItemId,
                     ReduceQuantity = usedQuantity,
-                    RecordStatusId = (int)RecordStatus.Activated,
+                    RecordStatusId = (byte)RecordStatus.Activated,
                     NoteTypeId = (int)NoteInOutType.ReturnToSupplier,
                     NoteItemId = item.NoteItemId,
-                    DrugStoreCode = drugStoreCode
+                    DrugStoreCode = drugStoreCode,
+                    DrugID = item.DrugId ?? 0
                 });
                 quantity += usedQuantity;
                 affectedItemIds.Add(firstItem.ReceiptItemId);
@@ -1045,7 +937,7 @@ namespace Med.Service.Impl.Report
                 reduceItemRepo.InsertMany(reduceItems);
             }
 
-            receiptItemRepo.UpdateMany(updateItems, d => d.MaPhieuNhapCt, d => d.RemainRefQuantity,
+            receiptItemRepo.UpdateMany(updateItems, d => d.RemainRefQuantity,
                 d => d.ReduceNoteItemIds, d => d.IsModified, d => d.ReduceQuantity, d => d.RequestUpdateFromBkgService);
 
             return affectedItemIds;
@@ -1121,23 +1013,32 @@ namespace Med.Service.Impl.Report
             var modifiedRefItemIds = effectedRefItems.Select(i => i.Id).Distinct().ToList();
             var deliveryItemRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuXuatChiTiet>>();
             var receiptItemRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuNhapChiTiet>>();
-            receiptDrugPriceRefRepo.UpdateMany(i => modifiedRefItemIds.Contains(i.Id), i =>
-                new ReceiptDrugPriceRef()
-                {
-                    IsDeleted = true
-                });
-            deliveryItemRepo.UpdateMany(i => modifiedDeliveryItemIds.Contains(i.MaPhieuXuatCt), i =>
-               new PhieuXuatChiTiet()
-               {
-                   IsModified = true,
-                   RequestUpdateFromBkgService = true
-               });
-            receiptItemRepo.UpdateMany(i => modifiedReceiptItemIds.Contains(i.MaPhieuNhapCt), i =>
-              new PhieuNhapChiTiet()
-              {
-                  IsModified = true,
-                  RequestUpdateFromBkgService = true
-              });
+            if (modifiedRefItemIds.Any())
+            {
+                receiptDrugPriceRefRepo.UpdateMany(i => modifiedRefItemIds.Contains(i.Id), i =>
+                    new ReceiptDrugPriceRef()
+                    {
+                        IsDeleted = true
+                    });
+            }
+            if (modifiedDeliveryItemIds.Any())
+            {
+                deliveryItemRepo.UpdateMany(i => modifiedDeliveryItemIds.Contains(i.MaPhieuXuatCt), i =>
+                   new PhieuXuatChiTiet()
+                   {
+                       IsModified = true,
+                       RequestUpdateFromBkgService = true
+                   });
+            }
+            if (modifiedReceiptItemIds.Any())
+            {
+                receiptItemRepo.UpdateMany(i => modifiedReceiptItemIds.Contains(i.MaPhieuNhapCt), i =>
+                  new PhieuNhapChiTiet()
+                  {
+                      IsModified = true,
+                      RequestUpdateFromBkgService = true
+                  });
+            }
         }
 
         private void GenerateReceiptDrugPriceRefsByDrug(int? drugId, List<DeliveryItemCandidate> candidates,
@@ -1272,11 +1173,15 @@ namespace Med.Service.Impl.Report
 
             // Update relate entities
             var receiptPriceRefRepo = IoC.Container.Resolve<BaseRepositoryV2<MedReportContext, ReceiptDrugPriceRef>>();
-            receiptPriceRefRepo.UpdateMany(d => generatedDeliveryItemIds.Contains(d.DeliveryNoteItemId) && d.DrugStoreCode == drugStoreCode, 
-                d => new ReceiptDrugPriceRef()
-                {
-                    IsDeleted = true
-                });
+            if (generatedDeliveryItemIds.Any())
+            {
+                receiptPriceRefRepo.UpdateMany(d => generatedDeliveryItemIds.Contains(d.DeliveryNoteItemId) && d.DrugStoreCode == drugStoreCode,
+                    d => new ReceiptDrugPriceRef()
+                    {
+                        IsDeleted = true
+                    });
+            }
+            
             receiptPriceRefRepo.InsertMany(receiptPriceRefs);
             
             var nonGeneratedDeliveryItemIds = deliveryCands.Select(i => i.DeliveryItemId).ToList()
@@ -1294,15 +1199,18 @@ namespace Med.Service.Impl.Report
                 RemainRefQuantity = c.Value.RemainRefQuantity,
                 RequestUpdateFromBkgService = true
             }).ToList();
-            receiptItemRepo.UpdateMany(updateReceiptItems, r => r.MaPhieuNhapCt, r => r.RemainRefQuantity, r => r.RequestUpdateFromBkgService);
+            receiptItemRepo.UpdateMany(updateReceiptItems, r => r.RemainRefQuantity, r => r.RequestUpdateFromBkgService);
 
             // Update delivery item snapshot infos
             var deliveryItemSnapshotRepo = IoC.Container.Resolve<BaseRepositoryV2<MedReportContext, DeliveryNoteItemSnapshotInfo>>();
-            deliveryItemSnapshotRepo.UpdateMany(d => generatedDeliveryItemIds.Contains(d.DeliveryNoteItemId) && d.DrugStoreCode == drugStoreCode, 
-                d => new DeliveryNoteItemSnapshotInfo()
-                {
-                    IsDeleted = true
-                });
+            if (generatedDeliveryItemIds.Any())
+            {
+                deliveryItemSnapshotRepo.UpdateMany(d => generatedDeliveryItemIds.Contains(d.DeliveryNoteItemId) && d.DrugStoreCode == drugStoreCode,
+                    d => new DeliveryNoteItemSnapshotInfo()
+                    {
+                        IsDeleted = true
+                    });
+            }
 
             deliveryItemSnapshotRepo.InsertMany(deliveryNoteItemSnapshots);
         }

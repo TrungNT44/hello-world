@@ -1,0 +1,90 @@
+﻿
+@{
+    ViewBag.Title = "Danh sách nhóm thuốc";
+}
+
+<script>
+    var viewModel = @Html.Raw(ViewBag.ViewModel);
+</script>
+
+<h3><b>Danh sách nhóm thuốc</b></h3>
+
+<br />
+<div class="row" ng-controller="ListDrugGroupController" ng-cloak>
+    <div class="col-md-3">
+        <form action="/DrugGroup/Index" method="get">
+            
+            <input class="form-control" type="text" name="searchTen" placeholder="Nhập tên nhóm thuốc..."/>
+            
+
+            <hr style="margin-top:0px" />
+
+            
+
+            <div>
+                <button class="btn btn-primary" type="submit">Xem</button>
+
+                <a class="btn btn-primary" href="/DrugGroup/Create">Thêm mới</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="col-md-9">
+        <div class="baocao-container">
+            <table tr-ng-grid="" items="model"
+                   locale="en"
+                   display-total-items-count="false"
+                   class="table table-striped table-bordered table-hover"
+                   selection-mode="None"
+                   current-page="setCurrentPage"
+                   enable-filtering="false"
+                   enable-sorting="false"
+                   page-items="model.ItemPerPage" total-items="model.length">
+                <thead>
+                    <tr>
+                        <th display-name="#"></th>
+                        <th display-name="Tên nhóm thuốc"></th>
+                        <th display-name="Ghi chú"></th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>
+                            <div>
+                                {{gridOptions.currentPage * model.ItemPerPage + $index + 1}}
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                {{gridItem.TenNhomThuoc}}
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                {{gridItem.KyHieuNhomThuoc}}
+                            </div>
+                        </td>
+
+                        <td>
+                            <div style="text-align:right">
+                                <a href="/DrugGroup/Edit/{{gridItem.MaNhomThuoc}}">Sửa</a>
+                                <span>|</span>
+                                <a href="/DrugGroup/Delete/{{gridItem.MaNhomThuoc}}">Xóa</a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+
+
+            </table>
+
+            <div ng-show="model.length <= 0">
+                <p style="text-align:center;color:darkorange;font-size:large">Không tìm thấy nhóm thuốc nào</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+

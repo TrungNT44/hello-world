@@ -1,0 +1,181 @@
+﻿@model sThuoc.Models.KhachHang
+
+@{
+    ViewBag.Title = "Xóa khách hàng";
+}
+
+<h4><b>Bạn có chắc chắn xóa khách hàng này?</b></h4>
+<hr style="margin-top:0px" />
+@*<div>    
+    <hr />
+    <dl class="dl-horizontal">
+        <dt style="text-align:left">
+            @Html.DisplayNameFor(model => model.TenKhachHang)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TenKhachHang)
+        </dd>
+
+        <dt style="text-align:left">
+            @Html.DisplayNameFor(model => model.DiaChi)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DiaChi)
+        </dd>
+
+        <dt style="text-align:left">
+            @Html.DisplayNameFor(model => model.SoDienThoai)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SoDienThoai)
+        </dd>
+
+        <dt style="text-align:left">
+            @Html.DisplayNameFor(model => model.NoDauKy)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NoDauKy)
+        </dd>
+
+        <dt style="text-align:left">
+            @Html.DisplayNameFor(model => model.DonViCongTac)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DonViCongTac)
+        </dd>
+
+        <dt style="text-align:left">
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+
+        <dt style="text-align:left">
+            @Html.DisplayNameFor(model => model.GhiChu)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.GhiChu)
+        </dd>
+
+        <dt style="text-align:left">
+            @Html.DisplayNameFor(model => model.NhomKhachHang.TenNhomKhachHang)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NhomKhachHang.TenNhomKhachHang)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">            
+            <input type="button" value="Quay lại" class="btn btn-default" onclick="javascript:window.history.go(-1);" />
+            <span class="btn-separator">|</span>
+            <input type="submit" value="Xác nhận" class="btn btn-danger" />               
+        </div>
+    }
+</div>*@
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">         
+        <div class="form-group">
+            @Html.LabelFor(model => model.TenKhachHang, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:right" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.TenKhachHang, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })                
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DiaChi, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.DiaChi, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })                
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.SoDienThoai, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.SoDienThoai, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.NoDauKy, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">            
+                @Html.TextBoxFor(model => model.NoDauKy, htmlAttributes: new { @class = "form-control", @readonly = "readonly", @data_inputmask = "'alias': 'numeric', 'groupSeparator': ',', 'autoGroup': true, 'digits': 0, 'digitsOptional': true, 'placeholder': '0'" })               
+            </div>
+        </div>        
+        <div @*id="trSlide"*@>
+            <div class="form-group">
+                @Html.LabelFor(model => model.DonViCongTac, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.DonViCongTac, new { htmlAttributes = new { @class = "form-control", @style = "text-align:left", @readonly = "readonly" } })
+                   
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                    
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.GhiChu, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.GhiChu, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                    
+                </div>
+            </div>
+        </div>
+        @Html.HiddenFor(model => model.MaNhaThuoc, new { @Value = ViewBag.MaNhaThuoc })
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.MaNhomKhachHang, "Tên nhóm", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">                
+                @Html.EditorFor(model => model.NhomKhachHang.TenNhomKhachHang, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })                
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="form-actions no-color">
+                    <input type="button" value="Quay lại" class="btn btn-default" onclick="javascript:window.history.go(-1);" />
+                    <span class="btn-separator"></span>
+                    <input type="submit" value="Xác nhận" class="btn btn-danger" />
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery.inputmask/inputmask.js"></script>
+    <script src="~/Scripts/jquery.inputmask/jquery.inputmask.js"></script>
+    <script src="~/Scripts/jquery.inputmask/inputmask.numeric.extensions.js"></script>
+    <script src="~/Scripts/Custom/formUtil.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            ShowHideFields();
+        });
+        $(document).ready(function () {
+            initialForm();
+        });
+    </script>
+}

@@ -1,0 +1,81 @@
+﻿@using sThuoc.Models.ViewModels
+<link href="~/Content/jquery.tree.css" rel="stylesheet" />
+@model List<sThuoc.Models.ViewModels.Permission>
+@{
+    ViewBag.Title = "Phân quyền nhân viên";
+}
+
+<h4><b>Phần quyền nhân viên</b></h4>
+<p>Bạn đang phân quyền cho nhân viên: @ViewBag.UserName</p> 
+<hr style="margin-top:0px" />
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div id="example-0">
+            <div>
+                <ul>
+                    <li>
+                        <input type="checkbox"><span>Tất cả</span>
+                        <ul>
+                            @{ int i = 0, j = 0; }
+                            @foreach (var item in @Model)
+                            {
+                                @Html.Hidden(string.Format("[{0}].Controller", i), item.Controller)
+                                <li class="collapsed">
+                                    <input type="checkbox"><span>@item.Title</span>
+                                    <ul>
+                                        @{var permissionName = "";}
+                                        @foreach (var sub in item.Permissions)
+                                        {
+                                            if (!permissionName.Equals(sub.Permission, StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                if (sub.Visible)
+                                                {
+                                                    <li>
+                                                        @Html.Hidden(string.Format("[{0}].Permissions[{1}].Permission", i, j), sub.Permission)
+                                                        @Html.Hidden(string.Format("[{0}].Permissions[{1}].Controller", i, j), sub.controller)
+                                                        @Html.CheckBox(string.Format("[{0}].Permissions[{1}].Checked", i, j), sub.Checked)<span>@sub.Permission</span>
+                                                    </li>
+                                                }
+                                                else
+                                                {
+                                                    <li style="display:none">
+                                                        @Html.Hidden(string.Format("[{0}].Permissions[{1}].Permission", i, j), sub.Permission)
+                                                        @Html.Hidden(string.Format("[{0}].Permissions[{1}].Controller", i, j), sub.controller)
+                                                        @Html.CheckBox(string.Format("[{0}].Permissions[{1}].Checked", i, j), sub.Checked)<span>@sub.Permission</span>
+                                                    </li>
+                                                }
+
+                                                j++;
+                                            }
+
+                                            permissionName = sub.Permission;
+                                        }
+                                    </ul>
+                                </li>
+                                        i++;
+                                        j = 0;
+                            }
+                        </ul>
+                    <li>
+                </ul>
+            </div>
+        </div>
+        <br />
+        <div class="form-group">
+            <input type="button" value="Quay lại" class="btn btn-default" onclick="javascript:window.history.go(-1);" />
+            <span class="btn-separator"></span>
+            <input type="submit" value="Cập nhật" class="btn btn-default" />
+        </div>
+    }
+    @section Scripts{
+        @Scripts.Render("~/bundles/jqueryval")
+        <script src="~/Scripts/jquery.tree.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#example-0 div').tree({});
+            });
+        </script>
+
+    }

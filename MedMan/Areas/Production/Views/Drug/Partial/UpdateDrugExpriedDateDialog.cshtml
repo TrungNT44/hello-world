@@ -1,0 +1,51 @@
+﻿<div class="modal fade inmodal" id="update-drug-expried-date-dialog" ng-controller="UpdateDrugExpriedDateDialogController" tabindex='-1' ng-cloak>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Đóng"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"> Cập nhật lô/hạn dùng cho thuốc <b>{{drug.drugName}}</b></h4>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table table-bordered table-userpicker">
+                            <tbody>
+                                <tr>
+                                    <td><b>Số phiếu nhập:</b>
+                                    <td>{{drug.SoPhieuNhap}}</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Ngày phiếu nhập:</b>
+                                    <td>{{drug.NgayPhieuNhap |appDate}}</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Mã thuốc:</b>                                    
+                                    <td>{{drug.drugCode}}</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Tên thuốc:</b></td>
+                                    <td>{{drug.drugName}}</td>
+                                </tr>
+
+                                <tr>
+                                    <td><b>Số lô:</b></td>
+                                    <td><input type="text" class="form-control" ng-model="drug.drugBatch" enter-key-capture="updateDrugBatch()"></td>
+                                </tr>
+                                <tr>
+                                    <td><b>Hạn dùng:</b></td>
+                                    <td><input type="datetime" class="form-control input-datetime" ng-model="drug.drugDate" date-parser="dd/MM/yyyy" enter-key-capture="updateDrugBatch()"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" ng-click="updateDrugBatch()">Cập nhật</button>&nbsp;&nbsp;&nbsp;
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

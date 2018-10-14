@@ -1,0 +1,75 @@
+﻿@model sThuoc.Models.EditUserViewModel
+
+<h4><b>Bạn chắc chắn muốn xóa tài khoản này?</b></h4>
+<div>
+    @*<h4>Thông tin chi tiết</h4>*@
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.UserName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserName)
+        </dd>
+
+        @if (Model.DsNhaThuoc != null)
+        {         
+            <dt>
+                Nhà thuốc
+            </dt>
+
+            <dd>
+                <label class="control-label" style="font-weight: normal">@Html.Raw((Model.DsNhaThuoc != null ? string.Join("<br/> ", Model.DsNhaThuoc) : ""))</label>
+            </dd>
+        }
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TenDayDu)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TenDayDu)
+        </dd>        
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SoDienThoai)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.SoDienThoai)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SoCMT)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.SoCMT)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.HoatDong)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.HoatDong)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            @Html.ActionLink("Quay lại", "Index",null, new { @class = "btn btn-default" })
+            <span class="btn-separator">|</span>
+            <input type="submit" value="Xác nhận" class="btn btn-danger" /> 
+            
+        </div>
+    }
+</div>

@@ -1,0 +1,56 @@
+﻿@model sThuoc.Models.DonViTinh
+
+@{
+    ViewBag.Title = "Create";
+    Layout = null;
+}
+
+<div id="form-dvt-new">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <div class="row">
+            <div class="col-xs-8">
+                <div class="col-xs-4" style="min-width:300px">
+                    <div class="input-group">
+                        @Html.EditorFor(model => model.TenDonViTinh, new { htmlAttributes = new { @class = "form-control", placeholder = "Đơn vị tính mới"} })
+                        <span class="text-danger txt-error"></span>    
+                        <span class="input-group-btn">
+                            <input type="submit" value="Thêm" class="btn btn-default" />                                                
+                        </span>
+                       
+                    </div><!-- /input-group -->  
+                    @*@Html.EditorFor(model => model.TenDonViTinh, new { htmlAttributes = new { @class = "form-control", placeholder = "Đơn vị tính mới", @style = "min-width:75px" } })
+                    <span class="text-danger txt-error"></span>
+                    <input type="submit" value="Thêm" class="btn btn-default" />*@
+                </div>
+                @*<div class="col-xs-4"><input type="submit" value="Thêm" class="btn btn-default" /></div>*@
+            </div>
+        </div>
+
+    }
+
+</div>
+<script>
+    $('#form-dvt-new input:first').focus();
+    $('#form-dvt-new form').submit(function (e) {
+        $(this).find('input[type=submit]').attr('disabled', 'disabled');
+        $.post(window.baseUrl + $(this).attr('action'), $(this).serialize()).done(function (data) {
+            if (data.success) {
+                $(this).find('input[type=text]').val('');
+                $('#unit .txt-error').text('');
+                var editurl = '@Url.Action("Edit","DonViTinhs")' + "/";
+                var delurl = '@Url.Action("Edit","DonViTinhs")' + "/";
+                //var newRow = '<tr class="dvt-' + data.id + '"><td>' + data.title + '</td><td style="text-align:right;font-size:large"> <a class="dvt-edit" data-id="' + data.id + '" href="/Donvitinhs/Edit/' + data.id + '"><i class=" fa fa-pencil fa-fw" ></i></a> | <a class="dvt-delete" data-id="' + data.id + '" href="/Donvitinhs/Delete/' + data.id + '"><i class="fa fa-trash-o fa-fw"></i></a></td></tr>';
+                var newRow = '<tr class="dvt-' + data.id + '"><td>' + data.title + '</td><td style="text-align:right"> <a class="dvt-edit" data-id="' + data.id + '" href="' + editurl + data.id + '"> Sửa </a> | <a class="dvt-delete" data-id="' + data.id + '" href="' + delurl + data.id + '"> Xóa </a></td></tr>';
+                
+                $(newRow).insertAfter('#unit table tbody tr:first');
+                $('#dvt-form-holder').html('');
+            } else {
+                $('#unit .txt-error').text(data.message);
+            }
+            $(this).find('input[type=submit]').attr('disabled', '');
+        });
+        e.preventDefault();
+    });
+</script>

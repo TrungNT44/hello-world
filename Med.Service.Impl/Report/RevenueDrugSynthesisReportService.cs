@@ -46,7 +46,7 @@ namespace Med.Service.Impl.Report
             
             var rpDataService = IoC.Container.Resolve<IReportGenDataService>();
             rpDataService.GenerateReceiptDrugPriceRefs(drugStoreCode);
-            using (var tran = TransactionScopeHelper.CreateReadUncommitted())
+            using (var trans = TransactionScopeHelper.CreateReadUncommitted())
             {
                 var deliveryService = IoC.Container.Resolve<IDeliveryNoteService>();
                 var deliveryStatuses = new int[] { (int)NoteInOutType.Delivery };
@@ -54,6 +54,7 @@ namespace Med.Service.Impl.Report
 
                 if (deliveryItems.Count <= 0)
                 {
+                    trans.Complete();
                     result.PagingResultModel = new PagingResultModel<RevenueDrugItem>(revenueDrugItems, revenueDrugItems.Count);
                     return result;
                 }
@@ -98,6 +99,8 @@ namespace Med.Service.Impl.Report
                 var noteItemsReturnFromCustomers = receiptNoteService.GetReceiptNoteItems(drugStoreCode, filter,
                     new int[] { (int)NoteInOutType.ReturnFromCustomer });
                 var returnedCandidates = noteItemsReturnFromCustomers.OrderBy(i => i.NoteDate).GroupBy(i => i.NoteId);
+                trans.Complete();
+
                 foreach (var cand in returnedCandidates)
                 {
                     order++;

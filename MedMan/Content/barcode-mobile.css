@@ -1,0 +1,162 @@
+html { font-size: 62.5%; color: #606060; font-family: Arial,Helvetica,sans-serif; height: 100%; }
+body { font-size: 1.4rem; height: 100%; margin: 0px; overflow-x: hidden;}  /*line-height: 26px;*/
+
+.lblBarcodeType{ display: block;}
+.barcode-types-float-left { float: left; width: 55%; }
+.barcode-types-float-right { float: right; width: 45%; }
+.title{font-weight: bold;}
+#go { font-weight: bold; }
+canvas { display: block; margin:0 auto 0 auto;  }
+#container #divButtons { margin:0 auto 0 auto; text-align: center; }
+.barcodeTypeTxt { display: inline-block; margin-top: 5px;}
+img{ width:100%; max-width: 100%; height: auto; }
+/*#btnRead{ margin-left: 10px; }*/
+#imgContainer {width: auto; text-align: center; background: #eceeef;}
+#divBorder{border: 1px dashed #ccc;margin: 0 auto; overflow-y:auto; background:  top left repeat; background-image: url(../Content/images/bg_capture.png);background-size: cover; background-repeat: no-repeat; background-position: center center; }
+.displayIB{ display: inline-block;}
+.displayBlock{display:block;}
+.hidden{ display: none;}
+.grayBorderTop{ border-top: solid 1px #ddd; }
+.grayBorderBottom{ border-bottom: solid 1px #ddd; }
+.floatRight{ float: right;}
+#divSapLine{margin:0 auto;}
+.clear{ clear: both;}
+.resultContent{ max-height: 240px; overflow-y: auto; }
+
+a.largeBtnwhite {text-decoration: none; width: 40%; background: #fff; display: inline-block; border: solid 1px #eee; text-align: center; border-radius: 6px; -webkit-border-radius: 6px; -moz-border-radius: 6px; -o-border-radius: 6px; color: #000; cursor: pointer; -webkit-transition: all .2s ease-in-out; -moz-transition: all .2s ease-in-out; -ms-transition: all .2s ease-in-out; -o-transition: all .2s ease-in-out; transition: all .2s ease-in-out;}
+a.largeBtnwhite:active {color: #000; background: #eee; border: solid 1px #eee; }
+
+a.largeBtnOrg {text-decoration: none; width: 40%; background: #fe8e14; display: inline-block; border: solid 1px #fe8e14; text-align: center; border-radius: 6px; -webkit-border-radius: 6px; -moz-border-radius: 6px; -o-border-radius: 6px; color: #fff; cursor: pointer; -webkit-transition: all .2s ease-in-out; -moz-transition: all .2s ease-in-out; -ms-transition: all .2s ease-in-out; -o-transition: all .2s ease-in-out; transition: all .2s ease-in-out;font-size: 2rem;}
+a.largeBtnOrg:active { color: #fff; background: #feb420; border: solid 1px #feb420; }
+
+/*waiting panel*/
+.ks-overlay { position: absolute; left: -9999px; top: -9999px; }
+.ks-ext-close { padding: 0 20px; position: absolute; right: -5px; top: 5px; }
+.ks-ext-close, .ks-ext-close:link { color: #2222AA; text-decoration: none; cursor: pointer; }
+.ks-ext-mask { background: #999; filter: alpha(opacity=70); /* IE */ -moz-opacity: 0.7; /* Moz + FF */ opacity: 0.7; /* CSS3 e.g. FF 1.5 */ }
+.D-dailog .ks-ext-close .ks-ext-close-x { height: 8px; }
+.D-dailog .ks-ext-close, .D-dailog .ks-ext-close:hover { background: none; border: none; }
+.D-dailog { position: absolute; left: -9999px; top: -99999px; margin: 100px auto; padding: 0; width: 392px; height: 242px; background-color: #F1F2F2; }
+.D-dailog .D-dailog-body { width: 350px; height: 80px; position: relative; top: 5px; left: 5px; margin: 0; background-color: #ffffff; border: 1px solid #E7E7E7; padding: 15px; }
+.D-dailog .D-dailog-body-Recognition { width: 225px; height: 250px; position: relative; top: 5px; left: 5px; margin: 0; background-color: #ffffff; border: 1px solid #E7E7E7; padding: 15px; }
+.D-dailog a { text-decoration: none; }
+.link { text-decoration: underline; }
+.D-dailog ul { margin: 10px 0 10px 20px; list-style-type: disc; }
+
+/*slide checkbox*/
+.switch {
+	position: relative;
+	display: inline-block;
+	vertical-align: middle;
+	width: 75px;
+	height: 30px;
+	padding: 3px;
+	/*margin: 0 10px 10px 0;*/
+	background: linear-gradient(to bottom, #eeeeee, #FFFFFF 25px);
+	background-image: -webkit-linear-gradient(top, #eeeeee, #FFFFFF 25px);
+	border-radius: 18px;
+	box-shadow: inset 0 -1px white, inset 0 1px 1px rgba(0, 0, 0, 0.05);
+	cursor: pointer;
+}
+.switch-input {
+	position: absolute;
+	top: 0;
+	left: 0;
+	opacity: 0;
+}
+.switch-label {
+	position: relative;
+	display: block;
+	height: inherit;
+	font-size: 1rem;
+	text-transform: uppercase;
+	background: #eceeef;
+	border-radius: inherit;
+	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.12), inset 0 0 2px rgba(0, 0, 0, 0.15);
+}
+.switch-label:before, .switch-label:after {
+	position: absolute;
+	top: 50%;
+	margin-top: -.5em;
+	line-height: 1;
+	-webkit-transition: inherit;
+	-moz-transition: inherit;
+	-o-transition: inherit;
+	transition: inherit;
+}
+.switch-label:before {
+	content: attr(data-off);
+	right: 11px;
+	color: #aaaaaa;
+	text-shadow: 0 1px rgba(255, 255, 255, 0.5);
+}
+.switch-label:after {
+	content: attr(data-on);
+	left: 11px;
+	color: #FFFFFF;
+	text-shadow: 0 1px rgba(0, 0, 0, 0.2);
+	opacity: 0;
+}
+.switch-input:checked ~ .switch-label {
+	background: #32CD32;
+	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15), inset 0 0 3px rgba(0, 0, 0, 0.2);
+}
+.switch-input:checked ~ .switch-label:before {
+	opacity: 0;
+}
+.switch-input:checked ~ .switch-label:after {
+	opacity: 1;
+}
+.switch-handle {
+	position: absolute;
+	top: 4px;
+	left: 4px;
+	width: 28px;
+	height: 28px;
+	background: linear-gradient(to bottom, #FFFFFF 40%, #f0f0f0);
+	background-image: -webkit-linear-gradient(top, #FFFFFF 40%, #f0f0f0);
+	border-radius: 100%;
+	box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+}
+.switch-handle:before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	margin: -6px 0 0 -6px;
+	width: 12px;
+	height: 12px;
+	background: linear-gradient(to bottom, #eeeeee, #FFFFFF);
+	background-image: -webkit-linear-gradient(top, #eeeeee, #FFFFFF);
+	border-radius: 6px;
+	box-shadow: inset 0 1px rgba(0, 0, 0, 0.02);
+}
+.switch-input:checked ~ .switch-handle {
+	left: 50px;
+	box-shadow: -1px 1px 5px rgba(0, 0, 0, 0.2);
+}
+/* Transition
+========================== */
+.switch-label, .switch-handle {
+	transition: All 0.3s ease;
+	-webkit-transition: All 0.3s ease;
+	-moz-transition: All 0.3s ease;
+	-o-transition: All 0.3s ease;
+}
+
+/* Barcode Viewport */
+#interactive.viewport {
+    width: 640px;
+    height: 480px;
+}
+
+
+#interactive.viewport canvas, video {
+    float: left;
+    width: 640px;
+    height: 480px;
+}
+
+#interactive.viewport canvas.drawingBuffer, video.drawingBuffer {
+    margin-left: -640px;
+}

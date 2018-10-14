@@ -1,0 +1,158 @@
+﻿@using Med.Web.Extensions
+@using sThuoc.Models
+@using sThuoc.Filter
+@using PagedList.Mvc;
+@model PagedList.IPagedList<NhaCungCap>
+
+@{
+    ViewBag.Title = "Danh mục nhà cung cấp";
+}
+
+<h4><b>@ViewBag.Title</b></h4>
+
+@{
+    var canCreate = FunctionsService.Authorize(FunctionResource.BacSy, Operations.Create, User.IsInRole("User") ? new[] { "User" } : new[] { "Admin" });
+    var canModify = FunctionsService.Authorize(FunctionResource.BacSy, Operations.Modify, User.IsInRole("User") ? new[] { "User" } : new[] { "Admin" });
+}
+@using (Html.BeginForm("Index", "NhaCungCaps", FormMethod.Get))
+{
+    <table class="table">
+        <tr>
+            <td>
+                @*Tên nhà cung cấp: @Html.TextBox("searchString", ViewBag.CurrentFilter as string)&nbsp;<input type="submit" value="Tìm" class="btn btn-default" />
+                @if (canCreate)
+                {
+                    @:&nbsp; &nbsp;<input type="button" class="btn btn-default" value="Thêm mới" onclick="location.href='@Url.Action("Create", "NhaCungCaps")'" />
+                }*@
+                <div class="input-group">
+                    @Html.TextBox("searchString", ViewBag.CurrentSearchString as string, new { @class = "form-control", placeholder = "Tìm theo tên..." })
+                    <span class="input-group-btn">
+                        <button class="btn btn-default btn-finduser" type="submit"><i class="fa fa-search fa-fw"></i></button>
+                        <span class="btn-separator"></span>
+                       
+                        @Html.ActionLink("Thêm Mới", "Create", null, new { @class = "btn btn-primary" })
+                       
+                    </span>
+                </div><!-- /input-group --> 
+            </td>
+        </tr>
+    </table>
+}
+@*@if (canCreate)
+{
+    <p>
+        @Html.ActionLink("Thêm Mới", "Create")
+    </p>
+}*@
+<table class="table">
+    <tr>
+        <th>
+            #
+        </th>
+        <th>
+            @Html.ActionLink("Nhà cung cấp", "Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        @*<th>
+            @Html.ActionLink("Nhóm", "Index", new { sortOrder = ViewBag.NameSortParm2, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model[0].DiaChi)
+        </th>*@
+        <th>
+            @Html.DisplayNameFor(model => model[0].SoDienThoai)
+        </th>
+        @*<th style="text-align: right">
+            @Html.DisplayNameFor(model => model[0].NoDauKy)
+        </th>*@
+        @*@if (canModify)
+        {*@
+            <th></th>
+        @*}*@
+    </tr>
+    @{ var stt = (Model.PageNumber - 1) * 10;}
+    @foreach (var item in Model)
+    {
+        stt++;
+        <tr>
+            
+            <td>
+              @stt 
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TenNhaCungCap)
+            </td>
+            @*<td>
+                @Html.DisplayFor(modelItem => item.NhomNhaCungCap.TenNhomNhaCungCap)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DiaChi)
+            </td>*@
+            <td>
+                @Html.DisplayFor(modelItem => item.SoDienThoai)
+            </td>
+            @*<td style="text-align:right">                
+                @string.Format("{0:#,###}", item.NoDauKy)
+            </td>*@
+           
+                <td style="text-align:right">
+                    @*@Html.ActionLink("Sửa", "Edit", new { id = item.MaNhaCungCap })
+                    | @Html.ActionLink("Xóa", "Delete", new { id = item.MaNhaCungCap })*@
+                    <a href="@Url.Action("Edit", new { id = item.MaNhaCungCap })"><i class="fa fa-pencil fa-fw"></i></a>
+                    |
+                    <a href="@Url.Action("Delete", new { id = item.MaNhaCungCap })"><i class="fa fa-trash-o fa-fw"></i></a>                                        
+                </td>
+           
+        </tr>
+    }
+</table>
+    Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) trong @Model.PageCount
+    @Html.PagedListPager(Model, page => Url.Action("Index",
+        new
+        {
+            page,
+            sortOrder = ViewBag.CurrentSort,
+            currentFilter = ViewBag.CurrentFilter,
+            searchString = ViewBag.CurrentSearchString
+        }))
+
+@section Scripts{
+<!-- language pack - MUST be included before the jqGrid javascript -->
+<script type="text/javascript" src="../../Scripts/i18n/grid.locale-vi.js"></script>
+<!-- the jqGrid javascript runtime -->
+<script type="text/javascript" src="../../Scripts/jquery.jqGrid.min.js"></script>
+<script>
+    //Upload the excel file
+    $('.upload-form').on('submit', function(event) {
+        var check = CheckFileName($(this));
+        if (!check) {
+            event.preventDefault();
+        }
+    });
+
+    function OpenFileDialog() {
+        $('input[name=uploadFile]').trigger('click');
+    }
+
+    $('input[name=uploadFile]').on('change', function () {
+        $('.upload-form').trigger('submit');
+    });
+    
+    function CheckFileName(el) {
+        var fileName = el.find("input[name=uploadFile]").val();
+        //debugger;
+        var fileExtension = fileName.split(".");
+        fileExtension = fileExtension[fileExtension.length - 1];
+        if (fileName == "") {
+            alert("Chưa chọn tệp tin Excel tải lên");
+            return false;
+
+        } else if (fileExtension.toUpperCase() == "XLS" || fileExtension.toUpperCase() == "XLSX")
+            return true;
+        else {
+            alert("Tên file " + fileName.split(".")[1] + " không đúng. Cần tải file có đuôi xls/xlsx");
+            return false;
+        }
+        return true;
+    }
+</script>
+}

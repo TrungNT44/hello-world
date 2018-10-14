@@ -1,0 +1,35 @@
+﻿@model sThuoc.Models.DonViTinh
+
+@{
+    ViewBag.Title = "Delete";
+    Layout = null;
+}
+
+<div id="form-dvt-delete">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <span>Bạn có muốn xóa đơn vị tính <b>"@Model.TenDonViTinh"</b>?</span>
+        <input type="submit" value="Xóa" class="btn btn-default btn-danger" />
+        <label id="unitMsg" class="txt-error"></label>
+    }
+</div>
+<script>
+    $('#form-dvt-delete form').submit(function (e) {
+        $(this).find('input[type=submit]').attr('disabled', 'disabled');
+        $.post(window.baseUrl + $(this).attr('action'), $(this).serialize()).done(function (data) {
+            if (data.success) {
+                $(this).find('input[type=text]').val('');
+                $('#unit .txt-error').text('');
+                $('.dvt-list tr.dvt-' + data.id).remove();
+                $('#dvt-form-holder').html('');
+            } else {
+                $('#unitMsg').text(data.message);
+            }
+            $(this).find('input[type=submit]').attr('disabled', '');
+        });
+        e.preventDefault();
+    });
+</script>
+

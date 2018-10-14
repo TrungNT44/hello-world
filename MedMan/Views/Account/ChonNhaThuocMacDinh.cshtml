@@ -1,0 +1,51 @@
+﻿@model IEnumerable<sThuoc.Models.ViewModels.NhaThuocViewModel>
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+        <div class="select-nhathuoc">
+            <h4><b>Chọn nhà thuốc</b></h4>
+            @using (Html.BeginForm("ChonNhaThuoc", "Account", null, FormMethod.Get))
+            {
+                <input type="hidden" name="returnUrl" value="@ViewBag.returnUrl" />
+                <div class="chonnhathuoc-list">
+                    <table class="table table-chonnhathuoc">
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="radio" value="@item.MaNhaThuoc" name="id" />
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.MaNhaThuoc)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.TenNhaThuoc)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.AdminName)
+                                </td>
+
+                            </tr>
+                        }
+                    </table>
+                </div>
+                <br />
+                <div class="row">
+                    <div style="margin:0px auto;width: 50px">
+                        <input type="submit" value="Chọn" class="btn btn-primary" />
+                    </div>
+                    
+                </div>
+            }
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script language="javascript">
+        $(document).ready(function() {
+            $('.table-chonnhathuoc tr').on('click', function () {
+                $(this).find('input[type=radio]').prop('checked', true);
+            });
+        });
+    </script>
+}

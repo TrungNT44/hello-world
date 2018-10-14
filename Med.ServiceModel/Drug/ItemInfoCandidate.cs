@@ -34,9 +34,7 @@ namespace Med.ServiceModel.Drug
             }
         }
         public double OutPrice { get; set; }
-        public double RetailOutPrice { get; set; }
-        public double RetailBatchOutPrice { get; set; }
-        public double PrevRetailOutPrice { get; set; }
+        public double RetailOutPrice { get; set; } 
 
     }
 }

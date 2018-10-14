@@ -1,0 +1,10 @@
+﻿@{
+    var returnAction = "Index";
+    if (ViewBag.ReturnAction!=null)
+    {
+        returnAction = ViewBag.ReturnAction;
+    }
+}
+<h2>Không có quyền:</h2>
+<h3>@ViewBag.Message</h3>
+<input type="button" value="Quay lại" class="btn btn-default" onclick="javascript:window.history.go(-1);" />

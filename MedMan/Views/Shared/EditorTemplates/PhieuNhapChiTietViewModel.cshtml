@@ -1,0 +1,19 @@
+﻿@model sThuoc.Models.PhieuNhapChiTiet
+
+<tr>
+    @Html.HiddenFor(model => model.MaPhieuNhap)
+    @Html.HiddenFor(model => model.MaNhaThuoc)
+    @*<td>@Html.EditorFor(model => model.Thuoc)</td>
+        <td>@Html.EditorFor(model => model.DonViTinh)</td>*@
+    <td>1</td>
+    <td>1</td>
+    <td>@Html.DropDownList("MaThuoc", null, htmlAttributes: new { })</td>
+    <td>@Html.DropDownList("MaDonViTinh", null, htmlAttributes: new { })</td>
+    <td>@Html.EditorFor(model => model.SoLuong)</td>
+    <td>@Html.EditorFor(model => model.GiaNhap)</td>
+    <td>@Html.EditorFor(model => model.ChietKhau)</td>
+    <td>@Html.EditorFor(model => model.HanDung)</td>
+</tr>
+
+
+

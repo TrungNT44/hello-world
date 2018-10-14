@@ -1,0 +1,6 @@
+﻿@model sThuoc.Models.SelectOperationViewModel
+@Html.HiddenFor(model => model.OperationName, new { })
+<td style="text-align:left">
+    @Html.CheckBoxFor(model => model.Selected)
+    @*@Html.DisplayFor(model => model.OperationName)*@
+</td>

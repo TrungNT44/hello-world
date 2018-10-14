@@ -1,0 +1,67 @@
+﻿@model sThuoc.Models.NhomNhaCungCap
+
+@{
+    ViewBag.Title = "Xóa nhóm nhà cung cấp";
+}
+@*<div>
+    <h4><b>Bạn có chắc chắn xóa nhóm nhà cung cấp này?</b></h4>
+    <hr />
+    <dl class="dl-horizontal">      
+        <dt style="width:auto;text-align:left">
+            @Html.DisplayNameFor(model => model.TenNhomNhaCungCap)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TenNhomNhaCungCap)
+        </dd>
+
+        <dt style="text-align:left">
+            @Html.DisplayNameFor(model => model.GhiChu)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.GhiChu)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+        <div class="form-actions no-color">            
+            <input type="button" value="Quay lại" class="btn btn-default" onclick="javascript:window.history.go(-1);" />
+            <span class="btn-separator"></span>
+            <input type="submit" value="Xác nhận" class="btn btn-danger" />            
+            
+        </div>
+    }
+</div>*@
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4><b>Bạn có chắc chắn xóa nhóm nhà cung cấp này?</b></h4>
+        <hr style="margin-top:0px" />
+        <div class="form-group">
+            @Html.LabelFor(model => model.TenNhomNhaCungCap, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:right" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.TenNhomNhaCungCap, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })                
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.GhiChu, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.GhiChu, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })                
+            </div>
+        </div>
+        @Html.HiddenFor(model => model.MaNhaThuoc, new { @Value = ViewBag.MaNhaThuoc })
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="button" value="Quay lại" class="btn btn-default" onclick="javascript:window.history.go(-1);" />
+                <span class="btn-separator"></span>
+                <input type="submit" value="Xác nhận" class="btn btn-danger" />
+            </div>
+        </div>
+    </div>
+}

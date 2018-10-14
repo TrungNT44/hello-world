@@ -1,0 +1,105 @@
+﻿@model IEnumerable<sThuoc.Models.PhieuXuat>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th style="background-color:darkgray">
+            @Html.DisplayNameFor(model => model.BacSy.TenBacSy)
+        </th>
+        <th style="background-color:darkgray">
+            @Html.DisplayNameFor(model => model.KhachHang.TenKhachHang)
+        </th>
+        <th style="background-color:darkgray">
+            @Html.DisplayNameFor(model => model.LoaiXuatNhap.TenLoaiXuatNhap)
+        </th>
+        <th style="background-color:darkgray">
+            @Html.DisplayNameFor(model => model.NguoiTao.UserName)
+        </th>
+        <th style="background-color:darkgray">
+            @Html.DisplayNameFor(model => model.NhaThuoc.TenNhaThuoc)
+        </th>
+        <th style="background-color:darkgray">
+            @Html.DisplayNameFor(model => model.SoPhieuXuat)
+        </th>
+        <th style="background-color:darkgray">
+            @Html.DisplayNameFor(model => model.NgayXuat)
+        </th>
+        <th style="background-color:darkgray">
+            @Html.DisplayNameFor(model => model.VAT)
+        </th>
+        <th style="background-color:darkgray">
+            @Html.DisplayNameFor(model => model.DienGiai)
+        </th>
+        <th style="background-color:darkgray">
+            @Html.DisplayNameFor(model => model.NgayTao)
+        </th>
+        <th style="background-color:darkgray">
+            @Html.DisplayNameFor(model => model.TongTien)
+        </th>
+        <th style="background-color:darkgray">
+            @Html.DisplayNameFor(model => model.DaTra)
+        </th>
+        <th style="background-color:darkgray">
+            @Html.DisplayNameFor(model => model.Xoa)
+        </th>
+        <th style="background-color:darkgray"></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.BacSy.TenBacSy)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.KhachHang.TenKhachHang)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.LoaiXuatNhap.TenLoaiXuatNhap)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.NguoiTao.UserName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.NhaThuoc.TenNhaThuoc)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.SoPhieuXuat)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.NgayXuat)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.VAT)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DienGiai)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.NgayTao)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TongTien)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DaTra)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Xoa)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.MaPhieuXuat }) |
+            @Html.ActionLink("Details", "Details", new { id=item.MaPhieuXuat }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.MaPhieuXuat })
+        </td>
+    </tr>
+}
+
+</table>

@@ -1,0 +1,124 @@
+﻿
+@using Med.Web.Extensions;
+
+@{
+    ViewBag.Title = "BÁO CÁO TỔNG HỢP DOANH THU";
+}
+<div ng-controller="CustomizeReportController" ng-cloak>
+    <!-- report -->
+    <div id="period">
+        <table>
+            <tr>
+                <td>
+                    Từ ngày
+                </td>
+                <td>
+                    <div class="input-group input-group-sm">
+                        <input type="text" placeholder="Từ ngày.." class="form-control input-datetimepicker from" readonly="readonly" name="from" ng-model="fromDate">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Đến ngày
+                </td>
+                <td>
+                    <div class="input-group input-group-sm">
+                        <input type="text" placeholder="Đến ngày.." class="form-control input-datetimepicker to" readonly="readonly" name="to" ng-model="toDate">
+                    </div>
+                </td>
+            </tr>
+        </table>
+       
+        <br />
+        
+    </div>
+
+    <button class="btn btn-primary" style="margin-top: 7px" ng-click="showReport()">&nbsp;&nbsp;Xem báo cáo&nbsp;&nbsp;</button>
+    @*<button class="btn btn-primary" style="margin-top: 7px" ng-click="exportToExcel('#tableToExport')">&nbsp;&nbsp;Tạo file Excel&nbsp;&nbsp;</button>*@
+    <a style="margin-top: 7px" download="BaoCao.xls" id="exportToExcelDownloadLink" class="btn btn-primary" href="#" onclick="return ExcellentExport.excel(this, 'customizeTable', 'BaoCao');">
+        &nbsp;&nbsp;Tạo file Excel&nbsp;&nbsp;
+    </a>
+    <table class="table table-striped table-bordered table-hover" id="customizeTable">
+        <thead>
+            <tr>
+                <th rowspan="3" style="min-width: 80px; text-align: center">STT</th>
+                <th rowspan="3" style="min-width: 150px; text-align: center">Trình dược viên</th>
+                <th rowspan="3" style="min-width: 150px; text-align: center">Khách hàng</th>
+                <th rowspan="3" style="min-width: 200px; text-align: center">Địa chỉ</th>
+                <th rowspan="3" style="min-width: 150px; text-align: center">Ngày</th>
+            </tr>
+            <tr>
+                <th colspan="2" style="text-align: center;min-width: 200px" ng-repeat="drugName in model.DrugNames">
+                    {{drugName}}
+                </th>
+            </tr>
+
+            <tr id="idDynaicColumn"></tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="item in model.items">
+                <td style="text-align: center">
+                    <div>
+                        {{$index + 1}}
+                    </div>
+                </td>
+                <td>
+                    <div>
+                        {{item.DoctorName}}
+                    </div>
+                </td>
+                <td>
+                    <div>
+                        {{item.CustomerName}}
+                    </div>
+                </td>
+                <td>
+                    <div>
+                        {{item.CustomerAddress}}
+                    </div>
+                </td>
+                <td style="text-align: center">
+                    <div>
+                        {{item.ExportDate| date : 'dd-MM-yyyy'}}
+                    </div>
+                </td>
+                <td ng-repeat="subitem in item.DrugQuantityAndPrice track by $index" style="text-align: center">
+                    {{subitem | number}}
+                </td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr id="idDynamicReportTableFooter">
+                <td style="text-align: center">
+                    <div>
+                        Tổng
+                    </div>
+                </td>
+                <td>
+                    <div>
+
+                    </div>
+                </td>
+                <td>
+                    <div>
+
+                    </div>
+                </td>
+                <td>
+                    <div>
+
+                    </div>
+                </td>
+                <td>
+                    <div>
+
+                    </div>
+                </td>
+                <td ng-repeat="subitem in model.TotalQuantityAndPrice track by $index" style="text-align: center">
+                    {{subitem | number}}
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>

@@ -1,0 +1,214 @@
+﻿@model sThuoc.Models.NhaCungCap
+
+@{
+    ViewBag.Title = "Xóa nhà cung cấp";
+}
+
+@*<div>
+    <h4><b>Bạn có chắc chắn xóa nhà cung cấp này?</b></h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt style="width:auto;text-align:left">
+            @Html.DisplayNameFor(model => model.TenNhaCungCap)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TenNhaCungCap)
+        </dd>
+
+        <dt style="width:auto;text-align:left">
+            @Html.DisplayNameFor(model => model.DiaChi)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DiaChi)
+        </dd>
+
+        <dt style ="width:auto;text-align:left">
+            @Html.DisplayNameFor(model => model.SoDienThoai)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SoDienThoai)
+        </dd>
+
+        <dt style="width:auto;text-align:left">
+            @Html.DisplayNameFor(model => model.SoFax)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SoFax)
+        </dd>
+
+        <dt style="width:auto;text-align:left">
+            @Html.DisplayNameFor(model => model.MaSoThue)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MaSoThue)
+        </dd>
+
+        <dt style="width:auto;text-align:left">
+            @Html.DisplayNameFor(model => model.NguoiDaiDien)                    
+
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NguoiDaiDien)
+        </dd>
+
+        <dt style="width:auto;text-align:left">
+            @Html.DisplayNameFor(model => model.NguoiLienHe)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NguoiLienHe)
+        </dd>
+
+        <dt style="width:auto;text-align:left">
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+
+        <dd style="width:auto;text-align:left">
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+
+        <dt style="width:auto;text-align:left">
+             @Html.DisplayNameFor(model => model.NoDauKy)
+        </dt>
+
+        <dd>
+            @string.Format("{0:0,###}",@Html.DisplayFor(model => model.NoDauKy))           
+        </dd>
+        <dt style="width:auto;text-align:left">            
+            Nhóm nhà cung cấp
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NhomNhaCungCap.TenNhomNhaCungCap)
+        </dd>
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()        
+        <div class="form-actions no-color">
+                        
+            <input type="button" value="Quay lại" class="btn btn-default" onclick="javascript:window.history.go(-1);" />
+            <span class="btn-separator"></span>
+            <input type="submit" value="Xác nhận" class="btn btn-danger" />
+            
+        </div>
+    }
+</div>*@
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h4><b>Bạn có chắc chắn xóa nhà cung cấp này?</b></h4>
+        <hr style="margin-top:0px" />
+       
+        <div class="form-group">
+            @Html.LabelFor(model => model.TenNhaCungCap, htmlAttributes: new { @class = "control-label col-md-2", @style = "text-align:right" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.TenNhaCungCap, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+       
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.DiaChi, htmlAttributes: new { @class = "control-label col-md-2"})
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.DiaChi, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.SoDienThoai, htmlAttributes: new { @class = "control-label col-md-2"})
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.SoDienThoai, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.NoDauKy, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.NoDauKy, htmlAttributes: new { @class = "form-control", @readonly = "readonly", @data_inputmask = "'alias': 'numeric', 'groupSeparator': ',', 'autoGroup': true, 'digits': 0, 'digitsOptional': true, 'placeholder': '0'" })                
+            </div>
+        </div>
+        
+        <div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.SoFax, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.SoFax, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                    
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.MaSoThue, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.MaSoThue, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                    
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.NguoiDaiDien, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.NguoiDaiDien, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                    
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.NguoiLienHe, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.NguoiLienHe, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                    
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                    
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            @*<label class="control-label col-md-2" for="MaNhomNhaCungCap">Department</label>*@
+            @Html.LabelFor(model => model.NhomNhaCungCap, "Tên nhóm", htmlAttributes: new { @class = "control-label col-md-2"})
+            <div class="col-md-10">               
+                @Html.EditorFor(model => model.NhomNhaCungCap.TenNhomNhaCungCap, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            </div>
+        </div>
+        @Html.HiddenFor(model => model.MaNhaThuoc, new { @Value = ViewBag.MaNhaThuoc })
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="button" value="Quay lại" class="btn btn-default" onclick="javascript:window.history.go(-1);" />
+                <span class="btn-separator"></span>
+                <input type="submit" value="Xác nhận" class="btn btn-danger" />
+            </div>
+        </div>
+     
+    </div>
+}
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery.inputmask/inputmask.js"></script>
+    <script src="~/Scripts/jquery.inputmask/jquery.inputmask.js"></script>
+    <script src="~/Scripts/jquery.inputmask/inputmask.numeric.extensions.js"></script>
+    <script src="~/Scripts/Custom/formUtil.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            initialForm();
+        });
+    </script>
+}

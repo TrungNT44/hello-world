@@ -1,0 +1,123 @@
+﻿@using PagedList.Mvc
+@using Med.Web.Extensions
+@using sThuoc.Models
+@using sThuoc.Filter
+@model PagedList.IPagedList<NhomThuoc>
+
+@{
+    ViewBag.Title = "Nhóm thuốc";
+}
+@{
+
+    var nt = this.GetNhaThuoc();
+    var canCreate = FunctionsService.Authorize("NhomThuocs", "Create", nt);
+    var canModify = FunctionsService.Authorize("NhomThuocs", "Edit", nt);
+    if (nt.MaNhaThuoc != nt.MaNhaThuocCha)
+    {
+        canCreate = false;
+        canModify = false;
+    }
+}
+
+<h4><b>Danh sách nhóm thuốc</b></h4>
+@using (Html.BeginForm("Index", "NhomThuocs", FormMethod.Get))
+{
+    <div class="form-horizontal">
+        
+        <table class="table">
+            <tr>
+                <td>
+                    @*<label>Tên nhóm :</label> @Html.TextBox("searchString", ViewBag.SearchString as string, new { @class = "form-control", @style = "width:140px;display:inline" })&nbsp;<input type="submit" value="Tìm" class="btn btn-default" />
+                        &nbsp; &nbsp;
+                        @if (canCreate)
+                        {
+                           @Html.ActionLink("Thêm Mới", "Create", null, new { @class = "btn btn-default" })
+                        }*@
+                    <div class="input-group">
+                        @Html.TextBox("searchString", ViewBag.SearchString as string, new { @class = "form-control", placeholder = "Tìm nhóm thuốc theo tên..." })
+                        <span class="input-group-btn">
+                            <button class="btn btn-default btn-finduser" type="submit">Tìm</button>
+                            <span class="btn-separator"></span>
+                            @if (canCreate)
+                            {
+                                @Html.ActionLink("Thêm Mới", "Create", null, new { @class = "btn btn-primary" })
+                            }
+                        </span>
+                    </div><!-- /input-group -->
+                </td>
+            </tr>
+        </table>
+
+        <table class="table">
+            <tr>
+                <th>
+                    #
+                </th>
+
+                <th>
+                    @*@Html.DisplayNameFor(model => model[0].TenNhomThuoc)*@
+                    @Html.ActionLink("Tên nhóm thuốc", "Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model[0].KyHieuNhomThuoc)
+                </th>
+                @if (canModify)
+                {
+                    <th style="width: 90px"></th>
+                }
+
+            </tr>
+            @{ var stt = (Model.PageNumber - 1) * 10;}
+            @foreach (var item in Model)
+            {
+                stt++;
+                <tr>
+                    <td>
+                        @stt
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TenNhomThuoc)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.KyHieuNhomThuoc)
+                    </td>
+                    @if (canModify)
+                    {
+                        <td>
+
+                            @Html.ActionLink("Sửa", "Edit", new { id = item.MaNhomThuoc })
+                                | @Html.ActionLink("Xóa", "Delete", new { id = item.MaNhomThuoc })
+
+                            @*@Html.ActionLink(" ", "Edit", new { id = item.MaNhomThuoc }, new { @class = "glyphicon glyphicon-pencil" })
+                            | @Html.ActionLink(" ", "Delete", new { id = item.MaNhomThuoc }, new { @class = "glyphicon glyphicon-remove", style = "color:red" })*@
+
+                            @*@Html.ActionLink(" ", "Edit", new { id = item.MaNhomThuoc }, new { @class = "glyphicon glyphicon-pencil" })*@
+                            @*<a class="edit-thuoc display-mode" style="cursor: pointer" id="0" title="Sửa nhóm"><i class="glyphicon glyphicon-pencil"></i></a>
+                                | <a class="exit-thuoc edit-mode text-warning" style="cursor: pointer" id="0" title="Xóa nhóm"><i class="glyphicon glyphicon-remove"></i></a>*@
+
+                        </td>
+                    }
+                </tr>
+            }
+        </table>
+        Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) trong @Model.PageCount
+        @*@Html.PagedListPager(Model, page => Url.Action("Index",
+            new
+            {
+                page,
+                searchString = ViewBag.SearchString
+            }))*@
+        @Html.PagedListPager(Model, page => Url.Action("Index",
+        new
+        {
+            page,
+            sortOrder = ViewBag.CurrentSort,
+            currentFilter = ViewBag.CurrentFilter
+        }))
+    </div>
+
+}
+
+
+

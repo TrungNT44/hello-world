@@ -1,0 +1,161 @@
+﻿@using System.Text.RegularExpressions;
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using System.Web;
+@using System.Web.Mvc;
+@using System.Web.WebPages;
+@using Med.Web.Extensions
+
+@model sThuoc.Models.Thuoc
+
+@{
+    ViewBag.Title = "Xóa thuốc";
+}
+@{
+    var nT = this.GetNhaThuoc();
+    bool checkNhaThuocCon = (nT.MaNhaThuoc == nT.MaNhaThuocCha);
+}
+
+@*<h4><b>Xóa thuốc</b></h4>*@
+<h4>Bạn có chắc chắn xóa thuốc này?</h4>
+<hr style="margin-top:0px" />
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        @*@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.ThuocId)*@
+        <table class="table">
+            <tr>
+                <td>@Html.LabelFor(model => model.NhomThuoc.TenNhomThuoc, "Nhóm thuốc", htmlAttributes: new { @class = "control-label " })</td>
+                <td>
+                    @Html.EditorFor(model => model.NhomThuoc.TenNhomThuoc, new { htmlAttributes = new { @class = "form-control", @readonly="readonly" } })                    
+                </td>
+                <td>@Html.LabelFor(model => model.MaThuoc, htmlAttributes: new { @class = "control-label " })</td>
+                <td>                   
+                    @Html.EditorFor(model => model.MaThuoc, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                </td>               
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(model => model.TenThuoc, htmlAttributes: new { @class = "control-label " })</td>
+                <td>
+                    @Html.EditorFor(model => model.TenThuoc, new { htmlAttributes = new { @class = "form-control", @readonly="readonly" } })                    
+                </td>
+                <td>@Html.LabelFor(model => model.BarCode, htmlAttributes: new { @class = "control-label " })</td>
+                <td>
+                    @Html.EditorFor(model => model.BarCode, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })                    
+                </td>
+            </tr>
+            <tr>
+                <td><b>Cảm quan</b></td>
+                <td>
+                    @Html.TextBoxFor(model => model.ThongTin, new { @class = "form-control", @readonly="readonly" })                    
+                </td>
+                <td>@Html.LabelFor(model => model.HangTuVan, htmlAttributes: new { @class = "control-label " })</td>
+                <td>
+                    @Html.EditorFor(model => model.HangTuVan, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+
+                </td>
+            </tr>      
+            <tr>              
+                <td>@Html.LabelFor(model => model.GiaNhap, htmlAttributes: new { @class = "control-label " })</td>
+                <td>
+                    @Html.TextBoxFor(model => model.GiaNhap, new { @class = "form-control", @readonly = "readonly", @data_inputmask = "'alias': 'numeric', 'groupSeparator': ',', 'autoGroup': true, 'digits': 0, 'digitsOptional': false, 'suffix': '', 'placeholder': '0'" })
+                </td>
+                <td></td>
+                <td></td>
+            </tr>  
+            <tr>
+                <td>@Html.LabelFor(model => model.GiaBanLe, htmlAttributes: new { @class = "control-label " })</td>
+                <td>
+                    @Html.TextBoxFor(model => model.GiaBanLe, new { @class = "form-control", @readonly = "readonly", @data_inputmask = "'alias': 'numeric', 'groupSeparator': ',', 'autoGroup': true, 'digits': 0, 'digitsOptional': false, 'suffix': '', 'placeholder': '0'" })                    
+                </td>
+                <td>@Html.LabelFor(model => model.GiaBanBuon, htmlAttributes: new { @class = "control-label " })</td>
+                <td>
+                    @Html.TextBoxFor(model => model.GiaBanBuon, new { @class = "form-control", @readonly = "readonly", @data_inputmask = "'alias': 'numeric', 'groupSeparator': ',', 'autoGroup': true, 'digits': 0, 'digitsOptional': false, 'suffix': '', 'placeholder': '0'" })                    
+                </td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(model => model.DonViXuatLe.TenDonViTinh, "Đơn vị xuất lẻ", htmlAttributes: new { @class = "control-label " })</td>
+                <td>                    
+                    @Html.TextBoxFor(model => model.DonViXuatLe.TenDonViTinh, new { @class = "form-control", @readonly = "readonly" })                                      
+                </td>
+                <td>@Html.LabelFor(model => model.DonViThuNguyen.TenDonViTinh, "Đơn vị thứ nguyên", htmlAttributes: new { @class = "control-label " })</td>
+                <td>
+                    @Html.TextBoxFor(model => model.DonViThuNguyen.TenDonViTinh, new { @class = "form-control", @readonly = "readonly" })                                      
+                </td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(model => model.GioiHan, htmlAttributes: new { @class = "control-label " })</td>
+                <td>
+                    @Html.TextBoxFor(model => model.GioiHan, htmlAttributes: new { @class = "form-control", @readonly = "readonly", Value = "0", style = "text-align:left" })                    
+                </td>
+                <td>@Html.LabelFor(model => model.HeSo, htmlAttributes: new { @class = "control-label " })</td>
+                <td>
+                    @Html.TextBoxFor(model => model.HeSo, htmlAttributes: new { @class = "form-control", @readonly = "readonly", style = "text-align:left" })                   
+                </td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(model => model.SoDuDauKy, htmlAttributes: new { @class = "control-label " })</td>
+                <td>
+                    @Html.TextBoxFor(model => model.SoDuDauKy, new { @class = "form-control", @readonly = "readonly", @data_inputmask = "'alias': 'numeric', 'groupSeparator': ',', 'autoGroup': true, 'digits': 0, 'digitsOptional': false, 'placeholder': '0'" })                    
+                </td>
+                <td>@Html.LabelFor(model => model.GiaDauKy, htmlAttributes: new { @class = "control-label " })</td>
+                <td>
+                    @Html.TextBoxFor(model => model.GiaDauKy, new { @class = "form-control", @readonly = "readonly", @data_inputmask = "'alias': 'numeric', 'groupSeparator': ',', 'autoGroup': true, 'digits': 0, 'digitsOptional': false, 'suffix': '', 'placeholder': '0'" })                    
+                </td>
+            </tr>
+
+            <tr>
+                <td>@Html.LabelFor(model => model.HoatDong, htmlAttributes: new { @class = "control-label " })</td>
+                <td>                    
+                    @Html.EditorFor(model => model.HoatDong, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })                    
+                    
+                </td>
+                @if (checkNhaThuocCon)
+                {
+                    <td>@Html.LabelFor(model => model.HanDung, "Hạn dùng", htmlAttributes: new { @class = "control-label " })</td>
+                    <td>
+                        @*@Html.TextBoxFor(model => model.HanDung, new { @class = "datefield form-control text-box single-line", @readonly = "readonly" })*@
+                        @Html.TextBoxFor(model => model.HanDung, new { @class = "form-control", @readonly = "readonly" })
+                    </td>
+                }
+               
+            </tr>                                  
+            <tr>
+                <td>@Html.LabelFor(model => model.DangBaoChe.TenDangBaoChe, "Dạng bào chế", htmlAttributes: new { @class = "control-label " })</td>
+                <td>                   
+                    @Html.EditorFor(model => model.DangBaoChe.TenDangBaoChe, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })                    
+                </td>
+                <td>@Html.LabelFor(model => model.Nuoc.TenNuoc, "Quốc gia", htmlAttributes: new { @class = "control-label " })</td>
+                <td>                    
+                    @Html.EditorFor(model => model.Nuoc.TenNuoc, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })                    
+                </td>
+            </tr>
+
+        </table>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                @Html.ActionLink("Quay lại", "Index", null, new { @class = "btn btn-default" })
+                <span class="btn-separator"></span>
+                <input type="submit" value="Xác nhận" class="btn btn-default btn-danger" />
+            </div>
+        </div>
+    </div>
+}
+@section Scripts{
+    @*@Scripts.Render("~/bundles/jqueryval")*@
+    <script src="~/Scripts/jquery.inputmask/inputmask.js"></script>
+    <script src="~/Scripts/jquery.inputmask/jquery.inputmask.js"></script>
+    <script src="~/Scripts/jquery.inputmask/inputmask.numeric.extensions.js"></script>
+    <script src="~/Scripts/Custom/formUtil.js"></script>
+    <script src="~/Scripts/datepicker-vi.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            initialForm();
+        });
+    </script>
+}

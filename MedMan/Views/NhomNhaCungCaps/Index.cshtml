@@ -1,0 +1,104 @@
+﻿@using Med.Web.Extensions
+@using sThuoc.Models
+@using sThuoc.Filter
+@using PagedList.Mvc;
+@*@model IEnumerable<NhomNhaCungCap>*@
+@model PagedList.IPagedList<NhomNhaCungCap>
+
+@{
+    ViewBag.Title = "Danh mục nhóm nhà cung cấp";
+}
+
+<h4><b>@ViewBag.Title</b></h4>
+
+@{
+    var canCreate = FunctionsService.Authorize("NhomNhaCungCaps", "Create", this.GetNhaThuoc());
+    var canModify = FunctionsService.Authorize("NhomNhaCungCaps", "Edit", this.GetNhaThuoc());
+}
+@*@if (canCreate)
+{
+    <p>
+        @Html.ActionLink("Thêm Mới", "Create")
+    </p>
+}*@
+@using (Html.BeginForm("Index", "NhomNhaCungCaps", FormMethod.Get))
+{
+    <table class="table">
+        <tr>
+            <td>
+                @*Tên nhóm: @Html.TextBox("searchString", ViewBag.CurrentFilter as string)&nbsp;<input type="submit" value="Tìm" class="btn btn-default" />
+                @if (canCreate)
+                {
+                    @:&nbsp; &nbsp;<input type="button" class="btn btn-default" value="Thêm mới" onclick="location.href='@Url.Action("Create", "NhomNhaCungCaps")'" />
+                }*@
+                <div class="input-group">
+                    @Html.TextBox("searchString", ViewBag.SearchString as string, new { @class = "form-control", placeholder = "Tìm nhóm nhà cung cấp theo tên..." })
+                    <span class="input-group-btn">
+                        <button class="btn btn-default btn-finduser" type="submit">Tìm</button>
+                        <span class="btn-separator"></span>
+                        @if (canCreate)
+                        {
+                            @Html.ActionLink("Thêm Mới", "Create", null, new { @class = "btn btn-primary" })
+                        }
+                    </span>
+                </div><!-- /input-group -->  
+            </td>
+        </tr>
+    </table>
+}
+<table class="table">
+    <tr>
+        <td>
+            #
+        </td>
+        <th>
+            @*@Html.DisplayNameFor(model => model[0].TenNhomNhaCungCap)*@
+            @Html.ActionLink("Nhóm nhà cung cấp", "Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model[0].GhiChu)
+        </th>
+        @if (canModify)
+        {
+            <th style="width: 90px"></th>
+        }
+
+    </tr>
+    @{ var stt = (Model.PageNumber - 1) * 10;}
+    @foreach (var item in Model)
+    {
+        stt++;
+        <tr>
+            <td>
+                @stt
+            </td>
+           
+            <td>
+                @Html.DisplayFor(modelItem => item.TenNhomNhaCungCap)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GhiChu)
+            </td>
+            @if (canModify)
+            {
+                <td>
+
+                    @Html.ActionLink("Sửa", "Edit", new { id = item.MaNhomNhaCungCap })
+                    | @Html.ActionLink("Xóa", "Delete", new { id = item.MaNhomNhaCungCap })
+                    @*@Html.ActionLink(" ", "Edit", new { id = item.MaNhomNhaCungCap }, new { @class = "glyphicon glyphicon-pencil", style = "text-align:left" })
+                    | @Html.ActionLink(" ", "Delete", new { id = item.MaNhomNhaCungCap }, new { @class = "glyphicon glyphicon-remove", style = "color:red;text-align:left" })*@
+
+                </td>
+            }
+        </tr>
+    }
+
+</table>
+Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) trong @Model.PageCount
+@Html.PagedListPager(Model, page => Url.Action("Index",
+        new
+        {
+            page,
+            sortOrder = ViewBag.CurrentSort,
+            currentFilter = ViewBag.CurrentFilter
+        }))

@@ -1,0 +1,291 @@
+﻿@using System.Globalization
+@using Med.Web.Controllers
+@using sThuoc.Models
+@using sThuoc.Enums
+@using MedMan.App_Start
+@model sThuoc.Models.PhieuXuatEditModel
+
+@{
+
+    ViewBag.Title = "Phiếu Xuất Hàng " + "#" + Model.SoPhieuXuat;
+    var title = "PHIẾU XUẤT HÀNG";
+    if (ViewBag.LoaiPhieu == 4)
+    {
+        ViewBag.Title = "Trả Lại Hàng Nhà Cung Cấp" + "#" + Model.SoPhieuXuat;
+        title = "TRẢ LẠI HÀNG NHÀ CUNG CẤP";
+    }
+    ViewBag.NgayXuat = Model.NgayXuat;
+}
+<link href="~/Content/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/phieuStyle.css" rel="stylesheet" />
+@using (Html.BeginForm("Create", "PhieuXuats", FormMethod.Post, new { id = "frmPhieuXuat", onkeydown = "return event.keyCode!=13" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal" ng-controller="DeliveryNoteController">
+        <h2 style="font-size: 30px; text-align: center;color: coral">@title</h2>
+        <div style="text-align: center;font-size: 15px">
+            <div style=" position:absolute;right:10%;top:5">
+                Mã số: <strong>@ViewBag.SoPhieu</strong>
+            </div>
+            @*<span id="" style="width: 10%">@string.Format("Ngày {0}/{1}/{2}", Model.NgayXuat.Value.Day, Model.NgayXuat.Value.Month, Model.NgayXuat.Value.Year)</span>*@
+            <span id="" style="width: 10%">Ngày @ViewBag.NgayXuat.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture)</span>
+        </div>
+
+        @Html.HiddenFor(model => model.NgayXuat, new { @Value = DateTime.Now.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture) })
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.MaPhieuXuat, new { @Value = "0" })
+        @*@Html.HiddenFor(model => model.NgayTao, new { @Value = DateTime.Now.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture) })*@
+        @*<div class="form-group">
+                @if (ViewBag.LoaiPhieu != "3")
+                {
+                    <a style="cursor: pointer" onclick="location.href='@Url.Action("Create", "PhieuXuats")?loaiPhieu=3'">Nhập từ khách hàng</a>
+                }
+                else
+                {
+                    <a style="cursor: pointer" onclick="location.href='@Url.Action("Create", "PhieuXuats")?loaiPhieu=1'">Nhập Hàng</a>
+                }
+            </div>*@
+
+        @Html.HiddenFor(model => model.MaLoaiXuatNhap, new { @Value = ViewBag.LoaiPhieu })
+        <table class="table borderless table-condensed">
+            <tr>
+                @if (ViewBag.LoaiPhieu == 2)
+                {
+                    @*<td style="text-align: left"><label class="control-label">Khách hàng:</label></td>
+                        <td style="text-align: left">
+                            <label class="control-label" style="font-weight: normal">@Html.DisplayFor(model => model.TenKhachHang)</label>
+                            @Html.ValidationMessageFor(model => model.MaKhachHang, "", new { @class = "text-danger" })
+                        </td>*@
+                    <td style="text-align: left">
+                        <label class="control-label">Khách hàng:</label>
+                        <label class="control-label" style="font-weight: normal">@Html.DisplayFor(model => model.TenKhachHang)</label>
+                        @Html.ValidationMessageFor(model => model.MaKhachHang, "", new { @class = "text-danger" })
+                    </td>
+
+                    <td style="text-align: right"><label class="control-label">Bác sỹ:</label></td>
+                    <td style="text-align: left">
+                        <label class="control-label" style="font-weight: normal">@(string.IsNullOrEmpty(Model.TenBacSy) ? "Không có" : Model.TenBacSy)</label>
+                    </td>
+                }
+                else if (ViewBag.LoaiPhieu == 4)
+                {
+                    @*<td style="text-align: left">
+                            <label class="control-label">Nhà cung cấp:</label>
+                        </td>
+                        <td style="text-align: left">
+                            <label class="control-label" style="font-weight: normal">@Html.DisplayFor(model => model.TenNhaCungCap)</label>
+                        </td>*@
+                    <td style="text-align: left">
+                        <label class="control-label">Nhà cung cấp:</label>
+                        <label class="control-label" style="font-weight: normal">@Html.DisplayFor(model => model.TenNhaCungCap)</label>
+                    </td>
+                }
+
+            </tr>
+        </table>
+        <table class="table-condensed table-responsive display table-bordered" id="tblCt" style="width:100%">
+            <thead>
+                <tr>
+
+                    <th style="width: 10px">STT</th>
+                    <th style="width: 70px">Mã</th>
+                    <th>Tên Hàng</th>
+                    <th style="width: 100px;">Đơn Vị</th>
+                    <th style="width: 100px; text-align: right">SL</th>
+                    <th style="width: 150px; text-align: right">Đơn Giá</th>
+                    <th style="width: 80px; text-align: right">C.K</th>
+                    <th style="width: 150px; text-align: right">Thành Tiền</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.PhieuXuatChiTiets != null)
+                {
+                    for (var i = Model.PhieuXuatChiTiets.Count - 1; i >= 0; i--)
+                    {
+                        <tr>
+
+                            <td>@(Model.PhieuXuatChiTiets.Count - i)</td>
+                            <td>
+                                <span class="" id="dMaThuoc@(i)"> @Html.DisplayFor(model => Model.PhieuXuatChiTiets[i].MaThuoc)</span>
+                            </td>
+                            <td>
+                                <span class="" id="PhieuXuatChiTiets_@(i)__TenSp">@Html.DisplayFor(model => Model.PhieuXuatChiTiets[i].TenThuoc)</span>
+                            </td>
+                            <td>
+                                <span class="display-mode" id="PhieuXuatChiTiets_@(i)__MaDonViTinhSp">@Html.DisplayFor(model => Model.PhieuXuatChiTiets[i].TenDonViTinh)</span>
+                            </td>
+                            <td>
+                                <span class="display-mode pNumber" id="PhieuXuatChiTiets_@(i)__SoLuongSp">@sThuoc.Utils.Helpers.FormatDecimal(Model.PhieuXuatChiTiets[i].SoLuong.ToString())</span>
+
+                            </td>
+                            <td>
+                                <span class="display-mode pNumber" id="PhieuXuatChiTiets_@(i)__GiaXuatSp">@string.Format("{0:#,##0}", Model.PhieuXuatChiTiets[i].GiaXuat)</span>
+
+                            </td>
+                            <td>
+                                <span class="display-mode pNumber" id="PhieuXuatChiTiets_@(i)__ChietKhauSp">
+                                    @sThuoc.Utils.Helpers.FormatDecimal(Model.PhieuXuatChiTiets[i].ChietKhau.ToString())
+                                </span>
+
+                            </td>
+                            <td>
+                                @{var chietkhau = decimal.Parse(Model.PhieuXuatChiTiets[i].ChietKhau) / 100;}
+                                <span class="display-mode pNumber" id="PhieuXuatChiTiets_@(i)__GiaXuatSp">@string.Format("{0:#,##0}", Model.PhieuXuatChiTiets[i].SoLuong * Model.PhieuXuatChiTiets[i].GiaXuat - chietkhau * (Model.PhieuXuatChiTiets[i].SoLuong * Model.PhieuXuatChiTiets[i].GiaXuat))</span>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        <br />
+
+        <div class="row">
+            <div class="col-md-3">
+                <b>Tổng Số Tiền : &nbsp;<span id="spanSumAll"></span></b>@string.Format("{0:#,##0}", Model.TongTien)
+            </div>
+            <div class="col-md-2">
+                @if (Model.VAT > 0)
+                {
+                    <b>VAT : &nbsp;</b><span>@string.Format("{0:#0.##} %", Model.VAT)</span>
+                }
+            </div>
+            @if (ViewBag.LoaiPhieu == 2)
+            {
+                <div class="col-md-2">
+
+                    <span style="font-weight: bold" id="spSumfinal">
+                        @if (Model.VAT > 0)
+                        {
+                            <span> Tổng Cộng : @string.Format("{0:#,##0}", Model.TongTien + Model.TongTien * Model.VAT / 100)</span>
+                        }
+                    </span>
+
+
+                </div>
+                <div class="col-md-5">
+                    <table style="padding: 5px">
+                        <tr>
+                            <td>
+                                Đã Trả : @string.Format("{0:#,##0}", Model.DaTra)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span id="spDebt" style="color: red">Còn nợ: @string.Format("{0:#,##0}", Model.TongTien - Model.DaTra)</span></td>
+                        </tr>
+                    </table>
+                </div>
+            }
+
+        </div>
+
+        <table class="table borderless table-condensed">
+            <tr>
+                <td style="text-align:left">
+                    <label class="control-label">Diến giải: </label>
+                    <label class="control-label" style="font-weight: normal">@Html.DisplayFor(model => model.DienGiai)</label>
+                </td>
+                @*<td style="text-align:right">
+            <label class="control-label">  Người lập: </label>
+            <label class="control-label" style="font-weight: normal">@Html.DisplayFor(model => model.NguoiLapPhieu)</label>
+        </td>*@
+                <td style="text-align:right; font-weight: normal; color:GrayText">
+                    <label class="control-label" style="font-weight: normal">[Người lập: </label>
+                    <label class="control-label" style="font-weight: normal">@Html.DisplayFor(model => model.NguoiLapPhieu)]</label>
+                </td>
+                <td style="text-align:right; font-weight: normal; color:GrayText">
+                    <label class="control-label" style="font-weight: normal">[Ngày lập: </label>
+                    <label class="control-label" style="font-weight: normal">@Model.NgayLapPhieu.Value.ToString("dd/MM/yyyy")]</label>
+                </td>
+            </tr>
+        </table>
+        <hr />
+
+        @Html.HiddenFor(model => model.Xoa, new { @Value = "False" })
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="form-inline">
+                    @if (ViewBag.BillType == EBillType.Manual)
+                    {
+                        @*<a href="@Url.Action("Create", new { loaiPhieu = ViewBag.loaiPhieu })"><button class="btn btn-default">Tiếp tục</button></a>*@
+                        @Html.ActionLink("Tiếp tục", "Create", new { loaiPhieu = ViewBag.loaiPhieu, ngayxuat = Model.NgayXuat.Value.ToString("dd/MM/yyyy HH:mm") }, new { @class = "btn btn-default", id = "btnTiepTuc" })
+                    }
+                    else if (ViewBag.BillType == EBillType.Barcode)
+                    {
+                        @*<a href="@Url.Action("CreateWithBCScanner","PhieuXuats")"><button class="btn btn-default">Tiếp tục</button></a>*@
+                        @*@Html.ActionLink("Tiếp tục", "CreateWithBCScanner", new { ngayxuat = Model.NgayXuat.Value.ToString("dd/MM/yyyy HH:mm") }, new { @class = "btn btn-default" })*@
+                        @*@Html.ActionLink("Tiếp tục", "DeliveryWithBarcode", "DeliveryNote")*@
+
+                        @*@Html.ActionLink("Tiếp tục", "DeliveryWithBarcode", "DeliveryNote", new { @class = "btn btn-default" })*@
+
+                        <input type="button" class="btn btn-default" id="btnTiepTuc" onclick="location.href = '@Url.Action("DeliveryWithBarcode", "DeliveryNote")';" value="Tiếp tục" />
+                    }
+                    <span class="btn-separator"></span>
+                    @*<input type="button" class="btn btn-default" value="In" onclick="window.open('@Url.Action("In", "PhieuXuats", new { id = Model.MaPhieuXuat, loaiPhieu = Model.MaLoaiXuatNhap })',target = '_blank', width = '500px', height = '500px')" />*@
+                    @if (ViewBag.LoaiPhieu == 4)
+                    {
+                        <input type="button" class="btn btn-default" value="In" onclick="window.open('@Url.Action("In", "PhieuXuats", new { id = Model.MaPhieuXuat, loaiPhieu = Model.MaLoaiXuatNhap })',target = '_blank', width = '500px', height = '500px')" />
+
+
+                    }
+                    else
+                    {
+                        <div class="btn-group">
+                            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                In <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="javascript:window.open('@Url.Action("In", "PhieuXuats", new { id = Model.MaPhieuXuat, loaiPhieu = Model.MaLoaiXuatNhap, loaiPhieuIn = Constants.LoaiPhieuXuatIn.InKhachLe58mm })',target = '_blank')">Phiếu khách lẻ - 58mm</a></li>
+                                <li><a href="javascript:window.open('@Url.Action("In", "PhieuXuats", new { id = Model.MaPhieuXuat, loaiPhieu = Model.MaLoaiXuatNhap, loaiPhieuIn = Constants.LoaiPhieuXuatIn.InKhachLe80mm })',target = '_blank')">Phiếu khách lẻ - 80mm</a></li>
+                                <li><a href="javascript:window.open('@Url.Action("In", "PhieuXuats", new { id = Model.MaPhieuXuat, loaiPhieu = Model.MaLoaiXuatNhap, loaiPhieuIn = Constants.LoaiPhieuXuatIn.InKhachLeA5 })',target = '_blank')">Phiếu khách lẻ - A5</a></li>
+                                <li><a href="javascript:window.open('@Url.Action("In", "PhieuXuats", new { id = Model.MaPhieuXuat, loaiPhieu = Model.MaLoaiXuatNhap, loaiPhieuIn = Constants.LoaiPhieuXuatIn.InKhachQuen })',target = '_blank')">Phiếu khách quen - A4</a></li>
+                                <li class="divider"></li>
+                                <li><a href="javascript:window.open('@Url.Action("InMaVach", "Thuocs", new { MaPhieu = Model.MaPhieuXuat, LoaiPhieu = Model.MaLoaiXuatNhap })',target = '_blank')">In mã vạch thuốc</a></li>
+                            </ul>
+                        </div>
+                    }
+                    <span class="btn-separator"></span>
+                    @Html.ActionLink("Sửa", "Edit", "PhieuXuats", new { id = Model.MaPhieuXuat }, new { @class = "btn btn-default" })
+                    @Html.ActionLink("Xóa", "Delete", "PhieuXuats", new { id = Model.MaPhieuXuat }, new { @data_type = ViewBag.CurrentFilterLP, @data_id = Model.MaPhieuXuat, @class = "btn btn-default btn-danger" })
+                    @if (Model.CanTransitWarehouse)
+                    {
+                        <span>&nbsp;</span>
+                        <button class="btn btn-default" ng-click="transitWarehouse(@Model.MaPhieuXuat); $event.preventDefault();" ng-disabled="allreadyTransitedWarehouse"> Chuyển kho </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    @Html.Partial("~/Areas/Production/Views/InOutCommingNote/WarehouseTransitionDialog.cshtml")
+}
+
+@section Scripts{
+@Scripts.Render("~/bundles/jqueryval")
+<script src="~/Scripts/jquery.inputmask/inputmask.js"></script>
+<script src="~/Scripts/jquery.inputmask/jquery.inputmask.js"></script>
+<script src="~/Scripts/jquery.inputmask/inputmask.numeric.extensions.js"></script>
+<script src="~/Scripts/Custom/formUtil.js"></script>
+<script src="~/Scripts/datepicker-vi.js"></script>
+<script type="text/javascript">
+    var drugStores = @Html.Raw(ViewBag.DrugStores);
+    //$(document).ready(function () {
+    //    //Mousetrap.bind(['enter'], function (e) {
+    //    //    $("#btnTiepTuc").click();
+    //    //});
+    //    Mousetrap.bindGlobal('enter', function() {
+    //        $("#btnTiepTuc").click();
+    //    });
+    //});    
+
+    $(window).keypress(function (e) {
+        if (e.which == 13) {
+            $("#btnTiepTuc").trigger("click");
+            e.preventDefault();
+        }
+        
+    });
+
+</script>
+}

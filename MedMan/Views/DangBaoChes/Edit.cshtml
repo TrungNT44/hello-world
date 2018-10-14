@@ -1,0 +1,52 @@
+﻿@model sThuoc.Models.DangBaoChe
+
+@{
+    ViewBag.Title = "Edit";
+    Layout = null;
+}
+<div id="form-dbc-edit">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <div class="row">
+            <div class="col-xs-8">
+                <div class="col-xs-4" style="min-width: 300px">
+                    @*@Html.HiddenFor(model => model.MaDangBaoChe)
+                    @Html.EditorFor(model => model.TenDangBaoChe, new { htmlAttributes = new { @class = "form-control", placeholder = "Dạng bào chế", @style = "min-width:75px" } })
+                    <span class="text-danger txt-error"></span>
+                </div>
+                <div class="col-xs-2"><input type="submit" value="Cập nhật" class="btn btn-default" /></div>*@
+
+                    <div class="input-group">
+                       @Html.HiddenFor(model => model.MaDangBaoChe)
+                       @Html.EditorFor(model => model.TenDangBaoChe, new { htmlAttributes = new { @class = "form-control", placeholder = "Dạng bào chế", @style = "min-width:75px" } })
+                        <span class="text-danger txt-error"></span>
+                        <span class="input-group-btn">
+                            <input type="submit" value="Cập nhật" class="btn btn-default" />
+                        </span>
+
+                    </div><!-- /input-group -->  
+                </div>
+             </div>
+        </div>
+
+    }
+
+</div>
+<script>
+    $('#form-dbc-edit form').submit(function (e) {
+        $(this).find('input[type=submit]').attr('disabled', 'disabled');
+        $.post(window.baseUrl + $(this).attr('action'), $(this).serialize()).done(function (data) {
+            if (data.success) {
+                $(this).find('input[type=text]').val('');
+                $('#dangbaoche .txt-error').text('');
+                $('.dbc-list tr.dbc-' + data.id).find('td:first').text(data.title);
+                $('#dbc-form-holder').html('');
+            } else {
+                $('#dangbaoche .txt-error').text(data.message);
+            }
+            $(this).find('input[type=submit]').attr('disabled', '');
+        });
+        e.preventDefault();
+    });
+</script>

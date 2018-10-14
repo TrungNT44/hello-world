@@ -66,6 +66,8 @@ namespace Med.Service.Impl
             context.RegisterHybridPerWebRequestPerThread<ITransactionReportService, TransactionReportService>();
             context.RegisterHybridPerWebRequestPerThread<IBackgroundService, BackgroundService>();
             context.RegisterHybridPerWebRequestPerThread<IInventoryService, InventoryService>();
+            context.RegisterHybridPerWebRequestPerThread<IReportHelperService, ReportHelperService>();
+            context.RegisterHybridPerWebRequestPerThread<ICleanUpService, CleanUpService>();
             context.RegisterHybridPerWebRequestPerThread<IInventoryAdjustmentService, InventoryAdjustmentService>();
             context.RegisterSingleton<IAppSettingService, AppSettingService>();
         }
@@ -95,8 +97,9 @@ namespace Med.Service.Impl
             context.RegisterPerLifetimeScope<ITransactionReportService, TransactionReportService>();
             context.RegisterPerLifetimeScope<IBackgroundService, BackgroundService>();
             context.RegisterPerLifetimeScope<IInventoryService, InventoryService>();
-            context.RegisterPerLifetimeScope<IInventoryAdjustmentService, InventoryAdjustmentService>();
-            context.RegisterSingleton<IAppSettingService, AppSettingService>();
+            context.RegisterPerLifetimeScope<IReportHelperService, ReportHelperService>();
+            context.RegisterSingleton<ICleanUpService, CleanUpService>();
+            context.RegisterPerLifetimeScope<IInventoryAdjustmentService, InventoryAdjustmentService>();            context.RegisterSingleton<IAppSettingService, AppSettingService>();
         }
     }
 }

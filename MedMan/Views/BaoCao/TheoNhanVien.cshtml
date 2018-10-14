@@ -1,0 +1,207 @@
+﻿@using Med.Web.Extensions
+@model sThuoc.Models.ViewModels.TheoNhanVienViewModel
+@using System.IdentityModel.Tokens
+@using MedMan.App_Start
+@using sThuoc.Models.ViewModels
+@{
+    ViewBag.Title = "BÁO CÁO THEO NHÂN VIÊN";
+}
+<link href="~/Content/baocao.css" rel="stylesheet" />
+@*<h2 style="text-align:center; padding:0px"><b>@ViewBag.Title</b></h2>*@
+<div class="print-date">@DateTime.Now.ToString("dd/MM/yyyy")</div>
+<div style="font-size: 30px; text-align: center;color: green;padding: 0px"><b>@ViewBag.Title</b></div>
+<br />
+<div class="container">
+    <div class="row">
+        <div class="col-md-3 baocao-filter">
+            @using (Html.BeginForm("TheoNhanVien", "BaoCao", FormMethod.Get))
+            {
+                <fieldset class="">
+                    <legend><b>Nhân viên</b></legend>
+                    <div>
+                        <div>
+                            @if (Context.User.IsInRole(Constants.Security.Roles.SuperUser.Value) || Context.User.IsInRole(Constants.Security.Roles.Admin.Value))
+                            {
+                                @*@Html.DropDownList("UserId", (SelectList)ViewBag.NhanViens, "Chọn nhân viên");*@
+                                @Html.DropDownListFor(model => model.UserId, (SelectList)ViewBag.NhanViens, "Tất cả nhân viên", new { @class = "form-control" })
+                            }
+                            else
+                            {
+                                <input disabled="disabled" value="@ViewBag.SelectedNhanVien.TenDayDu" type="text" />
+                                <input disabled="disabled" value="@ViewBag.SelectedNhanVien.UserId" type="hidden" name="UserId" />
+                            }
+                        </div>
+
+                    </div>
+                </fieldset>
+                <br />
+                <fieldset>
+                    <legend><b>Ngày</b></legend>
+                    <div>
+                        <div class="radio">
+                            <div><input name="Period" type="radio" id="theongay-all" value="all" checked="checked" @(Model.Period == "all" ? "checked='checked'" : "") /> <label for="theongay-all">Tổng kết hết</label></div>
+                            <div>
+                                <input name="Period" type="radio" id="theongay-period" value="period" @(Model.Period == "period" ? "checked='checked'" : "") /> <label for="theongay-period">Tổng kết theo ngày ...</label>
+                            </div>
+                            <div id="period" style="display: none">
+                                <div class="input-group input-group-sm">
+                                    @*<input type="text" placeholder="Từ ngày.." class="form-control input-datetimepicker from" readonly="readonly" name="from">*@
+                                    @Html.TextBoxFor(model => model.From, new { @Value = Model.From.HasValue ? Model.From.Value.ToString("dd/MM/yyyy") : "", @class = "form-control input-datetimepicker from", @readonly = "readonly", placeholder = "Từ ngày.." })
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default btn-datepicker"><i class="glyphicon glyphicon-calendar"></i></button>
+                                    </span>
+                                </div>
+                                <br />
+                                <div class="input-group input-group-sm">
+                                    @*<input type="text" placeholder="Đến ngày.." class="form-control input-datetimepicker to" readonly="readonly" name="to">*@
+                                    @Html.TextBoxFor(model => model.To, new { @Value = Model.To.HasValue ? Model.To.Value.ToString("dd/MM/yyyy") : "", @class = "form-control input-datetimepicker to", @readonly = "readonly", placeholder = "Đến ngày.." })
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default btn-datepicker"><i class="glyphicon glyphicon-calendar"></i></button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <div>
+                    <input type="submit" value="Xem" class="btn btn-default" />
+                    <input type="hidden" name="export" value="" />
+                    <input type="submit" value="Xuất Excel" class="btn btn-default btn-excel" />
+                    <input type="button" value="In" class="btn btn-default btn-print" onclick="" />
+                </div>
+            }
+        </div>
+        <div class="col-md-9">
+            <div class="form-group">
+                <div class="baocao-container">
+                    <div class="print-header">
+                        <table>
+                            <tr>
+                                <td>Nhân viên: <span id="user-filter"></span></td>
+                                <td>Kỳ báo cáo: <span id="report-period"></span></td>
+                            </tr>
+                        </table>
+                    </div>
+                    @if (Model.Items.Any())
+                    {
+                        <table class="table table-responsive table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="background-color:darkgray">STT</th>
+                                    @if (Model.Type == TheoNhanVienTypes.Individual)
+                                    {
+                                        <th style="background-color:darkgray">Ngày</th>
+                                    }
+                                    @if (Model.Type == TheoNhanVienTypes.All)
+                                    {
+                                        <th style="background-color:darkgray">Nhân viên</th>
+                                    }
+                                    else
+                                    {
+                                        <th style="background-color:darkgray">@(Model.Type == TheoNhanVienTypes.All ? "Nhân viên" : "Số phiếu")</th>
+                                        <th style="background-color:darkgray">@(Model.Type == TheoNhanVienTypes.All ? "Nhân viên" : "Khách hàng")</th>
+                                    }
+
+                                    <th style="text-align: right; background-color:darkgray">Tổng tiền</th>
+                                    <th style="text-align: right; background-color:darkgray">Tiền trả</th>
+                                    <th style="text-align: right; background-color:darkgray">Tiền nợ</th>
+                                    <th style="text-align: right; background-color:darkgray">Lợi nhuận</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ var stt = 0; decimal tongloinhuan = 0;}
+                                @foreach (var item in Model.Items)
+                                {
+                                    ++stt;
+                                    tongloinhuan += item.LoiNhuan;
+                                    <tr>
+                                        <td>@stt</td>
+                                        @if (Model.Type == TheoNhanVienTypes.Individual)
+                                        {
+                                            <td>@item.Date.ToString("dd/MM/yyyy")</td>
+                                        }
+                                        else
+                                        {
+                                            <td>@item.TenNhanVien</td>
+                                        }
+                                        @*@if (Model.Type == TheoNhanVienTypes.Individual)
+                                            {
+                                                <td>@item.SoPhieu.ToString()</td>
+                                            }
+                                            @if (item.TongTien < 0)
+                                            {
+                                                <td>@(Model.Type == TheoNhanVienTypes.All ? item.TenNhanVien : item.TenKhachHang) trả hàng</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@(Model.Type == TheoNhanVienTypes.All ? item.TenNhanVien : item.TenKhachHang)</td>
+                                            }*@
+
+
+                                        @if (Model.Type == TheoNhanVienTypes.Individual)
+                                        {
+                                            if (item.TongTien >= 0)
+                                            {
+                                                <td>@Html.ActionLink(item.SoPhieu.ToString(), "Details", "PhieuXuats", new { id = item.MaPhieu }, null)</td>
+                                                <td>@item.TenKhachHang</td>
+                                            }
+                                            else
+                                            {
+                                                <td>@Html.ActionLink(item.SoPhieu.ToString(), "Details", "PhieuNhaps", new { id = item.MaPhieu }, null)</td>
+                                                <td>@item.TenKhachHang trả hàng</td>
+                                            }
+                                        }
+                                        <td style="text-align: right">@item.TongTien.ToString("#,##0")</td>
+                                        <td style="text-align: right">@item.DaTra.ToString("#,##0")</td>
+                                        <td style="text-align: right">@item.TienNo.ToString("#,##0")</td>
+                                        <td style="text-align: right">
+                                            @if (this.HasPermisson("baocao", "ViewProfit"))
+                                            {
+                                                <span>@item.LoiNhuan.ToString("#,##0")</span>
+                                            }
+                                            else
+                                            {
+                                                <span>***</span>
+                                            }
+
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        @*<div class="summary">*@
+                        <div class="pull-right">
+                            <table>
+                                <tr>
+                                    <td>Tổng tiền: <strong style="color:red">@Model.Items.Sum(e => e.TongTien).ToString("#,##0")</strong> </td>
+                                    @*<td><span class="btn-separator"></span></td>*@
+                                    <td><span class="btn-separator"></span></td>
+                                    @if (this.HasPermisson("baocao", "ViewProfit"))
+                                    {
+                                        <td>Tổng lợi nhuận: <strong style="color:red"> @tongloinhuan.ToString("#,##0")</strong> </td>
+                                    }
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="clearfix"></div>
+                        @*</div>*@
+                    }
+                    else
+                    {
+                        <p>Không có dữ liệu</p>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+@section Scripts{
+    <script src="~/Scripts/Custom/baocao.js"></script>
+    <script language="javascript">
+        $(document).ready(function () {
+            theoNhanVien();
+        });
+    </script>
+}

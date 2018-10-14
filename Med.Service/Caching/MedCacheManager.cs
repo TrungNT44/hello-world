@@ -14,6 +14,7 @@ using Med.Service.Common;
 using Med.ServiceModel.Admin;
 using Castle.Core.Internal;
 using App.Common.Base;
+using Med.Service.Report;
 
 namespace Med.Service.Caching
 {
@@ -180,7 +181,24 @@ namespace Med.Service.Caching
         {
             var cacheManager = AppBase.Instance.RedisCacheManager;           
             var key = GetCacheKeyForDrugStore(drugStoreCode);
-            cacheManager.Set(key, drugs, MedConstants.DrugCacheTimeInMinutes);
+            var alllDrugs = GetAllCacheDrugs(drugStoreCode);
+            var updateDrugIds = drugs.Select(i => i.DrugId).ToList();
+            var updateDrugs = alllDrugs.Where(i => updateDrugIds.Contains(i.DrugId)).ToList();
+            var existingCacheDrugIds = alllDrugs.Select(i => i.DrugId).Distinct().ToList();
+            var newDrugs = drugs.Where(i => !existingCacheDrugIds.Contains(i.DrugId)).ToList();
+            updateDrugs.ForEach(i =>
+            {
+                var drug = drugs.FirstOrDefault(d => d.DrugId == i.DrugId);
+                if (drug != null)
+                {
+                    alllDrugs.Remove(i);
+                    alllDrugs.Add(drug);
+                }
+            });
+
+            newDrugs.ForEach(i => alllDrugs.Add(i));
+
+            cacheManager.Set(key, alllDrugs, MedConstants.DrugCacheTimeInMinutes);
         }
         public void ReloadCacheDrugs(string drugStoreCode)
         {
@@ -215,13 +233,13 @@ namespace Med.Service.Caching
             if (!string.IsNullOrEmpty(searchingText))
             {
                 var lowerSearchingText = searchingText.ToLower();
-                results = results.Where(i => i.FullInfo.ToLower().Contains(lowerSearchingText)).ToList();
+                results = results.Where(i => i.GetFullSearchString().Contains(lowerSearchingText)).ToList();
             }
             results = results.Take(maxItems).ToList();
              
             return results;
         }
-        public void UpdateCacheDrug(string drugStoreCode, int drugId, string drugCode, string drugName, string extraInfo)
+        public void UpdateCacheDrug(string drugStoreCode, int drugId, string drugCode, string drugName, string extraInfo, double retailOutPrice)
         {
             var cacheManager = AppBase.Instance.RedisCacheManager;
             var key = GetCacheKeyForDrugStore(drugStoreCode);
@@ -234,6 +252,7 @@ namespace Med.Service.Caching
                     drug.DrugCode = drugCode;
                     drug.DrugName = drugName;
                     drug.ExtraInfo = extraInfo;
+                    drug.RetailOutPrice = retailOutPrice;
                 }
                 else
                 {
@@ -242,9 +261,13 @@ namespace Med.Service.Caching
                         DrugId = drugId,
                         DrugCode = drugCode,
                         DrugName = drugName,
-                        ExtraInfo = extraInfo
+                        ExtraInfo = extraInfo,
+                        RetailOutPrice = retailOutPrice
                     });
                 }
+                var invService = IoC.Container.Resolve<IInventoryService>();
+                invService.UpdateInventoryDrugPrices(drugCode, drugId, retailOutPrice);
+
                 cacheManager.Set(key, cacheDrugs, MedConstants.DrugCacheTimeInMinutes);
             }
         }        
@@ -302,6 +325,28 @@ namespace Med.Service.Caching
                 }});
             }
         }
+
+        public int GetInitialInventoryReceiptNoteID(string drugStoreID)
+        {
+            var retVal = 0;
+            var cacheManager = AppBase.Instance.RedisCacheManager;
+            var key = GetCacheKeyForInitialReceiptNoteID(drugStoreID);
+            if (cacheManager.IsSet(key))
+            {
+                retVal = cacheManager.Get<int>(key);
+            }
+            if (retVal <= 0)
+            {
+                var service = IoC.Container.Resolve<IReportHelperService>();
+                retVal = service.CreateInitialInventoryReceiptNote(drugStoreID);
+            }
+            if (retVal > 0)
+            {
+                cacheManager.Set(key, retVal, null);
+            }
+
+            return retVal;
+        }
         #endregion
 
         #region Private Method
@@ -314,6 +359,12 @@ namespace Med.Service.Caching
         private string GetCacheKeyForCheckingRemainQuantity(string drugStoreCode)
         {
             var key = AppBase.Instance.CacheKeyPrefix + string.Format("CacheKeyForCheckingRemainQuantity-{0}", drugStoreCode);
+
+            return key;
+        }
+        private string GetCacheKeyForInitialReceiptNoteID(string drugStoreCode)
+        {
+            var key = AppBase.Instance.CacheKeyPrefix + string.Format("CacheKeyForGetCacheKeyForInitialReceiptNoteID-{0}", drugStoreCode);
 
             return key;
         }

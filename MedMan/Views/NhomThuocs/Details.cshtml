@@ -1,0 +1,36 @@
+﻿@using System.Web.UI.WebControls
+@model sThuoc.Models.NhomThuoc
+
+@{
+    ViewBag.Title = "Chi tiết nhóm thuốc";
+}
+
+<h4>@ViewBag.Title</h4>
+<hr style="margin-top:0px" />
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.TenNhomThuoc)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TenNhomThuoc)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.KyHieuNhomThuoc)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.KyHieuNhomThuoc)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Trở lại", "Index", null, new { @class = "btn btn-default" })
+    <span class="btn-separator">|</span>
+    @Html.ActionLink("Sửa", "Edit", new { id = Model.MaNhomThuoc },new {@class="btn btn-default"})
+    
+</p>

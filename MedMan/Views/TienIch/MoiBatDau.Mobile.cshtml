@@ -1,0 +1,163 @@
+﻿@*@model sThuoc.Models.CanhBaoDuTru*@
+@{
+    ViewBag.Title = "Hướng dẫn sử dụng nhanh phần mềm";
+}
+
+@*<h4>
+    <b>@ViewBag.Title</b>
+</h4>
+<hr style="margin-top:0px" />*@
+<div class="form-group">
+   
+       
+        <div id="myCarousel" class="carousel slide" data-ride="carousel">
+            <!-- Carousel indicators -->
+            <ol class="carousel-indicators">
+                <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                <li data-target="#myCarousel" data-slide-to="1"></li>
+                <li data-target="#myCarousel" data-slide-to="2"></li>
+                <li data-target="#myCarousel" data-slide-to="3"></li>
+                <li data-target="#myCarousel" data-slide-to="4"></li>
+                <li data-target="#myCarousel" data-slide-to="5"></li>
+                <li data-target="#myCarousel" data-slide-to="6"></li>
+                <li data-target="#myCarousel" data-slide-to="7"></li>
+            </ol>
+            <!-- Wrapper for carousel items -->
+            <div class="carousel-inner" role="listbox" style="background-color:#808089;">
+                @*slide 0*@
+                <div class="item active" style="width:100%;height:200px">
+                    
+                        <div class="carousel-caption" style="">
+                            <h4>CHÀO MỪNG BẠN ĐẾN VỚI TIỆN ÍCH PHẦN MỀM QUẢN LÝ NHÀ THUỐC CỦA WEB NHÀ THUỐC</h4>
+                            
+                            <p style="text-align:left">
+                                Nếu lần đầu tiên làm quen với phần mềm này, xin bạn bạn hãy vui lòng dành ra chút thời gian để tìm hiểu một số thao tác cơ bản thông qua phần trợ giúp sau đây.
+                            </p>
+                        </div>
+                   
+                </div>
+                @*slide 1*@
+                <div class="item" style="width:100%;height:320px">
+                    
+                        <div class="carousel-caption">
+                            <h4>NHẬP MỚI NHÓM KHÁCH HÀNG VÀ NHÓM NHÀ CUNG CẤP</h4>
+                            
+                            <p style="text-align:left">
+                                Để thuận tiện cho việc quản lý, khách hàng và nhà cung cấp của bạn sẽ được chia ra thành các nhóm khác nhau. Ví dụ, nhóm nhà cung cấp: trình dược, quầy chợ sỉ; nhóm khách hàng: khách quen, khách buôn. Nếu bạn không cần quản lý theo nhóm có thể bỏ qua bước này. Hệ thống đã nhập sẵn một nhóm có tên là mặc định.
+                            </p>
+                            <p style="text-align:left">
+                                Bạn chọn menu Đối tác --> Nhóm khách hàng để vào danh sách nhóm khách hàng.
+                            </p>
+                            <p style="text-align:left">
+                                Bạn chọn menu Đối tác --> Nhóm nhà cung cấp để vào danh sách nhóm khách hàng.
+                            </p>
+                        </div>
+                    
+                </div>
+                @*slide 2*@
+                <div class="item" style="width:100%;height:310px">
+                    <div class="container">
+                        <div class="carousel-caption">
+                            <h4>NHẬP MỚI KHÁCH HÀNG VÀ NHÀ CUNG CẤP</h4>
+                            <p style="text-align:left">
+                                Để nhập mới khách hàng, bạn chọn menu Đối tác -> Khách hàng để vào danh sách khách hàng hiện tại, rồi chọn thêm mới khách hàng. Đối với khách mua hàng trả tiền ngay và không cần quản lý công nợ, phần mềm đã tạo sẵn một khách hàng có thên “Khách hàng lẻ” cho những người mua hàng.
+                            </p>
+                            <p style="text-align:left">
+                                Để nhập mới khách hàng, bạn chọn menu Đối tác -> Nhà cung cấp để vào danh sách nhà cung cấp hiện tại, rồi chọn thêm mới nhà cung cấp. Đối với những mặt hàng nhập lẻ, trả tiền ngay và không cần quản lý công nợ, phần mềm đã tạo sẵn một nhà cung cấp có tên “Hàng nhập lẻ” cho những mặt hàng này.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                @*slide 3*@
+                <div class="item" style="width:100%;height:240px">
+                    <div class="container">
+                        <div class="carousel-caption">
+                            <h4>NHẬP MỚI CHỦNG LOẠI THUỐC</h4>                            
+                            <p style="text-align:left">
+                                Chủng loại thuốc là một nhóm các thuốc tính năng, tác dụng tương đồng nhau. Ví dụ, chủng loại kháng sinh (Aug, Zinat, Cefexim, vv…), chủng loại siro (Cotuff, Ceelin, Attusin, vv…)
+                            </p>
+                            <p style="text-align:left">
+                                Bạn chọn menu Hàng Hóa --> Nhóm thuốc để có thể xem danh sách toàn bộ nhóm thuốc hiện tại. Sau đó, bạn có thể bấm thêm mới để tạo thêm nhóm thuốc.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                @*slide 4*@
+                <div class="item" style="width:100%;height:240px">
+                    <div class="container">
+                        <div class="carousel-caption">
+                            <h4>NHẬP MỚI ĐƠN VỊ TÍNH</h4>
+                            
+                            <p style="text-align:left">
+                                Bước tiếp theo là nhập mới các đơn vị tính cho các mặt hàng thuốc. Khi bạn bắt đầu sử dụng phần mềm, hầu hết các đơn vị tính thông dụng cho mặt hàng thuốc đã được chúng tôi cài đặt sẵn. Nên bạn có thể bỏ qua bước này.
+                            </p>
+                            <p style="text-align:left">
+                                Nếu bạn muốn thêm hay xóa bớt, trong menu Hệ thống --> Tùy chọn bạn chọn cửa sổ đơn vị tính rồi bấm thêm mới hoặc xóa.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                @*slide 5*@
+                <div class="item" style="width:100%;height:350px">
+                    <div class="container">
+                        <div class="carousel-caption">
+                            <h4>NHẬP MỚI TÊN CÁC MẶT HÀNG THUỐC</h4>
+
+                            <p style="text-align:left">
+                                Bạn vào menu Hàng Hóa --> Thêm thuốc mới hoặc vào Danh sách thuốc bấm vào thêm mới để thêm mới thuốc mà bạn đang kinh doanh.
+                            </p>
+                            <p style="text-align:left">
+                                Những thông tin quan trọng đối với mỗi mặt hàng thuốc gồm: mã thuốc bắt buộc nhập nhưng không được trùng, tên thuốc, giá nhập, giá bán lẻ và bán buôn, đơn vị xuất lẻ và thứ nguyên (đơn vị bao ngoài của đơn vị lẻ, ví dụ đơn vị xuất lẻ là vỉ thì đơn vị nguyên là hộp = 3 vỉ), mã vạch nếu bạn quản lý hàng hóa theo mã vạch (không được trùng), nhóm hàng.
+                            </p>
+                            <p style="text-align:left">
+                                Bạn vào menu Hàng Hóa --> Danh sách thuốc để vào danh sách toàn bộ thuốc trong hệ thống.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                @*slide 6*@
+                <div class="item" style="width:100%;height:280px">
+                    <div class="container">
+                        <div class="carousel-caption">
+                            <h4>NHẬP MỚI PHIẾU NHẬP HÀNG, BÁN HÀNG</h4>
+                            
+                            <p style="text-align:left">
+                                Đến lúc này bạn đã có đầy đủ thông tin để tạo các giao dịch hàng hóa tại nhà thuốc.
+                            </p>
+                            <p style="text-align:left">
+                                Nếu bạn nhập hàng, bạn chọn menu Nhập-Xuất --> Nhập hàng để tạo các phiếu nhập hàng trong phần mềm.
+                            </p>
+                            <p style="text-align:left">
+                                Nếu bạn muốn xuất bán hàng, bạn chọn menu Nhập-Xuất --> Bán hàng để tạo các phiếu xuất hàng trong phần mềm. Phần mềm của chúng tôi đã hỗ trợ barcode cho việc xuất hàng.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                @*slide 7*@
+                <div class="item" style="width:100%;height:250px">
+                    <div class="container">
+                        <div class="carousel-caption">
+                            <h4>LÀM VIỆC VỚI THIẾT BỊ MÃ VẠCH</h4>
+                            
+                            <p style="text-align:left">
+                                Phần mềm của chúng tôi cho phép bạn bán hàng với sự hỗ trợ của thiết bị quét vã vạch. Bạn có thể vào menu Nhập-Xuất --> Bán hàng với barcode đối với giao diện máy tính.
+                            </p>
+                            <p style="text-align:left">
+                                Phần mềm của chúng tôi cũng đã tính năng quét vã vạch có sẵn trên các thiết bị di động như máy tính bảng, điện thoại thông minh. Bạn có thể vào menu Nhập-Xuất --> Bán hàng đối với giao diện cho thiết bị di động.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- Carousel controls -->
+            <a class="carousel-control left" href="#myCarousel" data-slide="prev" style="background-color:#808080">
+                <span class="glyphicon glyphicon-chevron-left"></span>
+            </a>
+            <a class="carousel-control right" href="#myCarousel" data-slide="next" style="background-color:#808080">
+                <span class="glyphicon glyphicon-chevron-right"></span>
+            </a>
+        </div>
+        
+    
+</div>

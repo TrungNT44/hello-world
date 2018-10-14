@@ -10,31 +10,13 @@ namespace Med.Service.Background
 {
     public static class BackgroundServiceJobHelper
     {
-        public static void EnqueueUpdateDrugExpiredDate4InitInventory(string drugStoreCode, int drugId)
+        public static void EnqueueMakeAffectedChangesRelatedDeliveryNotes(string drugStoreCode, int? actorId, params int[] noteIds)
         {
-            BackgroundJob.Enqueue(() => UpdateDrugExpiredDate4InitInventory(drugStoreCode, drugId));
-            
+            BackgroundJob.Enqueue(() => MakeAffectedChangesRelatedDeliveryNotes(drugStoreCode, actorId, noteIds));
         }
-        public static void UpdateDrugExpiredDate4InitInventory(string drugStoreCode, int drugId)
+        public static void MakeAffectedChangesRelatedDeliveryNotes(string drugStoreCode, int? actorId, params int[] noteIds)
         {
-            IoC.Container.Resolve<IBackgroundService>().UpdateDrugExpiredDate4InitInventory(drugStoreCode, drugId);
-        }
-
-        public static void EnqueueUpdateLastInventoryQuantity4CacheDrugs(string drugStoreCode, params int[] drugIds)
-        {
-            BackgroundJob.Enqueue(() => UpdateLastInventoryQuantity4CacheDrugs(drugStoreCode, drugIds));
-        }
-        public static void UpdateLastInventoryQuantity4CacheDrugs(string drugStoreCode, params int[] drugIds)
-        {
-            IoC.Container.Resolve<IBackgroundService>().UpdateLastInventoryQuantity4CacheDrugs(drugStoreCode, drugIds);
-        }
-        public static void EnqueueUpdateExtraInfo4DeliveryNotes(string drugStoreCode, int actorId, params int[] noteIds)
-        {
-            BackgroundJob.Enqueue(() => UpdateExtraInfo4DeliveryNotes(drugStoreCode, actorId, noteIds));
-        }
-        public static void UpdateExtraInfo4DeliveryNotes(string drugStoreCode, int actorId, params int[] noteIds)
-        {
-            IoC.Container.Resolve<IBackgroundService>().UpdateExtraInfo4DeliveryNotes(drugStoreCode, noteIds);
+            IoC.Container.Resolve<IBackgroundService>().MakeAffectedChangesRelatedDeliveryNotes(drugStoreCode, noteIds);
             if (noteIds != null && noteIds.Any())
             {
                 foreach (var noteId in noteIds)
@@ -42,15 +24,15 @@ namespace Med.Service.Background
                     IoC.Container.Resolve<IAuditLogService>().LogDeliveryNote(drugStoreCode, noteId, actorId);
                 }
             }
-            
+
         }
-        public static void EnqueueUpdateExtraInfo4ReceiptNotes(string drugStoreCode, int actorId, params int[] noteIds)
+        public static void EnqueueMakeAffectedChangesRelatedReceiptNotes(string drugStoreCode, int? actorId, params int[] noteIds)
         {
-            BackgroundJob.Enqueue(() => UpdateExtraInfo4ReceiptNotes(drugStoreCode, actorId, noteIds));
+            BackgroundJob.Enqueue(() => MakeAffectedChangesRelatedReceiptNotes(drugStoreCode, actorId, noteIds));
         }
-        public static void UpdateExtraInfo4ReceiptNotes(string drugStoreCode, int actorId, params int[] noteIds)
+        public static void MakeAffectedChangesRelatedReceiptNotes(string drugStoreCode, int? actorId, params int[] noteIds)
         {
-            IoC.Container.Resolve<IBackgroundService>().UpdateExtraInfo4ReceiptNotes(drugStoreCode, noteIds);
+            IoC.Container.Resolve<IBackgroundService>().MakeAffectedChangesRelatedReceiptNotes(drugStoreCode, noteIds);
             if (noteIds != null && noteIds.Any())
             {
                 foreach (var noteId in noteIds)
@@ -58,6 +40,33 @@ namespace Med.Service.Background
                     IoC.Container.Resolve<IAuditLogService>().LogReceiptNote(drugStoreCode, noteId, actorId);
                 }
             }
+        }
+
+        public static void EnqueueUpdateNewestInventories(string drugStoreID, params int[] drugIds)
+        {
+            BackgroundJob.Enqueue(() => UpdateNewestInventories(drugStoreID, drugIds));
+        }
+        public static void UpdateNewestInventories(string drugStoreID, params int[] drugIds)
+        {
+            IoC.Container.Resolve<IInventoryService>().GenerateInventory4Drugs(drugStoreID, drugIds == null, false, true, drugIds);
+        }
+
+        public static void EnqueueMakeAffectedChangesByUpdatedDrugs(string drugStoreID, params int[] drugIds)
+        {
+            BackgroundJob.Enqueue(() => MakeAffectedChangesByUpdatedDrugs(drugStoreID, drugIds));
+        }
+        public static void MakeAffectedChangesByUpdatedDrugs(string drugStoreID, params int[] drugIds)
+        {
+            IoC.Container.Resolve<IBackgroundService>().MakeAffectedChangesByUpdatedDrugs(drugStoreID, drugIds);
+        }
+
+        public static void EnqueueDeleteForeverDrugs(string drugStoreID, params int[] drugIds)
+        {
+            BackgroundJob.Enqueue(() => DeleteForeverDrugs(drugStoreID, drugIds));
+        }
+        public static void DeleteForeverDrugs(string drugStoreID, params int[] drugIds)
+        {
+            IoC.Container.Resolve<IBackgroundService>().DeleteForeverDrugs(drugStoreID, drugIds);
         }
     }
 }

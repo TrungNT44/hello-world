@@ -18,8 +18,6 @@ using Med.Service.Receipt;
 using Med.Service.Report;
 using Med.ServiceModel.Inventory;
 
-//using Med.ServiceModel.PhieuKiemKe;
-
 namespace Med.Service.Impl.Common
 {
     public class InventoryAdjustmentService : MedBaseService, IInventoryAdjustmentService
@@ -40,15 +38,15 @@ namespace Med.Service.Impl.Common
                         join pkkct in phieuKiemKeChiTietRepo
                         on pkk.MaPhieuKiemKe equals pkkct.PhieuKiemKe_MaPhieuKiemKe
 
-                        where (pkk.NhaThuoc_MaNhaThuoc == maNhaThuoc && pkk.RecordStatusID == (int)RecordStatus.Activated
-                        && pkkct.RecordStatusID == (int)RecordStatus.Activated)
+                        where (pkk.NhaThuoc_MaNhaThuoc == maNhaThuoc && pkk.RecordStatusID == (byte)RecordStatus.Activated
+                        && pkkct.RecordStatusID == (byte)RecordStatus.Activated)
 
                         group new { pkk.Created, pkk.DaCanKho, pkkct.MaPhieuKiemKeCt, up.TenDayDu } by pkk.MaPhieuKiemKe into g
 
                         select new InventoryDetailModel
                         {
                             Id = g.Key,
-                            CreateTime = g.Select(x => x.Created).FirstOrDefault(),
+                            CreateTime = g.Select(x => x.Created.Value).FirstOrDefault(),
                             DaCanKho = g.Select(x => x.DaCanKho).FirstOrDefault(),
                             FullName = g.Select(x => x.TenDayDu).FirstOrDefault(),
                             DrugQuantity = g.Select(x => x.MaPhieuKiemKeCt).Distinct().Count()
@@ -68,7 +66,6 @@ namespace Med.Service.Impl.Common
             if (fromDate != null && toDate != null)
             {
                 query = query.Where(x => x.CreateTime >= fromDate && x.CreateTime < toDate);
-
             }
 
             // trả về danh sách phiếu và order theo thời gian tạo phiếu giảm dần
@@ -85,8 +82,7 @@ namespace Med.Service.Impl.Common
             var phieuKiemKeRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuKiemKe>>().GetAll();
             var phieuKiemKeChiTietRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuKiemKeChiTiet>>().GetAll();
             var userProfileRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, UserProfile>>().GetAll();
-            var dataFilterService = IoC.Container.Resolve<IDataFilterService>();
-            var thuocRepo = dataFilterService.GetValidDrugs(maNhaThuoc);
+            var thuocRepo = _dataFilterService.GetValidDrugs(maNhaThuoc);
             var nhomThuocRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, NhomThuoc>>().GetAll();
             var donViTinhRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, DonViTinh>>().GetAll();
             var phieuNhapRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuNhap>>().GetAll();
@@ -97,7 +93,7 @@ namespace Med.Service.Impl.Common
             // join bảng PhieuKiemKe và PhieuKiemKeChiTiet để lấy thông tin phiếu
             var inventoryDetailQuery = from pkk in phieuKiemKeRepo
 
-                                       where (pkk.MaPhieuKiemKe == Id && pkk.RecordStatusID == (int)RecordStatus.Activated)
+                                       where (pkk.MaPhieuKiemKe == Id && pkk.RecordStatusID == (byte)RecordStatus.Activated)
 
                                        join up in userProfileRepo
                                         on pkk.CreatedBy_UserId equals up.UserId
@@ -123,9 +119,6 @@ namespace Med.Service.Impl.Common
                                       join pkkct in phieuKiemKeChiTietRepo
                                       on pkk.MaPhieuKiemKe equals pkkct.PhieuKiemKe_MaPhieuKiemKe
 
-                                      where (pkk.MaPhieuKiemKe == Id && pkk.RecordStatusID == (int)RecordStatus.Activated
-                                      && pkkct.RecordStatusID == (int)RecordStatus.Activated)
-
                                       join t in thuocRepo
                                       on pkkct.Thuoc_ThuocId equals t.ThuocId
 
@@ -135,8 +128,13 @@ namespace Med.Service.Impl.Common
                                       join dvt in donViTinhRepo
                                       on t.DonViXuatLe_MaDonViTinh equals dvt.MaDonViTinh
 
+                                      where (pkk.MaPhieuKiemKe == Id && pkk.RecordStatusID == (byte)RecordStatus.Activated
+                                      && pkkct.RecordStatusID == (byte)RecordStatus.Activated && nt.MaNhaThuoc == maNhaThuoc
+                                      && dvt.MaNhaThuoc == maNhaThuoc)
+
                                       select new ThuocModel
                                       {
+                                          MaNhomThuoc = nt.MaNhomThuoc,
                                           TenNhomThuoc = nt.TenNhomThuoc,
                                           ThuocId = t.ThuocId,
                                           MaThuoc = t.MaThuoc,
@@ -149,14 +147,14 @@ namespace Med.Service.Impl.Common
                                           HanDung = pkkct.HanDung
                                       };
 
-            inventoryDetailResult.MedicineList = medicineDetailQuery.ToList();
+            inventoryDetailResult.MedicineList = medicineDetailQuery.OrderBy(x => x.TenNhomThuoc).ToList();
 
             // TH phiếu đã cân kho, lấy thông tin của các phiếu cân kho sau kiểm kê
             if (inventoryDetailResult.DaCanKho)
             {
                 // lấy thông tin phiếu Nhập nếu có
                 var phieuNhapQuery = from pkk in phieuKiemKeRepo
-                                     where (pkk.MaPhieuKiemKe == Id && pkk.RecordStatusID == (int)RecordStatus.Activated)
+                                     where (pkk.MaPhieuKiemKe == Id && pkk.RecordStatusID == (byte)RecordStatus.Activated)
 
                                      join pn in phieuNhapRepo
                                      on pkk.PhieuNhap_MaPhieuNhap equals pn.MaPhieuNhap
@@ -177,18 +175,18 @@ namespace Med.Service.Impl.Common
                 // lấy thông tin phiếu xuất nếu có
                 var phieuXuatQuery = from pkk in phieuKiemKeRepo
 
-                                     where (pkk.MaPhieuKiemKe == Id && pkk.RecordStatusID == (int)RecordStatus.Activated)
+                                     where (pkk.MaPhieuKiemKe == Id && pkk.RecordStatusID == (byte)RecordStatus.Activated)
 
                                      join px in phieuXuatRepo
                                      on pkk.PhieuXuat_MaPhieuXuat equals px.MaPhieuXuat
 
-                                     join pnct in phieuXuatChiTietRepo
-                                     on px.MaPhieuXuat equals pnct.PhieuXuat_MaPhieuXuat into pngr
+                                     join pxct in phieuXuatChiTietRepo
+                                     on px.MaPhieuXuat equals pxct.PhieuXuat_MaPhieuXuat into pngr
 
                                      select new PhieuCanKhoItem
                                      {
-                                         MaPhieu = px.MaPhieuXuat, //gr.Key.MaPhieuXuat,
-                                         SoPhieu = px.SoPhieuXuat, //gr.Key.SoPhieuXuat,
+                                         MaPhieu = px.MaPhieuXuat,
+                                         SoPhieu = px.SoPhieuXuat,
                                          LoaiPhieu = NoteInOutType.Delivery,//"Phiếu Xuất",
                                          SoLuong = pngr.Distinct().Count(),
 
@@ -212,7 +210,7 @@ namespace Med.Service.Impl.Common
 
             // Nếu các thuốc trong phiếu không có thông tin giá/số lô/hạn dùng => lấy thông tin từ phiếu nhập gần nhất
             List<int> drugIdsOfInventory = inventoryDetailResult.MedicineList.Select(x => x.ThuocId).ToList();
-            var phieuNhapChiTietQueryable = dataFilterService.GetValidReceiptNoteItems(maNhaThuoc);
+            var phieuNhapChiTietQueryable = _dataFilterService.GetValidReceiptNoteItems(maNhaThuoc);
 
             // lấy danh sách phiếu nhập của các thuốc có trong phiếu đã tạo
             var phieuNhapChiTietQuery = from pnct in phieuNhapChiTietQueryable
@@ -237,7 +235,7 @@ namespace Med.Service.Impl.Common
                     x.HanDung = !x.HanDung.HasValue ? pnct.ExpiredDate : x.HanDung;
                 }
                 // nếu hạn dùng của thuốc < min date quy đinh thì không hiển thị hạn dùng
-                x.HanDung = x.HanDung <= MedConstants.MinProductionDataDate ? null : x.HanDung;
+                x.HanDung = (x.HanDung.HasValue && x.HanDung <= MedConstants.MinProductionDataDate) ? null : x.HanDung;
             });
 
             return inventoryDetailResult;
@@ -249,14 +247,6 @@ namespace Med.Service.Impl.Common
             bool result = false;
             var phieuKiemKeRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuKiemKe>>();
             var phieuKiemKeChiTietRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuKiemKeChiTiet>>();
-            //var userProfileRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, UserProfile>>().GetAll();
-            //var thuocRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, Thuoc>>().GetAll();
-            var nhomThuocRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, NhomThuoc>>().GetAll();
-            //var donViTinhRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, DonViTinh>>().GetAll();
-            var phieuNhapRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuNhap>>();
-            var phieuXuatRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuXuat>>();
-            var phieuNhapChiTietRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuNhapChiTiet>>().GetAll();
-            var phieuXuatChiTietRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuXuatChiTiet>>().GetAll();
 
             // lấy thông tin phiếu
             var inventory = GetInventoryDetailInfo(maNhaThuoc, Id);
@@ -264,7 +254,6 @@ namespace Med.Service.Impl.Common
             {
                 return false;
             }
-
             try
             {
                 // TH phiếu đã cân kho, đổi trạng thái phiếu nhập và phiếu xuất (nếu có) sang đã xóa
@@ -276,16 +265,15 @@ namespace Med.Service.Impl.Common
                     {
                         if (phieuCanKho.LoaiPhieu == NoteInOutType.Receipt)
                         {
-                            receiptService.DeleteReceiptNote(maNhaThuoc, phieuCanKho.MaPhieu);
+                            receiptService.DeleteReceiptNote(maNhaThuoc, phieuCanKho.MaPhieu, userId);
                         }
                         if (phieuCanKho.LoaiPhieu == NoteInOutType.Delivery)
                         {
-                            deliveryService.DeleteDeliveryNote(maNhaThuoc, phieuCanKho.MaPhieu);
+                            deliveryService.DeleteDeliveryNote(maNhaThuoc, phieuCanKho.MaPhieu, userId);
                         }
                     }
                 }
                 // xóa mềm dữ liệu ở 2 bảng PhieuKiemKes và PhieuKiemKeChiTiets (update RecordStatusID sang RecordStatus.Deleted)
-                //phieuKiemKeRepo.Delete(i => i.MaPhieuKiemKe == Id);
                 var pkkQuery = from pkk in phieuKiemKeRepo.GetAll()
                                where (pkk.MaPhieuKiemKe == Id)
                                select pkk;
@@ -293,12 +281,11 @@ namespace Med.Service.Impl.Common
                 var phieuKiemKe = pkkQuery.FirstOrDefault();
                 phieuKiemKe.Modified = DateTime.Now;
                 phieuKiemKe.ModifiedBy_UserId = userId;
-                phieuKiemKe.RecordStatusID = (int)RecordStatus.Deleted;
+                phieuKiemKe.RecordStatusID = (byte)RecordStatus.Deleted;
 
                 phieuKiemKeRepo.Update(phieuKiemKe);
                 phieuKiemKeRepo.Commit();
 
-                //phieuKiemKeChiTietRepo.Delete(i => i.PhieuKiemKe_MaPhieuKiemKe == Id);
                 var pkkctQuery = from pkkct in phieuKiemKeChiTietRepo.GetAll()
                                  where (pkkct.PhieuKiemKe_MaPhieuKiemKe == Id)
                                  select pkkct;
@@ -306,7 +293,7 @@ namespace Med.Service.Impl.Common
                 var phieuKiemKeChiTiet = pkkctQuery.ToList();
                 phieuKiemKeChiTiet.ForEach(x =>
                 {
-                    x.RecordStatusID = (int)RecordStatus.Deleted;
+                    x.RecordStatusID = (byte)RecordStatus.Deleted;
                 });
 
                 phieuKiemKeChiTietRepo.UpdateMany(phieuKiemKeChiTiet);
@@ -331,27 +318,25 @@ namespace Med.Service.Impl.Common
             var phieuXuatRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuXuat>>();
             var phieuNhapChiTietRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuNhapChiTiet>>();
             var phieuXuatChiTietRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuXuatChiTiet>>();
-            var dataFilterService = IoC.Container.Resolve<IDataFilterService>();
-            var validDrugRepo = dataFilterService.GetValidDrugs(maNhaThuoc);
-            
+            var validDrugRepo = _dataFilterService.GetValidDrugs(maNhaThuoc);
+
 
             bool canKho = model.DaCanKho;
-            // add thêm giá trị giờ phút vào ngày tạo phiếu
-            var currentDate = DateTime.Now;
-            model.CreateTime = model.CreateTime.Value.AddHours(currentDate.Hour).AddMinutes(currentDate.Minute).AddSeconds(currentDate.Second);
+            // add thêm giá trị giờ phút vào ngày tạo
+            model.CreateTime = model.CreateTime.WithCurrentTime();
 
             // return value = mã phiếu nếu lưu phiếu thành công
             int retval = 0;
             var inventoryDrugCodes = model.MedicineList.Select(i => i.MaThuoc.ToLower()).ToList();
             var inventoryDrugQuery = from d in validDrugRepo
-                        where (inventoryDrugCodes.Contains(d.MaThuoc.ToLower()))
-                        select new
-                        {
-                            d.MaThuoc,
-                            d.ThuocId,
-                            d.DonViXuatLe_MaDonViTinh,
-                            d.GiaNhap
-                        };
+                                     where (inventoryDrugCodes.Contains(d.MaThuoc.ToLower()))
+                                     select new
+                                     {
+                                         d.MaThuoc,
+                                         d.ThuocId,
+                                         d.DonViXuatLe_MaDonViTinh,
+                                         d.GiaNhap
+                                     };
 
             var inventoryDrugQueryResult = inventoryDrugQuery.ToDictionary(x => x.MaThuoc.ToLower(), x => new
             {
@@ -371,7 +356,7 @@ namespace Med.Service.Impl.Common
                     CreatedBy_UserId = userId,
                     Created = model.CreateTime,
                     DaCanKho = canKho,
-                    RecordStatusID = (int)RecordStatus.Activated
+                    RecordStatusID = (byte)RecordStatus.Activated
                 };
                 phieuKiemKeRepo.Insert(phieuKiemKe);
                 phieuKiemKeRepo.Commit();
@@ -413,7 +398,6 @@ namespace Med.Service.Impl.Common
                     LoaiXuatNhap_MaLoaiXuatNhap = loaiKiemKe.MaLoaiXuatNhap
                 };
                 phieuNhapRepo.Insert(phieuNhap);
-                //phieuNhapRepo.Commit();
 
                 // tạo phiếu xuất mới
                 var phieuXuat = new PhieuXuat()
@@ -428,7 +412,6 @@ namespace Med.Service.Impl.Common
                 };
 
                 phieuXuatRepo.Insert(phieuXuat);
-                //phieuXuatRepo.Commit();
 
                 var phieuXuatChiTiets = new List<PhieuXuatChiTiet>();
                 var phieuNhapChiTiets = new List<PhieuNhapChiTiet>();
@@ -442,7 +425,6 @@ namespace Med.Service.Impl.Common
                     if (chenhLech > 0)
                     {
                         // tao phieu xuat dieu chinh kiem ke
-
                         var dItem = new PhieuXuatChiTiet()
                         {
                             DonViTinh_MaDonViTinh = maDonViTinh.Value,
@@ -471,6 +453,7 @@ namespace Med.Service.Impl.Common
                     }
                 });
 
+                // tính tổng tiền và đã trả cho phiếu nhập xuất rồi insert bản ghi vào DB
                 phieuNhap.TongTien = phieuNhapChiTiets.Sum(a => a.SoLuong * a.GiaNhap);
                 phieuNhap.DaTra = phieuNhap.TongTien;
                 phieuXuat.TongTien = phieuXuatChiTiets.Sum(a => a.SoLuong * a.GiaXuat);
@@ -478,6 +461,7 @@ namespace Med.Service.Impl.Common
                 phieuNhapRepo.Commit();
                 phieuXuatRepo.Commit();
 
+                // cập nhật mã phiếu nhập/xuất vào phiếu nhập xuất chi tiết
                 phieuNhapChiTiets.ForEach(i =>
                 {
                     i.PhieuNhap_MaPhieuNhap = phieuNhap.MaPhieuNhap;
@@ -494,6 +478,7 @@ namespace Med.Service.Impl.Common
                 phieuXuatChiTietRepo.InsertMany(phieuXuatChiTiets);
                 phieuXuatChiTietRepo.Commit();
 
+                // cập nhật mã phiếu nhập/xuất vào Phiếu kiểm kê
                 phieuKiemKeRepo.UpdateMany(i => i.MaPhieuKiemKe == retval, i => new PhieuKiemKe()
                 {
                     PhieuNhap_MaPhieuNhap = phieuNhap.MaPhieuNhap,
@@ -502,9 +487,7 @@ namespace Med.Service.Impl.Common
                 phieuKiemKeRepo.Commit();
             }
 
-
-            // tạo 1 đối tượng PhieuKiemKeChiTiet
-            // update table PhieuKiemKeChiTiets
+            // TH phiếu đã lưu thì xóa các bản ghi phiếu kiểm kê chi tiết cũ
             if (model.Id > 0)
             {
                 phieuKiemKeChiTietRepo.Delete(i => i.PhieuKiemKe_MaPhieuKiemKe == model.Id);
@@ -523,7 +506,7 @@ namespace Med.Service.Impl.Common
                     DonGia = thuoc.Gia,
                     SoLo = thuoc.SoLo,
                     HanDung = thuoc.HanDung,
-                    RecordStatusID = (int)RecordStatus.Activated
+                    RecordStatusID = (byte)RecordStatus.Activated
 
                 });
             }
@@ -587,12 +570,12 @@ namespace Med.Service.Impl.Common
             return loaiXuatNhapKiemKe;
         }
 
-        // lấy danh sách thuốc chưa được Kiêm kê
+        // lấy danh sách thuốc chưa được Kiểm kê
         public InventoryResponseModel GetDrugsHaveNotInventoried(String maNhaThuoc, DateTime? fromDate, DateTime? toDate)
         {
             var phieuKiemKeRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuKiemKe>>().GetAll();
             var phieuKiemKeChiTietRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuKiemKeChiTiet>>().GetAll();
-            var drugRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, Thuoc>>().GetAll();
+            var drugRepo = _dataFilterService.GetValidDrugs(maNhaThuoc);
             var donViTinhRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, DonViTinh>>().GetAll();
             var nhomThuocRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, NhomThuoc>>().GetAll();
 
@@ -601,8 +584,8 @@ namespace Med.Service.Impl.Common
                                      join pkkct in phieuKiemKeChiTietRepo
                                      on pkk.MaPhieuKiemKe equals pkkct.PhieuKiemKe_MaPhieuKiemKe
 
-                                     where (pkk.NhaThuoc_MaNhaThuoc == maNhaThuoc && pkk.RecordStatusID == (int)RecordStatus.Activated
-                                      && pkkct.RecordStatusID == (int)RecordStatus.Activated && ((fromDate == null && toDate == null)
+                                     where (pkk.NhaThuoc_MaNhaThuoc == maNhaThuoc && pkk.RecordStatusID == (byte)RecordStatus.Activated
+                                      && pkkct.RecordStatusID == (byte)RecordStatus.Activated && ((fromDate == null && toDate == null)
                                      || (pkk.Created >= fromDate && pkk.Created < toDate)
                                      ))
 
@@ -620,8 +603,7 @@ namespace Med.Service.Impl.Common
                         join nt in nhomThuocRepo
                         on dr.NhomThuoc_MaNhomThuoc equals nt.MaNhomThuoc
 
-                        where (dr.NhaThuoc_MaNhaThuoc == maNhaThuoc
-                        && dr.HoatDong && !thuocDaKiemKes.Contains(dr.ThuocId))
+                        where (!thuocDaKiemKes.Contains(dr.ThuocId) && dvt.MaNhaThuoc == maNhaThuoc && nt.MaNhaThuoc == maNhaThuoc)
 
                         select new ThuocModel
                         {
@@ -646,8 +628,7 @@ namespace Med.Service.Impl.Common
         {
             var phieuKiemKeRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuKiemKe>>().GetAll();
             var phieuKiemKeChiTietRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuKiemKeChiTiet>>().GetAll();
-            var dataFilterService = IoC.Container.Resolve<IDataFilterService>();
-            var thuocs = dataFilterService.GetValidDrugs(maNhaThuoc);
+            var thuocs = _dataFilterService.GetValidDrugs(maNhaThuoc);
             var nhomThuocRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, Med.Entity.NhomThuoc>>().GetAll();
             var donViTinhRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, Med.Entity.DonViTinh>>().GetAll();
             var rpService = IoC.Container.Resolve<IReportService>();
@@ -675,7 +656,7 @@ namespace Med.Service.Impl.Common
                              join nt in nhomThuocRepo on t.NhomThuoc_MaNhomThuoc equals nt.MaNhomThuoc
                              join dvt in donViTinhRepo on t.DonViXuatLe_MaDonViTinh equals dvt.MaDonViTinh
 
-                             where (t.NhaThuoc_MaNhaThuoc == maNhaThuoc && nt.MaNhaThuoc == maNhaThuoc && dvt.MaNhaThuoc == maNhaThuoc)
+                             where (nt.MaNhaThuoc == maNhaThuoc && dvt.MaNhaThuoc == maNhaThuoc)
 
                              select new ThuocModel()
                              {
@@ -696,8 +677,8 @@ namespace Med.Service.Impl.Common
 
                                      where (pkk.NhaThuoc_MaNhaThuoc == maNhaThuoc &&
                                      thuocIds.Contains(pkkct.Thuoc_ThuocId.Value) &&
-                                     pkk.DaCanKho == false && pkk.RecordStatusID == (int)RecordStatus.Activated
-                                      && pkkct.RecordStatusID == (int)RecordStatus.Activated)
+                                     pkk.DaCanKho == false && pkk.RecordStatusID == (byte)RecordStatus.Activated
+                                      && pkkct.RecordStatusID == (byte)RecordStatus.Activated)
 
                                      select new
                                      {
@@ -707,7 +688,7 @@ namespace Med.Service.Impl.Common
             var invService = IoC.Container.Resolve<IInventoryService>();
             var drugQuantityAndPrice = invService.GetDrugInventoryValues(maNhaThuoc,
                 thuocIds, MedConstants.MinProductionDataDate, toDate);
-            var phieuNhapChiTietQueryable = dataFilterService.GetValidReceiptNoteItems(maNhaThuoc);
+            var phieuNhapChiTietQueryable = _dataFilterService.GetValidReceiptNoteItems(maNhaThuoc);
             var phieuNhapChiTietQuery = from pnct in phieuNhapChiTietQueryable
                                         join t in thuocs
                                         on pnct.DrugId equals t.ThuocId
@@ -736,7 +717,6 @@ namespace Med.Service.Impl.Common
                     // lấy thông tin giá, số lô, hạn dùng
                     if (pnct != null)
                     {
-                        //t.Gia = (decimal)pnct.Price;
                         t.SoLo = pnct.SerialNumber;
                         t.HanDung = pnct.ExpiredDate;
                     }
@@ -749,7 +729,7 @@ namespace Med.Service.Impl.Common
                     }
 
                     // TH HanDung nho hon MinTime, update lai HanDung
-                    t.HanDung = (t.HanDung == null || t.HanDung <= MedConstants.MinProductionDataDate) ? null : t.HanDung;
+                    t.HanDung = (!t.HanDung.HasValue || t.HanDung <= MedConstants.MinProductionDataDate) ? null : t.HanDung;
                 }
             );
             return thuocModels;
@@ -769,8 +749,6 @@ namespace Med.Service.Impl.Common
 
             var phieuKiemKeRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuKiemKe>>().GetAll();
             var phieuKiemKeChiTietRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuKiemKeChiTiet>>();
-            var phieuNhapRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuNhap>>();
-            var phieuXuatRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuXuat>>();
             var phieuNhapChiTietRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuNhapChiTiet>>();
             var phieuXuatChiTietRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuXuatChiTiet>>();
 
@@ -778,7 +756,7 @@ namespace Med.Service.Impl.Common
             var thuocId = inventoryDetailModel.MedicineList.Where(x => x.MaThuoc == inventoryEditModel.MaThuoc).FirstOrDefault().ThuocId;
             // lay thong tin phieu kiem ke chi tiet theo PhieuKiemKe_MaPhieuKiemKe va Thuoc_ThuocId
             var pkkctQuery = from pkkct in phieuKiemKeChiTietRepo.GetAll()
-                             where (pkkct.PhieuKiemKe_MaPhieuKiemKe == inventoryId && pkkct.RecordStatusID == (int)RecordStatus.Activated
+                             where (pkkct.PhieuKiemKe_MaPhieuKiemKe == inventoryId && pkkct.RecordStatusID == (byte)RecordStatus.Activated
                              && pkkct.Thuoc_ThuocId == thuocId)
 
                              select pkkct;
@@ -798,7 +776,7 @@ namespace Med.Service.Impl.Common
             {
                 inventoryDetailModel.PhieuCanKhoChiTiet.ForEach(p =>
                 {
-                    // TH Phieu Nhap
+                    // TH Phieu Nhap thì update giá nhập/lô/hạn dùng vào phiếu nhập chi tiết
                     if (p.LoaiPhieu == NoteInOutType.Receipt && p.SoLuong > 0)
                     {
                         // tim Phieu Nhap Chi Tiet theo MaPhieu va thuocId
@@ -822,7 +800,7 @@ namespace Med.Service.Impl.Common
 
 
                     }
-                    // TH Phieu Xuat
+                    // TH Phieu Xuat thì update giá xuất
                     if (p.LoaiPhieu == NoteInOutType.Delivery && p.SoLuong > 0)
                     {
                         // tim Phieu Xuat Chi Tiet theo MaPhieu va thuocId

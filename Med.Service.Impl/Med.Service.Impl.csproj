@@ -94,6 +94,7 @@
     <Compile Include="Recruitment\RecruitService.cs" />
     <Compile Include="Registration\UserService.cs" />
     <Compile Include="Report\CustomizeReportService.cs" />
+    <Compile Include="Report\ReportHelperService.cs" />
     <Compile Include="Report\TransactionReportService.cs" />
     <Compile Include="Report\ReportGenDataService.cs" />
     <Compile Include="Report\DrugWarehouseReportService.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="Report\ReportService.cs" />
     <Compile Include="System\AppSettingService.cs" />
     <Compile Include="System\SystemService.cs" />
+    <Compile Include="Utilities\CleanUpService.cs" />
     <Compile Include="Utilities\UtilitiesService.cs" />
   </ItemGroup>
   <ItemGroup>

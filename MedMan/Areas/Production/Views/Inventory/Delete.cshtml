@@ -1,0 +1,161 @@
+﻿
+@{
+    ViewBag.Title = "Xóa phiếu kiểm kê";
+}
+
+<title>@ViewBag.Title</title>
+
+<script>
+    var viewModel = @Html.Raw(ViewBag.ViewModel);
+</script>
+
+<h4><b>Bạn có chắc chắn xóa phiếu kiểm kê này?</b></h4>
+<link href="~/Content/baocao.css" rel="stylesheet" />
+
+
+<div ng-controller="DetailInventoryController">
+    <hr />
+
+    <table>
+
+        <tr>
+            <td>
+                <label>Mã Phiếu: </label>
+            </td>
+            <td>&nbsp;&nbsp;&nbsp;{{InventoryModel.Id}}</td>
+        </tr>
+
+        <tr>
+            <td>
+                <label>Người tạo: </label>
+            </td>
+            <td>&nbsp;&nbsp;&nbsp;{{InventoryModel.FullName}}</td>
+
+        </tr>
+
+        <tr>
+            <td>
+                <label>Ngày tạo: </label>
+            </td>
+            <td>
+                &nbsp;&nbsp;&nbsp;{{InventoryModel.CreateTime | date:'dd/MM/yyyy HH:mm:ss'}}
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label>Cân kho: </label>
+            </td>
+            <td ng-if="InventoryModel.DaCanKho" style="text-align : left">
+                &nbsp;&nbsp;&nbsp;
+                <i class="glyphicon-check glyphicon text-success"></i>
+            </td>
+            <td ng-if="!InventoryModel.DaCanKho" style="text-align : left">
+                &nbsp;&nbsp;&nbsp;
+                <i class="glyphicon-remove glyphicon text-danger"></i>
+            </td>
+        </tr>
+    </table>
+
+    <br />
+
+    
+        <table tr-ng-grid="" items="InventoryModel.MedicineList"
+               display-total-items-count="false"
+               id="table-id-delivery-note-with-barcode"
+               locale="en"
+               class="table table-striped table-responsive table-bordered table-hover"
+               selection-mode="None"
+               current-page="setCurrentPage"
+               enable-filtering="false"
+               enable-sorting="false"
+               @*page-items="InventoryModel.ItemPerPage" total-items="InventoryModel.items.length">*@
+               page-items="model.pageSize" total-items="InventoryModel.MedicineList.length">
+            <thead>
+                <tr>
+                    <th style="width: 5%" class="header-bg" display-name="STT"></th>
+                    <th field-name="MaThuoc" style="width: 15%" class="header-bg" enable-sorting="true" display-name="Mã Thuốc"></th>
+                    <th field-name="TenThuoc" style="width: 30%" class="header-bg" enable-sorting="true" display-name="Tên Thuốc"></th>
+                    <th style="width: 10%" class="header-bg" display-name="SL hệ thống"></th>
+                    <th field-name="ThucTe" style="width: 10%" class="header-bg" display-name="SL thực"></th>
+                    <th field-name="ChenhLech" style="width: 10%" class="header-bg" display-name="Chênh lệch"></th>
+                </tr>
+            </thead>
+            <tbody id="table-body-id-delivery-note-with-barcode">
+                <tr class="tr-barcode">
+                    <!--STT-->
+                    <td>
+                        <div>
+                            {{gridOptions.currentPage * model.pageSize + $index + 1}}
+                        </div>
+                    </td>
+                    
+                    <!--Mã Thuốc-->
+                    <td field-name="MaThuoc">
+                        <div>
+                            {{gridItem.MaThuoc}}
+                        </div>
+                    </td>
+                    <!--Đơn Vị-->
+                    <td field-name="TenThuoc">
+                        <div>
+
+                            {{gridItem.TenThuoc}}
+                        </div>
+                    </td>
+
+                    <!--Số Lượng hệ thống-->
+                    <td>
+                        <div style="text-align:right">
+
+                            {{gridItem.TonKho}} {{gridItem.TenDonViTinh}}
+                        </div>
+                    </td>
+
+                    <!--Số Lượng thực tế-->
+                    <td field-name="ThucTe">
+                        <div style="text-align:right">
+                            {{gridItem.ThucTe | DrugQuantityFilter:1}}
+                        </div>
+                    </td>
+
+
+                    <!--Chênh lệch-->
+                    <td field-name="ChenhLech">
+                        <div style="text-align:right">
+
+                            {{gridItem.TonKho - gridItem.ThucTe | DrugQuantityFilter:1}}
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td align="center">
+                        <span class="form-group pull-left page-size">
+                            <select id="ddlPageSize" class="form-control"
+                                    ng-model="model.pageSize"
+                                    ng-options="item.pageSizeKey as item.pageSizeValue for item in pageSizeList"
+                                    ng-change="changePageSize()"></select>
+                            <span class="page-size-label">&#160;&#160;Dòng / Trang</span>
+                        </span>
+                        <span tr-ng-grid-pager="" style="height:40px;"></span>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    
+
+
+
+    <div class="form-group">
+        <div>
+            <div class="form-inline">
+                <input type="button" value="Quay lại" class="btn btn-default" onclick=" javascript:window.history.go(-1); " />
+                <span class="btn-separator"></span>
+                <input type="submit" value="Xác nhận" class="btn btn-default btn-danger" ng-click="onDeleteInventory()" />
+            </div>
+        </div>
+    </div>
+
+</div>

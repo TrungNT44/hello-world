@@ -1,0 +1,74 @@
+﻿@media print{
+   #Header, #Footer { display: none !important; }   
+   footer,hr{display: none!important}
+   .button-group{display:none!important}
+   .phieunhaphang .storeinfo{display: block!important}
+   .phieuthuchi .storeinfo {display: block!important;}
+   .phieuthuchi .lien2 {display: block!important;}
+}
+/**Hoa don ban le**/
+.hoadonbanle {
+    width: 8cm;
+}
+.hoadonbanle .nhathuoc {
+    text-transform: uppercase;
+    text-align: center;
+}
+.hoadonbanle .header {
+    text-align: center;
+}
+.hoadonbanle .footer {
+    text-align: center;
+    font-size: smaller;
+}
+     h2 {
+        font-size: 24px;
+    }
+ h3 {
+    font-size: 20px;
+}
+ h4 {
+    font-size: 18px;
+}
+.hoadonbanle .title {
+    text-transform: uppercase;
+    font-weight: bold;
+}
+.hoadonbanle .ui-separator,.phieunhaphang .ui-separator {
+    height: 10px;
+    clear: both;
+}
+/*Phieu nhap hang*/
+.phieunhaphang {
+    max-width: 800px;
+}
+.phieunhaphang .storeinfo{
+    padding-left: 110px;
+    display: none;
+}
+.phieunhaphang .title-container {
+    text-align: center;
+    position: relative;
+}
+.phieunhaphang .title {
+    text-transform: uppercase;
+    font-weight: bold;
+}
+/*phieu thu chi*/
+.phieuthuchi {
+    max-width: 600px;
+}
+.phieuthuchi .storeinfo {
+    display: none;
+}
+.phieuthuchi .title-container {
+    text-align: center;
+    position: relative;
+}
+.phieuthuchi .title {
+    text-transform: uppercase;
+    font-weight: bold;
+}
+.phieuthuchi .lien2 {
+    display: none;
+}

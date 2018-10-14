@@ -8,6 +8,7 @@ using Med.ServiceModel.Report;
 using Med.ServiceModel.Response;
 using App.Common.Extensions;
 using App.Common.Helpers;
+using Med.Common;
 
 namespace Med.Service.Impl.Report
 {
@@ -26,7 +27,7 @@ namespace Med.Service.Impl.Report
             {
                 if (noteTypeId == (int)NoteInOutType.Receipt)
                 {
-                    var drugTransHisQable = _dataFilterService.GetValidReceiptNoteItems(drugStoreCode, filter).Where(i => i.NoteNumber > 0);
+                    var drugTransHisQable = _dataFilterService.GetValidReceiptNoteItems(drugStoreCode, filter).Where(i => i.NoteNumber >= 0 && i.NoteDate > MedConstants.MinProductionDataDate);
                     totalCount = drugTransHisQable.Count();
                     var candidates = drugTransHisQable.OrderByDescending(i => i.NoteDate).ToPagedQueryable(filter.PageIndex, filter.PageSize, totalCount);
                     drugTransHisItems = candidates
@@ -40,14 +41,16 @@ namespace Med.Service.Impl.Report
                             UnitName = i.UnitName,
                             Price = i.Price,
                             Quantity = i.Quantity,
-                            Amount = i.Quantity * i.Price,
+                            Discount = i.Discount,
+                            VAT = i.VAT,
+                            Amount = i.Quantity * i.Price * (1 - i.Discount/100) * (1 + i.VAT/100),
                             ItemDate = i.NoteDate.Value,
                             ItemNumber = (int)i.NoteNumber
                         }).ToList();
                 }
                 else if (noteTypeId == (int)NoteInOutType.Delivery)
                 {
-                    var drugTransHisQable = _dataFilterService.GetValidDeliveryNoteItems(drugStoreCode, filter).Where(i => i.NoteNumber > 0);
+                    var drugTransHisQable = _dataFilterService.GetValidDeliveryNoteItems(drugStoreCode, filter).Where(i => i.NoteNumber >= 0 && i.NoteDate > MedConstants.MinProductionDataDate);
                     totalCount = drugTransHisQable.Count();
                     var candidates = drugTransHisQable.OrderByDescending(i => i.NoteDate).ToPagedQueryable(filter.PageIndex, filter.PageSize, totalCount);
                     drugTransHisItems = candidates
@@ -61,12 +64,15 @@ namespace Med.Service.Impl.Report
                             UnitName = i.UnitName,
                             Price = i.Price,
                             Quantity = i.Quantity,
-                            Amount = i.Quantity * i.Price,
+                            Discount = i.Discount,
+                            VAT = i.VAT,
+                            Amount = i.Quantity * i.Price * (1 - i.Discount / 100) * (1 + i.VAT / 100),
                             ItemDate = i.NoteDate.Value,
                             ItemNumber = (int)i.NoteNumber
                         }).ToList();
                 }
-            }                
+                trans.Complete();
+            }            
 
             var order = filter.PageIndex * filter.PageSize;
             drugTransHisItems.ForEach(i =>

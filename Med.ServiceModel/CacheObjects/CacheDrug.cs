@@ -1,4 +1,5 @@
-﻿using Med.ServiceModel.Delivery;
+﻿using Med.Common;
+using Med.ServiceModel.Delivery;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,5 +40,37 @@ namespace Med.ServiceModel.CacheObjects
         public double LastInPrice { get; set; }
         public double LastOutPrice { get; set; }
         public double RetailBatchOutPrice { get; set; }
+        public string GetFullSearchString()
+        {
+            return string.Format("{0} - {1}", FullInfo, DrugBarcode).ToLower();
+        }
+        #region Pre Values
+        public decimal PreFactors { get; set; }
+        public int? PreRetailUnitID { get; set; }
+        public int? PreUnitID { get; set; }
+        public decimal PreInitQuantity { get; set; }
+        public decimal PreInitPrice { get; set; }
+        public decimal InitQuantity { get; set; }
+        public decimal InitPrice { get; set; }
+        public DateTime? PreExpiredDate { get; set; }
+        public bool ShouldUpdateInitialInventoryReceiptItems()
+        {
+            return (double)Math.Abs(PreInitPrice - InitPrice) > MedConstants.Esp
+                || (double)Math.Abs(PreInitQuantity - InitQuantity) > MedConstants.Esp
+                || (PreExpiredDate.GetValueOrDefault(DateTime.MaxValue).Date != ExpiredDateTime.GetValueOrDefault(DateTime.MaxValue).Date)
+                || InitReceiptNoteItemId <= 0;
+        }
+        public bool HasFactorsChanged()
+        {
+            return Math.Abs((double)PreFactors - Factors) > MedConstants.Esp
+                || (PreRetailUnitID != RetailUnitId)
+                || (PreUnitID != UnitId);
+        }
+        public bool HasInitQuantityChanged()
+        {
+            return (double)Math.Abs(PreInitQuantity - InitQuantity) > MedConstants.Esp;
+        }
+        public int? InitReceiptNoteItemId { get; set; }
+        #endregion
     }
 }

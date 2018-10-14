@@ -1,0 +1,260 @@
+﻿
+@{
+    ViewBag.Title = "Mapping danh mục thuốc";
+}
+<style>
+    .hideIfCatalog {
+        display: none;
+    }
+
+    .showIfCatalog {
+        display: contents !important;
+    }
+</style>
+<h4><b>Mapping danh mục thuốc</b></h4>
+<div ng-controller="MappingCatalogController" ng-cloak>
+    <form role="form" class="">
+        <hr style="margin-top:0px" />
+        <div class="row">
+            <div class="col-md-12" style="padding-bottom: 15px">
+                <input type="hidden" id="hdfStoreDrugId" value="{{StoreDrugFilter.selected.MaNhaThuoc}}"/>
+                <ui-select ng-model="StoreDrugFilter.selected" theme="select2" style="width: 50%; float: left;">
+                    <ui-select-match placeholder="Chọn 1 dòng">{{$select.selected.MaNhaThuoc}} - {{$select.selected.TenNhaThuoc}}</ui-select-match>
+                    <ui-select-choices repeat="d in StoreDrug | propsFilter: {MaNhaThuoc: $select.search, TenNhaThuoc: $select.search}">
+                        <span ng-bind-html="d.MaNhaThuoc | highlight: $select.search"></span> - <span  ng-bind-html="d.TenNhaThuoc | highlight: $select.search"></span>
+                    </ui-select-choices>
+                </ui-select>
+               
+                <input type="checkbox" ng-model="isGetAll" ng-true-value="1" ng-false-value="0" class="form-control" style="width: 18px;display: inline;height: 18px;vertical-align: bottom;margin-top: 0px;margin-left: 60px;margin-bottom: 6px;">
+                <label for="unassigneduser" style="margin-bottom: 0px;font-weight: normal">Lọc thuốc chưa tham chiếu</label>
+            </div>
+            <div class="col-md-12">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="txtTenThuoc" ng-keypress="fnSubmitSearch($event)" ng-model="keySearch" placeholder="Tên thuốc, hàm lượng, hãng" />
+                    <span class="input-group-btn">
+                        <a class="btn btn-default" id="finddrug" ng-click="fnFindDrug()">Tìm</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-12">
+                <table tr-ng-grid="" items="model.items"
+                       display-total-items-count="false"
+                       locale="en"
+                       class="table table-striped table-bordered table-hover"
+                       selection-mode="None"
+                       current-page="setCurrentPage"
+                       enable-filtering="false"
+                       enable-sorting="false"
+                       page-items="model.pageSize" total-items="model.totalItems"
+                       on-data-required="onServerSideItemsRequested(currentPage, pageItems, filterBy, filterByFields, orderBy, orderByReverse);">
+                    <thead>
+                        <tr>
+                            <th width="5%" display-name="#"></th>
+                            <th width="10%" display-name="Mã thuốc"></th>
+                            <th width="25%" display-name="Tên thuốc"></th>
+                            <th width="12%" display-name="Quy cách"></th>
+                            <th width="25%" display-name="Tên thuốc tham chiếu"></th>
+                            <th width="13%" display-name="Quy cách"></th>
+                            <th width="10%" display-name=""></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <a href="javascript:void(0)" onclick="fnViewDetailDrug(this)" action="@Url.Action("DialogDetailV2", "Thuocs", null, Request.Url.Scheme)" class="a_view">{{gridItem.Order}}</a>
+                            </td>
+                            <td>
+                                <div>{{gridItem.Code}}</div>
+                            </td>
+                            <td>
+
+                                <div>{{gridItem.TenDayDu}}
+                                    <input type="hidden" class="hdfThuocName" value="{{gridItem.TenDayDu}}" />
+                                </div>
+                            </td>
+                            <td>
+                                <div>{{gridItem.QuyCach}}</div>
+                            </td>
+                            <td>
+                                <div class="divMappingInfo">
+                                    <input type="hidden" class="hdfThuocId" value="{{gridItem.Id}}" />
+                                    <input type="hidden" class="hdfThuocRefId" value="{{gridItem.ThuocRefId == -1?'':gridItem.ThuocRefId}}" />
+                                    <input type="text" after-render class="ThuocRefName form-control" value="{{gridItem.ThuocRefTen}}" />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="drugQuyCach">{{gridItem.ThuocRefQuyCach}}</div>
+                            </td>
+                            <td>
+                                <a class="delete-thuoc edit-mode text-danger" onclick="fnRemoveDrugRef(this)" style="cursor: pointer; display: inline; padding-left: 10px" id="0" title="Xóa"><i class="glyphicon glyphicon-trash"></i></a>
+                                <a class="delete-thuoc edit-mode text-primary" onclick="fnAddDrugToCatalog(this)" style="cursor: pointer; display: inline; padding-left: 10px" id="0" title="Thêm vào danh mục dùng chung"><i class="glyphicon glyphicon-plus"></i></a>
+                                <a class="delete-thuoc edit-mode text-primary" onclick="fnEditDrugCatalog(this)" style="cursor: pointer; display: inline; padding-left: 10px" id="0" title="Sửa thông tin"><i class="glyphicon glyphicon-pencil"></i></a>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td align="center">
+                                <span class="form-group pull-left page-size">
+                                    <select id="ddlPageSize" class="form-control"
+                                            ng-model="model.pageSize"
+                                            ng-options="item.pageSizeKey as item.pageSizeValue for item in pageSizeList"
+                                            ng-change="changePageSize()"></select>
+                                    <span class="page-size-label">&#160;&#160;Dòng / Trang</span>
+                                </span>
+                                <span tr-ng-grid-pager="" style="height:40px;"></span>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    $(document).ready(function () {
+        BindAutocompleteSearchDrug($("#txtTenThuoc"));
+    });
+    function initEventSearch() {
+        $(".ThuocRefName").focusin(function () {
+            BindAutocomplete($(this));
+        });
+    }
+    function fnViewDetailDrug(ele) {
+        var rowid = $(ele).closest("tr").find(".hdfThuocId").val();
+        var dialogThuocDetails = {};
+        if (rowid > 0) {
+            $.get($(ele).attr('action'), {
+                id: rowid,
+                sMaNhaThuoc: $("#hdfStoreDrugId").val()
+            }).done(function (data) {
+                if (data) {
+                    dialogThuocDetails[rowid] = $(data).hide().appendTo(document.body).on('hide.bs.modal', function () { $('.modal-backdrop').remove(); }
+                    ).modal();
+                }
+            });
+        }
+    };
+    function BindAutocomplete(elem) {
+        var url = $('input[name=baseUrl]').val() + "Thuocs/GetThuocsByMaOrTen_CatalogsCommons";
+        elem.autocomplete({
+            minLength: 2,
+            source: function (request, response) {
+                $.getJSON(url, request, function (data, status, xhr) {
+                    response(data);
+                });
+            },
+            messages: {
+                noResults: "Không tìm thấy"//,
+                // results: ""
+            },
+            select: function (event, ui) {
+                //console.log(ui.item);
+                fnDoSave(elem, ui.item.drugId, ui.item.QuyCach);
+                elem.val(ui.item.TenThuoc.trim());
+                return false;
+            }
+        }).each(function () {
+            $(this).autocomplete('instance')._renderItem = function (ul, item) {
+                return $("<li>")
+                    .append("<a>" + item.TenDayDu + "</a>")
+                    .appendTo(ul);
+            };
+        });
+    }
+    function BindAutocompleteSearchDrug(elem) {
+        var url = $('input[name=baseUrl]').val() + "Thuocs/GetThuocsByMaOrTen_CatalogsCommons";
+        elem.autocomplete({
+            minLength: 2,
+            source: function (request, response) {
+                request.drugStoreCode = $("#hdfStoreDrugId").val();
+                $.getJSON(url, request, function (data, status, xhr) {
+                    response(data);
+                });
+            },
+            messages: {
+                noResults: "Không tìm thấy"//,
+                // results: ""
+            },
+            select: function (event, ui) {
+                elem.val(ui.item.TenThuoc.trim());
+                return false;
+            }
+        }).each(function () {
+            $(this).autocomplete('instance')._renderItem = function (ul, item) {
+                return $("<li>")
+                    .append("<a>" + item.TenDayDu + "</a>")
+                    .appendTo(ul);
+            };
+        });
+    }
+    function fnDoSave(ele, idRef, quyCachRef) {
+        var currentDrugId = $(ele).closest(".divMappingInfo").find(".hdfThuocId").val();
+        var sDrugRef = idRef;
+        if (sDrugRef) {
+            $.getJSON("/thuocs/MappingDrugCatalog", {
+                id: currentDrugId,
+                idRef: sDrugRef,
+                drugStoreCode: $("#hdfStoreDrugId").val()
+            }, function (data, status, xhr) {
+                if (data) {
+                    if (data == "khong_trung_don_vi_tinh") {
+                        app.notice.error('Thuốc mapping không tương thích đơn vị tính');
+                    }
+                    else {
+                        app.notice.message("Lưu thành công.");
+                        $(ele).closest("tr").find(".hdfThuocRefId").val(sDrugRef);
+                        $(ele).closest("tr").find(".drugQuyCach").text(quyCachRef);
+                        $(ele).closest("tr").next().find("input[type=text]").focus();
+                    }
+                }
+                else {
+                    app.notice.error('Lưu thất bại.');
+                }
+            });
+        }
+        else {
+            app.notice.error('Vui lòng chọn 1 thuốc cần mapping.');
+        }
+    }
+    function fnAddDrugToCatalog(ele) {
+        var hdfThuocId = $(ele).closest("tr").find(".hdfThuocId").val();
+        var win = window.open("Create/" + hdfThuocId, '_blank');
+        win.focus();
+    }
+    function fnEditDrugCatalog(ele) {
+        var idDrugRef = $(ele).closest("tr").find(".hdfThuocRefId").val();
+        if (idDrugRef) {
+            var win = window.open("Edit/" + idDrugRef, '_blank');
+            win.focus();
+        }
+        else {
+            app.notice.error('Vui lòng chọn 1 thuốc đã mapping.');
+        }
+    }
+    function fnRemoveDrugRef (ele) {
+        app.notice.confirm("Bạn có chắc chắn xóa?", function (res) {
+            if (res) {
+                var currentDrugId = $(ele).closest("tr").find(".hdfThuocId").val();
+                $.getJSON("/thuocs/ClearMappingDrugCatalog", {
+                    id: currentDrugId,
+                    drugStoreCode: $("#hdfStoreDrugId").val()
+                }, function (data, status, xhr) {
+                    if (data) {
+                        $(ele).closest("tr").find(".ThuocRefName").val("");
+                        $(ele).closest("tr").find(".drugQuyCach").text("");
+                        $(ele).closest("tr").find(".hdfThuocRefId").val("");
+                        app.notice.message("Xóa thành công.");
+                    }
+                    else {
+                        app.notice.error('Lưu thất bại.');
+                    }
+                });
+            }
+        });
+    }
+</script>
+

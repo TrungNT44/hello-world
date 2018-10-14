@@ -1,0 +1,199 @@
+﻿@using Med.Web.Extensions
+@model sThuoc.Models.PhieuKiemKe
+
+@{
+    ViewBag.Title = "Phiếu kiểm kê chi tiết";
+}
+
+<link href="~/Content/baocao.css" rel="stylesheet" />
+
+<div class="row">
+    <div class="col-md-3">
+        <table>
+            <tr>
+                <b style="font-size: 20px">PHIẾU KIỂM KÊ CHI TIẾT</b>
+            </tr>
+            <tr>
+                <td>
+                    <label>Mã phiếu: </label>
+                </td>
+                <td>&nbsp;&nbsp;&nbsp;@Model.MaPhieuKiemKe</td>
+            </tr>
+
+            <tr>
+                <td>
+                    <label>Người lập: </label>
+                </td>
+                <td>&nbsp;&nbsp;&nbsp;@Model.CreatedBy.TenDayDu</td>
+
+            </tr>
+
+            <tr>
+                <td>
+                    <label>Ngày tạo: </label>
+                </td>
+                <td>
+                    &nbsp;&nbsp;&nbsp;@*@Html.DisplayFor(model => model.Created)*@
+                    @string.Format("{0:dd/MM/yyyy}", Model.Created)
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <label>Cân kho: </label>
+                </td>
+                <td>
+                    &nbsp;&nbsp;&nbsp;
+                    @*@if (Model.DaCanKho)
+                        {
+                            <i class="glyphicon glyphicon-check text-success"></i>
+                        }
+                        else
+                        {
+                            <i class="glyphicon glyphicon-remove text-danger"></i>
+                        }*@
+                    @if (Model.DaCanKho)
+                    {
+                        <i class="fa fa-check text-success"></i>
+                    }
+                    else
+                    {
+                        <i class="fa fa-times text-danger"></i>
+                    }
+                </td>
+            </tr>
+        </table>
+
+        <br />
+        <div>
+            @if (!Model.DaCanKho)
+            {
+                @Html.ActionLink("Sửa/Cân kho", "Edit", new { id = Model.MaPhieuKiemKe }, new { @class = "btn btn-default" })
+                <br /> <br />
+            }
+
+            @Html.ActionLink("Quay lại", "Index", null, new { @class = "btn btn-default" })
+            <span class="btn-separator"></span>
+            <input type="button" class="btn btn-default" value="In" onclick="window.open('@Url.Action("In", "PhieuKiemKes", new { id = Model.MaPhieuKiemKe })',target = '_blank')" />
+            <span class="btn-separator"></span>
+            @if (this.HasPermisson("PhieuKiemKes", "Xoa"))
+            {
+                @Html.ActionLink("Xóa", "Delete", new { id = Model.MaPhieuKiemKe }, new { @class = "btn btn-default btn-danger" })
+            }
+
+
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <table class="table table-responsive table-bordered" id="tbl">
+            <thead>
+                <tr>
+                    <th style="background-color:darkgray">#</th>
+                    <th style="background-color:darkgray">Nhóm Thuốc</th>
+                    <th style="background-color:darkgray">Mã Thuốc</th>
+                    <th style="background-color:darkgray">Tên Thuốc</th>
+                    <th style="text-align: right; background-color:darkgray">
+                        SL hệ thống
+                    </th>
+                    <th style="text-align: right;background-color:darkgray">SL thực</th>
+                    <th style="text-align: right;background-color:darkgray">Chênh lệch</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ var stt = 0;}
+                @foreach (var item in Model.PhieuKiemKeChiTiets)
+                {
+                    ++stt;
+
+                    <tr>
+                        <td>
+                            @stt
+                        </td>
+                        <td>
+                            <span>@item.Thuoc.NhomThuoc.TenNhomThuoc</span>
+                        </td>
+                        <td>
+                            <span>@item.Thuoc.MaThuoc</span>
+                        </td>
+                        <td>
+                            <span>@item.Thuoc.TenThuoc</span>
+                        </td>
+                        <td style="text-align:right">
+                            <span class="soluonghethong">@sThuoc.Utils.Helpers.FormatDecimal(item.TonKho.ToString())</span><span> @item.Thuoc.DonViXuatLe.TenDonViTinh</span>
+                        </td>
+                        <td style="text-align: right">
+                            <span class="soluonghethong">@(item.ThucTe.HasValue ? sThuoc.Utils.Helpers.FormatDecimal(item.ThucTe.Value.ToString()) : string.Empty)</span>
+                        </td>
+                        <td style="text-align: right"><span class="chenhlech">@sThuoc.Utils.Helpers.FormatDecimal((item.TonKho - (item.ThucTe.HasValue ? item.ThucTe.Value : 0)).ToString())</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (Model.DaCanKho)
+        {
+            var count = 1;
+            <fieldset>
+                <legend>Phiếu nhập/xuất sau cân kho</legend>
+                <div>
+                    <table class="table table-responsive table-bordered" id="tbl">
+                        <thead>
+                            <tr>
+                                <th style="background-color:darkgray">#</th>
+                                <th style="background-color:darkgray">Số phiếu</th>
+                                <th style="background-color:darkgray">Loại phiếu</th>
+                                <th style="text-align: right; background-color:darkgray">
+                                    Số lượng mặt hàng
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in ViewBag.CanKho as List<sThuoc.Models.PhieuCanKhoItem>)
+                            {
+                                <tr>
+                                    <td>@count</td>
+                                    <td>
+                                        @if (item.LoaiPhieu == "Phiếu nhập")
+                                        {
+
+                                            @Html.ActionLink(item.SoPhieu.ToString(), "Details", "PhieuNhaps", new { id = item.MaPhieu }, null)
+                                            @*@Html.ActionLink(item.MaPhieu.ToString(), "Details", "PhieuNhaps", new { id = item.MaPhieu })
+                                                <span>@item.MaPhieu</span>*@
+                                        }
+                                        else
+                                        {
+                                            @*@Html.ActionLink(item.MaPhieu.ToString(), "Details", "PhieuXuats", new { id = item.MaPhieu })*@
+                                            @Html.ActionLink(item.SoPhieu.ToString(), "Details", "PhieuXuats", new { id = item.MaPhieu }, null)
+                                        }
+
+                                    </td>
+                                    <td>
+                                        <span>@item.LoaiPhieu</span>
+                                    </td>
+                                    <td style="text-align: right"><span class="chenhlech">@item.SoLuong.ToString("#,##0")</span></td>
+                                </tr>
+
+                                        count++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </fieldset>
+
+        }
+    </div>
+    @*</div>*@
+
+</div>
+
+@section Scripts{
+    <script language="javascript">
+        $(document).ready(function() {
+            $('.btn-print').on('click', function () {
+
+                window.print();
+            });
+        });
+    </script>
+}

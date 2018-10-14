@@ -1,0 +1,199 @@
+﻿@using Med.Web.Extensions;
+
+@{
+    ViewBag.Title = "BÁO CÁO THEO BÁC SỸ";
+}
+<div ng-controller="ReportByDoctorController" ng-cloak>
+    <div class="report-title">
+        <div class="print-date">@DateTime.Now.ToString("dd/MM/yyyy")</div>
+        <div style="font-size: 30px; text-align: center;color: green;padding: 0px"><b>@ViewBag.Title</b></div>
+    </div>
+    <br/>
+    <br/>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 baocao-filter">
+                <fieldset>
+                    <div report-group-type-filter group-filter-title="Theo Bác Sỹ"
+                         group-filter-type="groupFilterType"
+                         show-group-filter-type="false"
+                         option-all-items="true"
+                         single-mode-with-title="true"
+                         filter-item-type="filterItemType" selected-item-id="selectedItemId" filter-by-name-for-drug="false" drug-ids="drugIds"></div>
+                    <div>
+                        <fieldset>
+                            <div>
+                                <input type="button" ng-show="selectedItemId > 0" value="Xem báo cáo theo mặt hàng" class="btn btn-default" ng-click="onDetailByGoods()" />
+                            </div>
+                        </fieldset>                            
+                    </div>                    
+                </fieldset>                
+                <br />
+                <fieldset>
+                    <div report-date-rage-filter display-data-callback="onDisplayReportData"
+                         display-data-table-id="table-id-report-by-doctor"
+                         excel-file-name="ReportByDoctor.xls"
+                         supress-export="false" supress-print="true" call-callback-after-init="true"></div>
+                </fieldset>
+            </div>          
+           
+            <div class="col-md-9" style="font-size:smaller">
+                <div class="form-group">
+                    <div class="baocao-container">
+                        <div class="print-header">
+                            <table>
+                                <tr>
+                                    <td>Thuốc: <span id="user-filter"></span></td>
+                                    <td>Kỳ báo cáo: <span id="report-period"></span></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="pull-right">
+                            <table>
+                                <tr>
+                                    <td>Tổng tiền: <strong style="color:red"> {{model.TotalAmount | number:0}}</strong> </td>                                    
+                                    @if (this.HasPermisson("baocao", "ViewProfit"))
+                                    {
+                                        <td><span class="btn-separator"></span></td>
+                                        <td>Tổng lợi nhuận: <strong style="color:red"> {{model.TotalRevenue | number:0}}</strong> </td>
+                                    }
+                                </tr>
+                            </table>
+                        </div>
+                        <table tr-ng-grid="" items="model.items"
+                               display-total-items-count="false"
+                               id="table-id-report-by-doctor"
+                               locale="en"
+                               class="table table-striped table-responsive table-bordered table-hover"
+                               selection-mode="None"
+                               current-page="setCurrentPage"
+                               enable-filtering="false"
+                               enable-sorting="false"
+                               page-items="model.pageSize" total-items="model.totalItems"
+                               on-data-required="onServerSideItemsRequested(currentPage, pageItems, filterBy, filterByFields, orderBy, orderByReverse)">
+                            <thead>
+                                <tr>
+                                    <th display-name="STT"></th>
+                                    <th display-name="Ngày" field-name="ItemDate" enable-sorting="true" ng-show="currentSelectedItemId!=0"></th>
+                                    <th display-name="Số phiếu" field-name="ItemNumber" enable-sorting="true" ng-show="currentSelectedItemId!=0"></th>
+                                    <th display-name="Khánh hàng" ng-show="currentSelectedItemId!=0"></th>
+                                    <th display-name="Tên bác sỹ" field-name="ItemName" enable-sorting="true" ng-show="currentSelectedItemId==0"></th>
+                                    <th display-name="Tổng tiền" field-name="TotalAmount" enable-sorting="true"></th>
+                                    <th display-name="Tiền trả"></th>
+                                    <th display-name="Tiền nợ" field-name="DebtAmount" enable-sorting="true"></th>
+                                    @*<th display-name="Khách trả" ng-show="currentSelectedItemId==0"></th>*@
+                                    @if (this.HasPermisson("baocao", "ViewProfit"))
+                                    {
+                                        <th display-name="Lợi nhuận" field-name="Revenue" enable-sorting="true"></th>
+                                    }
+                                                                      
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="{{getItemBackground(gridItem)}}">
+                                    <!--STT-->
+                                    <td>                                       
+                                        <div>
+                                            {{gridItem.Order}}
+                                        </div>
+                                    </td>
+                                    <!--Ngày-->
+                                    <td field-name="ItemDate" ng-show="currentSelectedItemId!=0">
+                                        <div>
+                                            {{gridItem.ItemDate |appDate}}
+                                        </div>
+                                    </td>
+                                    <!--Số phiếu-->
+                                    <td field-name="ItemNumber" ng-show="currentSelectedItemId!=0">
+                                        <div>
+                                            <a href="/{{gridItem.ReturnedItem?'PhieuNhaps':'PhieuXuats'}}/Details/{{gridItem.ItemId}}" target="_blank">
+                                                {{gridItem.ItemNumber}}
+                                            </a>
+                                        </div>
+                                    </td>           
+                                    <!--Tên nhân viên-->
+                                    <td ng-show="currentSelectedItemId==0">                                        
+                                        <div>
+                                            {{gridItem.ItemName}}
+                                        </div>
+                                    </td>
+                                    <!--Bác sỹ-->
+                                    <td field-name="ItemName" ng-show="currentSelectedItemId!=0">
+                                        <div>
+                                            {{gridItem.ItemName}}
+                                        </div>
+                                    </td>
+                                    <!--Tổng tiền-->
+                                    <td field-name="TotalAmount">
+                                        <div class="number-value">
+                                            {{gridItem.TotalAmount | number:0}}
+                                        </div>
+                                    </td>
+                                    <!--Tiền trả-->
+                                    <td>                                       
+                                        <div class="number-value">
+                                            {{gridItem.PaidAmount | number:0}}
+                                        </div>
+                                    </td>
+                                    <!--Tiền nợ-->
+                                    <td field-name="DebtAmount">
+                                        <div class="number-value">
+                                            {{gridItem.DebtAmount | number:0}}
+                                        </div>
+                                    </td>
+                                    <!--Khách trả-->
+                                    @*<td ng-show="currentSelectedItemId==0">                                       
+                                        <div class="number-value">
+                                            {{gridItem.ReturnedAmount | number:0}}
+                                        </div>
+                                    </td>*@
+                                    <!--Lợi nhuận-->
+                                    @if (this.HasPermisson("baocao", "ViewProfit"))
+                                    {
+                                        <td field-name="Revenue">
+                                            <div class="number-value">
+                                                {{gridItem.Revenue | number:0}}
+                                            </div>
+                                        </td>
+                                    }
+                                                                    
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td align="center">
+                                        <span class="form-group pull-left page-size">
+                                            <select id="ddlPageSize" class="form-control"
+                                                    ng-model="model.pageSize"
+                                                    ng-options="item.pageSizeKey as item.pageSizeValue for item in pageSizeList"
+                                                    ng-change="changePageSize()"></select>
+                                            <span class="page-size-label">&#160;&#160;Dòng / Trang</span>
+                                        </span>
+                                        <span tr-ng-grid-pager="" style="height:40px;"></span>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <div class="pull-right">
+                            <table>
+                                <tr>
+                                    <td>Tổng tiền: <strong style="color:red"> {{model.TotalAmount | number:0}}</strong> </td>
+                                    @if (this.HasPermisson("baocao", "ViewProfit"))
+                                    {
+                                        <td><span class="btn-separator"></span></td>
+                                        <td>Tổng lợi nhuận: <strong style="color:red"> {{model.TotalRevenue | number:0}}</strong> </td>
+                                    }                                   
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <br />
+    <br />
+</div>
+@Html.Partial("~/Areas/Common/Views/Filter/ReportDateRageFilterControl.cshtml")
+@Html.Partial("~/Areas/Common/Views/Filter/ReportGroupTypeFilterControl.cshtml")

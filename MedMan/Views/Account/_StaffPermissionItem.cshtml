@@ -1,0 +1,20 @@
+﻿@model sThuoc.Models.ViewModels.PermissionItem
+
+
+<td>
+    @if (Model.Visible)
+    {
+        <label for="@string.Format("[{0}].Permissions[{1}].Checked", ViewData["Index"], ViewData["SubIndex"])">@Model.Permission</label>
+        @Html.Hidden(string.Format("[{0}].Permissions[{1}].Permission", ViewData["Index"], ViewData["SubIndex"]), Model.Permission)
+        @Html.CheckBox(string.Format("[{0}].Permissions[{1}].Checked", ViewData["Index"], ViewData["SubIndex"]), Model.Checked)
+    }
+    else
+    {
+        <div style="display: none">
+            <label for="@string.Format("[{0}].Permissions[{1}].Checked", ViewData["Index"], ViewData["SubIndex"])">@Model.Permission</label>
+            @Html.Hidden(string.Format("[{0}].Permissions[{1}].Permission", ViewData["Index"], ViewData["SubIndex"]), Model.Permission)
+            @Html.CheckBox(string.Format("[{0}].Permissions[{1}].Checked", ViewData["Index"], ViewData["SubIndex"]), Model.Checked)
+        </div>
+    }
+
+</td>

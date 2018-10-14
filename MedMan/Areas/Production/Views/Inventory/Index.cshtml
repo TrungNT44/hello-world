@@ -1,0 +1,124 @@
+﻿@{
+    ViewBag.Title = "Danh sách phiếu kiểm kê";
+}
+
+<h4><b>@ViewBag.Title</b></h4>
+<hr style="margin-top:0px" />
+
+<div ng-controller="ListInventoryController">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 baocao-filter" style="font-size:14px">
+                <div>
+                    <label style="font-size:16px">Thuốc</label>
+                    <div drug-search-filter select-changed-callback="onDrugSelectChanged" clear-after-selected="false"
+                         only-single-drug-item="true"></div>
+                </div>
+                <br />
+
+                <div report-date-rage-filter
+                     display-data-table-id="inventoryTableId"
+                     display-data-callback="onDisplayReportData"
+                     supress-export="true" supress-print="true"
+                     call-callback-after-init="true">
+                </div>
+
+                <br />
+                <div>
+                    <a class="btn btn-default" href="/Inventory/Create">Thêm mới phiếu kiểm kê</a>
+                </div>
+                <br />
+                <div>
+                    <a class="btn btn-default" href="/Inventory/DrugsNotInventoried">Xem thuốc chưa kiểm kê</a>
+                </div>
+            </div>
+
+            <div class="col-md-9">
+                <div class="baocao-container">
+                    <table tr-ng-grid="" items="InventoryModel"
+                           id="table-id-list-inventory"
+                           locale="en"
+                           display-total-items-count="false"
+                           class="table table-striped table-responsive table-bordered table-hover"
+                           selection-mode="None"
+                           current-page="setCurrentPage"
+                           enable-filtering="false"
+                           enable-sorting="false"
+                           page-items="model.pageSize" total-items="InventoryModel.length">
+                        <thead>
+                            <tr>
+                                <th display-name="#" style="width:6%"></th>
+                                <th field-name="FullName" display-name="Nhân viên" enable-sorting="true" style="width:30%"></th>
+                                <th field-name="Created" display-name="Ngày tạo" enable-sorting="true" style="width:20%"></th>
+                                <th field-name="DrugQuantity" display-name="SL mã thuốc" enable-sorting="true" style="width:15%"></th>
+                                <th field-name="DaCanKho" display-name="Cân kho" enable-sorting="true" style="width:12%"></th>
+                                <th style="width:14%"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body-id-delivery-note-with-barcode">
+                            <tr class="tr-barcode">
+                                <td>
+                                    <div>
+                                        {{gridOptions.currentPage * model.pageSize + $index + 1}}
+                                    </div>
+                                </td>
+                                <td field-name="FullName">
+                                    <div>
+                                        {{gridItem.FullName}}
+                                    </div>
+                                </td>
+                                <td field-name="Created">
+                                    <div>
+                                        {{gridItem.CreateTime | date:'dd/MM/yyyy HH:mm:ss'}}
+                                    </div>
+                                </td>
+                                <td field-name="DrugQuantity">
+                                    <div style="text-align:right">
+                                        {{gridItem.DrugQuantity}}
+                                    </div>
+                                </td>
+                                <td field-name="DaCanKho">
+                                    <div ng-if="gridItem.DaCanKho" style="text-align:center">
+                                        <i class="glyphicon-check glyphicon text-success"></i>
+                                    </div>
+                                    <div ng-if="!gridItem.DaCanKho" style="text-align:center">
+                                        <i class="glyphicon-remove glyphicon text-danger"></i>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="text-align:right">
+                                        <a href="/Inventory/Details/{{gridItem.Id}}">Chi tiết</a>
+                                        <span>|</span>
+                                        <a href="/Inventory/Delete/{{gridItem.Id}}">Xóa</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td align="center">
+                                    <span class="form-group pull-left page-size">
+                                        <select id="ddlPageSize" class="form-control"
+                                                ng-model="model.pageSize"
+                                                ng-options="item.pageSizeKey as item.pageSizeValue for item in pageSizeList"
+                                                ng-change="changePageSize()"></select>
+                                        <span class="page-size-label">&#160;&#160;Dòng / Trang</span>
+                                    </span>
+                                    <span tr-ng-grid-pager="" style="height:40px;"></span>
+                                </td>
+                            </tr>
+                        </tfoot>
+
+                    </table>
+
+                    <div ng-if="InventoryModel.length <= 0">
+                        <p style="text-align:center;color:darkorange;font-size:large">Không tìm thấy phiếu nào</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+@Html.Partial("~/Areas/Common/Views/Filter/ReportDateRageFilterControl.cshtml")
+

@@ -1,0 +1,116 @@
+﻿@model sThuoc.Models.Thuoc
+@using Med.Web.Extensions
+@using sThuoc.Filter
+@using sThuoc.Models;
+@{
+    Layout = null;
+}
+<!-- Modal -->
+<div class="modal fade" id="thuocDialogModal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" id="myModalContent">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel"><b>Thông tin về @Model.TenDayDu</b></h4>
+                @*<hr style="margin-top:0px" />*@
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table-bordered table-userpicker" style="max-height: 300px;min-width:200px">
+                            <tbody>
+                                <tr class="">
+                                    <td><b>Nhóm thuốc:</b></td>
+                                    <td>@Model.NhomThuoc.TenNhomThuoc</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Tên thuốc:</b></td>
+                                    <td>@Model.TenDayDu</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Mã vạch:</b></td>
+                                    <td>@Model.BarCode</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Hàng tư vấn:</b></td>
+                                    @if (Model.HangTuVan)
+                                    {
+                                        <td><i class="fa fa-check" style="color:green"></i></td>
+                                    }
+                                    else
+                                    {
+                                        <td><i class="fa fa-times" style="color:red"></i></td>
+                                    }
+
+                                </tr>
+
+                                <tr>
+                                    <td colspan="2"></td>
+                                </tr>
+                                <tr>
+                                    <td><b>Đơn vị:</b></td>
+                                    @if (@Model.DonViThuNguyen != null)
+                                    {
+                                        <td>@Model.DonViThuNguyen.TenDonViTinh</td>
+                                    }
+                                    else
+                                    {
+                                        <td>@Model.DonViXuatLe.TenDonViTinh</td>
+                                    }
+
+                                </tr>
+                                <tr>
+                                    <td><b>Quy cách:</b></td>
+                                    @if (@Model.DonViThuNguyen != null)
+                                    {
+                                        string lQuyCach = Model.DonViThuNguyen.TenDonViTinh + " = " + string.Format("{0:#,##0}", Model.HeSo) + " " + Model.DonViXuatLe.TenDonViTinh;
+                                        <td style="text-align:left">@lQuyCach</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="text-align:left"></td>
+                                    }
+                                    
+                                </tr>
+                                <tr>
+                                    <td colspan="2"></td>
+                                </tr>
+                                <tr>
+                                    <td><b>Giá nhập lẻ:</b></td>
+                                    <td style="text-align:left">@ViewBag.GiaNhapLe</td>
+                                </tr>
+
+                                <tr>
+                                    <td><b>Giá bán lẻ:</b></td>
+                                    <td style="text-align:left">@ViewBag.GiaBanLe</td>
+                                </tr>
+                                @*<tr class="">
+                                    <td><b>Giá bán sỉ: cais nayf ko cos</b></td>
+                                    @if (@Model.DonViThuNguyen != null)
+                                    {
+                                        <td style="text-align:left">@string.Format("{0:#,##0}", Model.GiaBanBuon * Model.HeSo)</td>
+                                    }
+                                    else
+                                    {
+                                        <td style="text-align:left">@string.Format("{0:#,##0}", Model.GiaBanBuon)</td>
+                                    }
+
+                                </tr>*@
+                                <tr class="">
+                                    <td><b>Ngày cập nhật:</b></td>
+                                    <td style="text-align:left">@ViewBag.GiaNhapNgayCapNhat</td>
+
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng lại</button>
+               
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,146 @@
+﻿@using MedMan.App_Start
+@model sThuoc.Models.ViewModels.NhaThuocViewModel
+@{
+    var deletable = false;
+}
+<div>
+    @if (ViewBag.OnDeleting != null && ViewBag.OnDeleting)
+    {
+        <h4><b>Bạn thực sự muốn xóa nhà thuốc:</b> <small>@Model.TenNhaThuoc 
+            <br />
+                               <span class="text-danger">
+                                   @if (Model.HoatDong)
+                                   {
+                                       <span>[Bạn không thể xóa nhà thuốc đang hoạt động]</span>
+                                   }
+                                   else
+                                   {
+                                       if (DateTime.Now < Model.Modified.AddDays(Constants.Settings.DeleteStoreAfterDays))
+                                       {
+                                           <span>[Bạn chỉ có thể xóa nhà thuốc này sau ngày @Model.Modified.AddDays(Constants.Settings.DeleteStoreAfterDays).ToString("f")]</span>
+                                       }
+                                       else
+                                       {
+                                           deletable = true;
+                                       }
+                                   }
+                                   
+                               </span></small></h4>
+    }
+    else
+    {
+        <h4><b>Thông tin nhà thuốc</b>@*<small>@Model.TenNhaThuoc</small>*@</h4>
+    }
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.MaNhaThuoc)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MaNhaThuoc)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TenNhaThuoc)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TenNhaThuoc)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DiaChi)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DiaChi)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SoKinhDoanh)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SoKinhDoanh)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DienThoai)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DienThoai)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NguoiDaiDien)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NguoiDaiDien)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Mobile)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Mobile)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DuocSy)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DuocSy)
+        </dd>
+        <dt>
+            Tài khoản quản lý
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.AdminUsername) - @Html.DisplayFor(model => model.AdminName)
+        </dd>
+        <dt>
+            Hoạt động
+        </dt>
+
+        <dd>
+            @(Model.HoatDong? "Đang hoạt động":"Không hoạt động")
+        </dd>
+
+    </dl>
+</div>
+<div class="row bottom-link">
+    
+    @Html.ActionLink("Quay lại", "Index", null, new { @class = "btn btn-default" }) <span class="btn-separator">|</span>
+    @if (ViewContext.RouteData.Values["action"].ToString().ToLower() == "delete")
+    {
+        if (deletable)
+         {
+             @Html.ActionLink("Xác Nhận", "ConfirmDelete", new {id = Model.MaNhaThuoc}, new {@class = "btn btn-danger"})
+         }
+         else
+         {
+             @Html.ActionLink("Xác Nhận", "ConfirmDelete", new { id = Model.MaNhaThuoc }, new { @class = "btn btn-danger", @disabled="disabled" })
+         }
+    }
+    else
+    {
+        @Html.ActionLink("Sửa", "Edit", new { id = Model.MaNhaThuoc }, new { @class = "btn btn-default" })
+        @Html.ActionLink("Xóa", "Delete", new { id = Model.MaNhaThuoc }, new { @class = "btn btn-danger" })
+        
+    }
+    
+</div>
+

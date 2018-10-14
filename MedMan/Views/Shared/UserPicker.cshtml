@@ -1,0 +1,59 @@
+﻿@model IEnumerable<sThuoc.Models.EditUserViewModel>
+@{ Layout = null;}
+<!-- Modal -->
+<div class="modal fade" id="UserPickerModal" tabindex="-1" role="dialog" aria-labelledby="UserPickerModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel"><b>Chọn tài khoản người dùng</b></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="finduser" placeholder="Tìm người dùng...">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-finduser" type="button">Tìm</button>
+                            </span>
+                        </div><!-- /input-group -->
+                    </div>
+                    <div class="col-md-12">
+                        <table class="table table-responsive table-userpicker" style="max-height: 400px;min-width:300px">
+                            <thead>
+                            <th>#</th>
+                            <th>Tài khoản</th>
+                            <th>Tên</th>
+                            <th>Số điện thoại</th>
+                            <th>Số CMT</th>
+                            </thead>
+                            <tbody>
+                                @{ var stt = 0;}
+                                @foreach (var item in Model)
+                                {
+                                    stt++;
+                                    <tr data-hasstore="@(item.DsNhaThuoc!=null? 1: 0)">
+                                        @*<td>@item.UserId</td>*@
+                                        <td>@stt <input type="hidden" id="hdfUserId" value="@item.UserId" /> </td>
+                                        <td>@item.UserName</td>
+                                        <td>@item.TenDayDu</td>
+                                        <td>@item.SoDienThoai</td>
+                                        <td>@item.SoCMT</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="pull-left">
+                    <input type="checkbox" class="form-control" style="width: 18px;display: inline;height: 18px;vertical-align: bottom;margin-top: 0px;" name="unassigneduser" id="unassigneduser" />
+                    <label for="unassigneduser" style="margin-bottom: 0px;font-weight: normal">Chỉ hiển thị người dùng chưa thuộc nhà thuốc nào</label>
+                </div>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng lại</button>
+                <button type="button" class="btn btn-primary" id="userpick" data-dismiss>Chọn</button>
+            </div>
+        </div>
+    </div>
+</div>

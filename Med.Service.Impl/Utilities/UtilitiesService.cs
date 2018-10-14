@@ -225,6 +225,7 @@ namespace Med.Service.Impl.Utilities
                 totalCount = deliveryDrugIds.Count();
                 if (totalCount < 1)
                 {
+                    trans.Complete();
                     result.PagingResultModel = new PagingResultModel<NegativeRevenueItem>(resultItems, totalCount);
                     return result;
                 }
@@ -253,6 +254,7 @@ namespace Med.Service.Impl.Utilities
                 var drugInfos = drugs.Where(i => deliveryDrugIds.Contains(i.ThuocId))
                     .Select(i => new { DrugId = i.ThuocId, DrugCode = i.MaThuoc, DrugName = i.TenThuoc })
                     .ToDictionary(i => i.DrugId, i => i);
+                trans.Complete();
 
                 deliveryDrugIds.ForEach(i =>
                 {
@@ -368,12 +370,14 @@ namespace Med.Service.Impl.Utilities
                 var totalCount = resultItems.Count;
                 if (totalCount < 1)
                 {
+                    trans.Complete();
                     result.PagingResultModel = new PagingResultModel<RemainQuantityReceiptDrugItem>(resultItems, totalCount);
                     return result;
                 }
                 var drugIds = resultItems.Select(i => i.ItemId).Distinct().ToArray();
                 var drugService = IoC.Container.Resolve<IDrugManagementService>();
                 var drugsDict = drugService.GetCacheDrugs(drugStoreCode, drugIds).ToDictionary(i => i.DrugId, i => i);
+                trans.Complete();
 
                 resultItems.ForEach(i =>
                 {

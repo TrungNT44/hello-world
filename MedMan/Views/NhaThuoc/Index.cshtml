@@ -1,0 +1,143 @@
+﻿@using PagedList.Mvc
+@model PagedList.IPagedList<sThuoc.Models.NhaThuoc>
+
+
+<h4><b>Quản lý nhà thuốc </b></h4>
+@using (Html.BeginForm("Index", "NhaThuoc", FormMethod.Get))
+{
+    <table class="table">
+        <tr>
+            <td>
+                @*<label>Tìm theo tên hoặc địa chỉ:</label> @Html.TextBox("searchString", ViewBag.SearchString as string, new{@class="form-control", @style="width:140px;display:inline"})&nbsp;<input type="submit" value="Tìm" class="btn btn-default" />
+                    &nbsp; &nbsp;@Html.ActionLink("Thêm mới", "Create", null, new { @class = "btn btn-primary" })*@
+                <div class="input-group">
+                    @Html.TextBox("searchString", ViewBag.SearchString as string, new { @class = "form-control", placeholder = "Tìm nhà thuốc theo tên hoặc địa chỉ..." })
+                    <span class="input-group-btn">
+                        <button class="btn btn-default btn-finduser" type="submit">Tìm</button>
+                        <span class="btn-separator"></span>
+                        @Html.ActionLink("Thêm mới", "Create", null, new { @class = "btn btn-primary" })
+                    </span>
+                </div><!-- /input-group -->
+            </td>
+        </tr>
+    </table>
+}
+<table class="table">
+    <tr>
+        <th>
+            #
+        </th>
+        <th>
+            <a href='@Url.Action("Index","NhaThuoc",new { @currentFilter= ViewBag.SearchString, @OrderColumn = ViewBag.MaNhaThuoc })'>
+                @Html.DisplayNameFor(model => model[0].MaNhaThuoc)
+            </a>
+            @*<b>Mã N.thuốc</b>*@
+        </th>
+        <th>
+            <a href='@Url.Action("Index","NhaThuoc",new { @currentFilter= ViewBag.SearchString, @OrderColumn = ViewBag.TenNhaThuoc })'>
+                @Html.DisplayNameFor(model => model[0].TenNhaThuoc)
+            </a>
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model[0].DiaChi)
+        </th>
+
+        <th>
+            @Html.DisplayNameFor(model => model[0].DienThoai)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model[0].NguoiDaiDien)
+        </th>
+        @*<th>
+                @Html.DisplayNameFor(model => model[0].Email)
+            </th>*@
+        <th>
+            <a href='@Url.Action("Index","NhaThuoc",new { @searchString= ViewBag.SearchString, @OrderColumn = ViewBag.TenNhaThuoc })'>
+                @Html.DisplayNameFor(model => model[0].HoatDong)
+            </a>
+        </th>
+        <th></th>
+        <th></th>
+        <th></th>
+    </tr>
+    @{ var stt = (Model.PageNumber - 1) * 10;}
+    @foreach (var item in Model)
+    {
+        //string tmp = stt.ToString();
+        //if(tmp.Length<4)
+        //{
+        //    int count = (4 - tmp.Length);
+        //    for (int i = 0; i < count; i++)
+        //    {
+        //        tmp = "0" + tmp;
+        //    }
+        //}
+
+        stt++;
+        <tr>
+            <td>
+                @stt
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaNhaThuoc)
+            </td>
+            <td>
+                @Html.ActionLink(item.TenNhaThuoc, "details", new { id = item.MaNhaThuoc })
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DiaChi)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DienThoai)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NguoiDaiDien)
+            </td>
+            @*<td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>*@
+            <td>
+                @Html.DisplayFor(modelItem => item.HoatDong)
+            </td>
+            <td>
+                @Html.ActionLink("Sửa", "Edit", new { id = item.MaNhaThuoc })
+            </td>
+            @*@Url.Action("ConfirmDelete", new { id = item.MaNhaThuoc })*@
+            <td>
+                @if (item.HoatDong) 
+                {
+                    <a href="#" onclick="YesNoDialog('dialogDelete-confirm','@Url.Action("ConfirmDelete", new { id = item.MaNhaThuoc })')">Xóa</a>
+                }
+                else
+                {
+                    <a href="#" onclick="YesNoDialog('dialogRollback-confirm','@Url.Action("ConfirmRollback", new { id = item.MaNhaThuoc })')">Khôi phục</a>
+                }
+            </td>
+            @*<td>
+                @if (!item.HoatDong){
+                <a href="#" onclick="YesNoDialog('dialogRollback-confirm','@Url.Action("ConfirmRollback", new { id = item.MaNhaThuoc })')">Khôi phục</a>
+                }
+            </td>*@
+        </tr>
+    }
+</table>
+Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) trong @Model.PageCount
+@Html.PagedListPager(Model, page => Url.Action("Index",
+        new
+        {
+            page,
+            currentFilter = ViewBag.SearchString,
+            @OrderColumn = ViewBag.CurrentSort
+        }))
+<div class="row bottom-link">
+
+</div>
+<div id="dialogDelete-confirm" title="Delete?" style="display:none">
+    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>Bạn chắc chắn muốn xóa nhà thuốc này?</p>
+</div>
+<div id="dialogRollback-confirm" title="Rollback?" style="display:none">
+    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>Bạn chắc chắn muốn khôi phục nhà thuốc này?</p>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/yesnodialog")
+}

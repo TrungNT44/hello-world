@@ -234,7 +234,6 @@ namespace Med.Service.Impl.Common
             }
             else
             {
-                result.NoteDate = DateTime.Now.AddDays(-1);
                 result.NoteTypeId = noteTypeId ?? (int)InOutCommingType.Incomming;
                 result.NoteNumber = GetInOutCommingNoteNumber(drugStoreCode, result.NoteTypeId);               
             }
@@ -304,14 +303,14 @@ namespace Med.Service.Impl.Common
                         CreatedDateTime = DateTime.Now
                     }).ToList();
                     receiverRepo.InsertMany(paymentNotes);
-                    if (model.NoteTypeId == (int)InOutCommingType.Incomming)
+                    if (model.NoteTypeId == (int)InOutCommingType.Incomming && model.ReceiverNoteIds.Any())
                     {
                         deliveryRepo.UpdateMany(i => model.ReceiverNoteIds.Contains(i.MaPhieuXuat), i => new PhieuXuat()
                         {
                             IsDebt = false
                         });
                     }
-                    else
+                    else if (model.ReceiverNoteIds.Any())
                     {
                         receiptRepo.UpdateMany(i => model.ReceiverNoteIds.Contains(i.MaPhieuNhap), i => new PhieuNhap()
                         {
@@ -456,7 +455,7 @@ namespace Med.Service.Impl.Common
             {
                 DeliveryNoteId = deliveryNoteId,
                 ReceiptNoteId = newNote.MaPhieuNhap,
-                RecordStatusId = (int)RecordStatus.Activated,
+                RecordStatusId = (byte)RecordStatus.Activated,
                 CreatedDateTime = DateTime.Now
             });
             whTransitRepo.Commit();
@@ -483,12 +482,18 @@ namespace Med.Service.Impl.Common
                 {
                     inOutCommingRepo.Delete(i => i.MaPhieu == noteId);
                     receiverRepo.Delete(i => i.InOutCommingNoteId == noteId);
-                    receiptNoteRepo.UpdateMany(i => receiptNoteIds.Contains(i.MaPhieuNhap), i => new PhieuNhap() { IsDebt = true });
-                    deliveryNoteRepo.UpdateMany(i => deliveryNoteIds.Contains(i.MaPhieuXuat), i => new PhieuXuat() { IsDebt = true });
-
+                    if (receiptNoteIds.Any())
+                    {
+                        receiptNoteRepo.UpdateMany(i => receiptNoteIds.Contains(i.MaPhieuNhap), i => new PhieuNhap() { IsDebt = true });
+                    }
+                    if (deliveryNoteIds.Any())
+                    {
+                        deliveryNoteRepo.UpdateMany(i => deliveryNoteIds.Contains(i.MaPhieuXuat), i => new PhieuXuat() { IsDebt = true });
+                    }
                     //tran.Complete();
+
                     retVal = true;
-                }                
+                }
             }
             catch (Exception ex)
             {

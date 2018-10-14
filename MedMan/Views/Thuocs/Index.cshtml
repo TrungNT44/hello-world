@@ -1,0 +1,299 @@
+﻿@using Med.Web.Extensions
+@using sThuoc.Filter
+@using sThuoc.Models;
+@using PagedList.Mvc;
+@model PagedList.IPagedList<Thuoc>
+
+@{
+    ViewBag.Title = "Danh sách thuốc";
+}
+<link rel="stylesheet" type="text/css" media="screen" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.0/themes/redmond/jquery-ui.css" />
+<h4><b>@ViewBag.Title</b></h4>
+<hr style="margin-top:0px" />
+@{
+    //var canCreate = FunctionsService.Authorize("PhieuThuChis", "Create", this.GetNhaThuoc());
+    var canModify = FunctionsService.Authorize("PhieuThuChis", "Edit", this.GetNhaThuoc());
+}
+
+<div class="row">
+    <div class="col-md-2">
+        @using (Html.BeginForm("Index", "Thuocs", FormMethod.Get))
+        {
+            <fieldset class="">
+                <label>Tìm thuốc theo</label>
+                <div class="control-group">
+                    @Html.TextBox("mathuoc", null, htmlAttributes: new { @class = "form-control", placeholder = "Nhập mã thuốc..." })
+                    @Html.TextBox("tenthuoc", null, htmlAttributes: new { @class = "form-control", placeholder = "Nhập tên thuốc..." })
+                    @Html.DropDownList("nhomthuoc", new SelectList(ViewBag.NhomThuoc, "MaNhomThuoc", "TenNhomThuoc"), htmlAttributes: new { @class = "form-control" }, optionLabel: "Chọn nhóm thuốc")
+                    @Html.DropDownList("DonViTinh", new SelectList(ViewBag.DonViTinh, "MaDonViTinh", "TenDonViTinh"), htmlAttributes: new { @class = "form-control" }, optionLabel: "Chọn đơn vị tính")
+                </div>
+            </fieldset>
+            <hr style="margin-top:0px" />
+            <div @*class="control-group"*@>
+                <input type="submit" class="btn btn-default" value="Tìm" />
+                @*<input id="btlreset" class="btn btn-default" value="Bỏ tìm" />*@
+                @Html.ActionLink("Bỏ tìm kiếm", "Index", null, new { @class = "btn btn-default" })
+            </div>
+            <fieldset>
+
+                <div>
+                    @*@Html.ActionLink("Bỏ tìm kiếm", "Index", null, new { @class = "btn btn-default" })*@
+                    <hr style="margin-top:10px" />
+                    @Html.ActionLink("Thêm mới", "Create", null, new { @class = "btn btn-primary" })
+                </div>
+            </fieldset>
+        }
+        @if (User.IsInRoles(string.Format("{0},{1}", MedMan.App_Start.Constants.Security.Roles.SuperUser.Value, MedMan.App_Start.Constants.Security.Roles.Admin.Value)))
+        {
+            <fieldset>
+                <hr style="margin-top:10px" />
+                <lable><b>Nhập/Xuất từ Excel</b></lable>
+                <div class="control-group">
+                    @using (Html.BeginForm("Upload", "Thuocs", FormMethod.Post, new { enctype = "multipart/form-data", @class = "upload-form", id = "formupload" }))
+                    {
+                        <div style="display: none"> <input name="uploadFile" type="file" /><br /></div>
+                        <input type="button" value="Tải file" title="Tải file" onclick="return OpenFileDialog();" class="btn btn-default" />@:&nbsp;
+                        @Html.ActionLink("Xuất file", "ExportToExcel", "Thuocs", null, new { @class = "btn btn-default" })
+                    }
+                </div>
+            </fieldset>
+        }
+
+    </div>
+    @using (Html.BeginForm("Index", "Thuocs", FormMethod.Get))
+    {
+        <div class="col-md-10">
+            <div class="baocao-container">
+                <table class="table table-responsive table-bordered">
+                    <tr>
+                        <th style="background-color:darkgray">#</th>
+                        <th style="background-color:darkgray">Mã</th>
+                        <th style="background-color:darkgray">Tên thuốc</th>
+                        <th style="background-color:darkgray">Tên nhóm</th>
+                        <th style="background-color:darkgray">Đơn vị</th>
+                        <th style="background-color:darkgray">Giá nhập lẻ</th>
+                        <th style="background-color:darkgray">Giá bán lẻ</th>
+                        <th style="background-color:darkgray">Giá bán sỉ</th>
+                        <th style="background-color:darkgray">Dự trù</th>
+                        <th style="background-color:darkgray">Hoạt động</th>
+                        <th style="background-color:darkgray;width:110px"></th>
+                    </tr>
+                    @{ var stt = (Model.PageNumber - 1) * 10;}
+                    @{ var gia = "";}
+                    @foreach (var item in Model)
+                    {
+                        stt = stt + 1;
+                        <tr>
+                            <td>
+                                <a href="javascript:void(0)" action="@Url.Action("DialogDetail", "Thuocs", null, Request.Url.Scheme)" class="a_view">@stt</a>
+                                @Html.HiddenFor(m => item.ThuocId)
+                            </td>
+                            <td>@Html.DisplayFor(modelItem => item.MaThuoc)</td>
+                            <td>@Html.DisplayFor(modelItem => item.TenDayDu)</td>
+                            <td>@Html.DisplayFor(modelItem => item.NhomThuoc.TenNhomThuoc)</td>
+                            <td>@Html.DisplayFor(modelItem => item.DonViXuatLe.TenDonViTinh)</td>
+                            <td style="text-align:right">
+                                @if (this.HasPermisson("thuocs", "ViewPriceInput"))
+                                {
+                                    <span> @string.Format("{0:#,##0}", item.GiaNhap)</span>
+                                }
+                                else
+                                {
+                                    <span>***</span>
+                                }
+                            </td>
+                            <td style="text-align:right">
+                                @string.Format("{0:#,##0}", item.GiaBanLe)
+                            </td>
+                            <td style="text-align:right">
+                                @string.Format("{0:#,##0}", item.GiaBanBuon)
+                            </td>
+                            <td style="text-align:right">@string.Format("{0:#,##0}", item.GioiHan)</td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.HoatDong)
+                            </td>
+                                @if (item.NhaThuoc_MaNhaThuocCreate.Equals(ViewBag.MaNhaThuoc) || ViewBag.MaNhaThuoc == ViewBag.MaNhaThuocCha)
+                                {
+                                    if (item.HoatDong)
+                                    {
+                                        <td style="text-align:left; margin-left:2px">
+                                            @Html.ActionLink("Sửa", "Edit", new { id = item.ThuocId })
+                                            | 
+                                            <a href="#" onclick="YesNoDialog('dialogDelete-confirm','@Url.Action("DeleteConfirm", new { id = item.ThuocId })')">Xóa</a>
+                                            | @Html.ActionLink("LS", "DrugTransHistories", "Report", new { drugId = item.ThuocId }, new { target = "_blank" })
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td style="text-align:left; margin-left:2px">
+                                            @*@Html.ActionLink("Sửa", "Edit", new { id = item.ThuocId })
+                                            |*@
+                                            <a href="#" onclick="YesNoDialog('dialogRollback-confirm','@Url.Action("RollbackConfirm", new { id = item.ThuocId })')">Khôi phục</a>
+                                            |
+                                            <a href="#" onclick="YesNoDialog('dialogDeleteFromdb-confirm','@Url.Action("DeleteFromdb", new { id = item.ThuocId })')">Xoá ngay</a>
+                                            @*|
+                                            @Html.ActionLink("Xoá hẳn", "DeleteFromdb", new { id = item.ThuocId })*@
+                                        </td>
+                                    }
+
+                                }
+                                else
+                                {
+                                        <td>
+                                            @Html.ActionLink("Xem", "Details", new { id = item.ThuocId })
+                                            | @Html.ActionLink("LS", "DrugTransHistories", "Report", new { drugId = item.ThuocId }, new { target = "_blank" })
+                                        </td>
+                                }
+                        </tr>
+                    }
+                </table>
+                Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) trong @Model.PageCount
+                @Html.PagedListPager(Model, page => Url.Action("Index",
+                                                    new
+                                                    {
+                                                        page,
+                                                        mathuoc = ViewBag.FilterMaThuoc,
+                                                        tenthuoc = ViewBag.FilterTenThuoc,
+                                                        nhomthuoc = ViewBag.FilterNhomThuoc,
+                                                        donvitinh = ViewBag.FilterDonViTinh
+                                                    }))
+            </div>
+        </div>
+                        }
+</div>
+<div id="dialogDelete-confirm" title="Xoá thuốc" style="display:none">
+    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>Bạn chắc chắn muốn xóa loại thuốc này?</p>
+</div>
+<div id="dialogRollback-confirm" title="Khôi phục thuốc" style="display:none">
+    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>Bạn chắc chắn muốn khôi phục loại thuốc này?</p>
+</div>
+<div id="dialogDeleteFromdb-confirm" title="Xoá hẳn thuốc khỏi danh mục " style="display:none">
+    <p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>Bạn chắc chắn muốn xoá hẳn loại thuốc này khỏi danh mục?</p>
+</div>
+@section Scripts{
+    @Scripts.Render("~/bundles/yesnodialog")
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/datepicker-vi.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            //bind date
+            var datefield = $(".datefield");
+            datefield.removeClass('hasDatepicker');
+            datefield.datepicker({
+                dateFormat: "dd/mm/yy",
+                changeMonth: true,
+                changeYear: true,
+                onClose: function () {
+                    $(this).parent().parent().find('input.save-thuoc').focus();
+                }
+            });
+
+            $('select#loaiPhieu').on('change', function () {
+                if ($(this).val() > 2) {
+                    $('.tendoitac').hide();
+                } else {
+                    $('.tendoitac').show();
+                }
+            }).trigger('change');
+
+            $('.a_view').on('click', function () {
+                var rowid = $(this).parent().find("#item_ThuocId").val();
+                var dialogThuocDetails = {};
+                if (rowid > 0) {
+                    $.get($(this).attr('action'), { id: rowid }).done(function (data) {
+                        if (data) {
+                            dialogThuocDetails[rowid] = $(data).hide().appendTo(document.body).on('hide.bs.modal', function () { $('.modal-backdrop').remove(); }
+                            ).modal();
+                        }
+                    });
+                }
+            }
+            );
+
+            BindAutocomplete($("#mathuoc"), "maThuoc");
+            BindAutocomplete($("#tenthuoc"), "tenThuoc");
+        });
+
+        function BindAutocomplete(elem, sName) {
+            var url = $('input[name=baseUrl]').val() + "Thuocs/GetThuocs";
+            if (sName == "maThuoc") {
+                url = $('input[name=baseUrl]').val() + "Thuocs/GetThuocsByMa";
+            }
+            elem.autocomplete({
+                minLength: 2,
+                source: function (request, response) {
+                    var term = request.term;
+                    currentTerm = sName + term;
+                    response(null);
+                    $.getJSON(url, request, function (data, status, xhr) {
+                        response(data);
+                    });
+                },
+                messages: {
+                    noResults: "Không tìm thấy"//,
+                    // results: ""
+                },
+                select: function (event, ui) {
+                    $(this).val(ui.item.label);
+                    $('#tenthuoc').val(ui.item.tenThuoc);
+                    $('#mathuoc').val(ui.item.maThuoc);
+                    return false;
+                }
+            }).each(function () {
+                $(this).autocomplete('instance')._renderItem = function (ul, item) {
+                    return $("<li>")
+                        .append("<a>" + item.desc + "</a>")
+                        .append('<input type="hidden" name="price" value="' + item.price + '"/>')
+                        .append('<input type="hidden" name="unit" value="' + item.unit + '"/>')
+                        .appendTo(ul);
+                };
+            });
+        }
+
+        //Upload the excel file
+
+        function OpenFileDialog() {
+            console.log(1);
+            $('input[name=uploadFile]').trigger('click');
+        }
+
+        $('input[name=uploadFile]').on('change', function () {
+            console.log(2);
+            $('.upload-form').submit();
+        });
+
+        $('.upload-form').on('submit', function (event) {
+            console.log(3);
+            var check = CheckFileName($(this));
+            if (!check) {
+                event.preventDefault();
+            }
+        });
+
+        function CheckFileName(el) {
+            var fileName = el.find("input[name=uploadFile]").val();
+            //debugger;
+            var fileExtension = fileName.split(".");
+            fileExtension = fileExtension[fileExtension.length - 1];
+            if (fileName == "") {
+                alert("Chưa chọn tệp tin Excel tải lên");
+                return false;
+
+            } else if (fileExtension.toUpperCase() == "XLS" || fileExtension.toUpperCase() == "XLSX")
+                return true;
+            else {
+                alert("Tên file " + fileName.split(".")[1] + " không đúng. Cần tải file có đuôi xls/xlsx");
+                return false;
+            }
+            return true;
+        }
+
+        $("#btnReset").click(function () {
+            window.location = "sthuoc/thuocs/index";
+        })
+
+        $("#btnNew").click(function () {
+            window.location = "sthuoc/thuocs/create";
+        })
+    </script>
+}

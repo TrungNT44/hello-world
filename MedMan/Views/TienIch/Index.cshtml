@@ -1,0 +1,55 @@
+﻿@using Med.Web.Extensions
+@using sThuoc.Filter
+@using sThuoc.Models;
+@using PagedList.Mvc;
+@model PagedList.IPagedList<HetHang>
+
+@{
+    ViewBag.Title = "Danh sách hàng hết";
+}
+<link rel="stylesheet" type="text/css" media="screen" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.0/themes/redmond/jquery-ui.css" />
+<h4>
+    <b>@ViewBag.Title</b>
+
+</h4>
+<hr style="margin-top:0px" />
+@using (Html.BeginForm())
+{
+    var stt = 1;
+    <div class="row">
+        <div class="baocao-container thuoc col-md-12">
+            @Html.ActionLink("Lập dự trù", "CreateReserve", "DrugManagement",null, new { @class = "btn btn-default", @style = "float:left" })
+            @*@Html.ActionLink("Lập dự trù", "Dutru", "Tienich", null, new { @class = "btn btn-default", @style = "float:left" })*@
+            @Html.ActionLink("Xuất Excel", "ExportToExcel", "Tienich", null, new { @class = "btn btn-default", @style = "float:left;margin-left:5px" })
+            @Html.ActionLink("In", "HetHangIn", "Tienich", null, new { @class = "btn btn-default", target = "_blank", @style = "float:left;margin-left:5px" })
+            <table class="table table-responsive table-bordered">
+                <tr>
+                    <th style="background-color:darkgray">#</th>
+                    <th style="background-color:darkgray">Mã thuốc</th>
+                    <th style="background-color:darkgray">Tên thuốc</th>
+                    <th style="background-color:darkgray">Số lượng cảnh báo</th>
+                    <th style="background-color:darkgray">Tồn kho</th>
+                </tr>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@stt</td>
+                        <td>@Html.DisplayFor(modelItem => item.MaThuoc)</td>
+                        <td>@Html.DisplayFor(modelItem => item.TenThuoc)</td>
+                        <td>@Html.DisplayFor(modelItem => item.SoLuongCanhBao)</td>
+                        <td>@Html.DisplayFor(modelItem => item.TonKho)</td>
+                    </tr>
+
+                    stt++;
+                }
+            </table>
+            Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) trong @Model.PageCount
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page }))
+        </div>
+    </div>
+}
+
+@if (User.IsInRoles(string.Format("{0},{1}", MedMan.App_Start.Constants.Security.Roles.SuperUser.Value, MedMan.App_Start.Constants.Security.Roles.Admin.Value)))
+{
+
+}

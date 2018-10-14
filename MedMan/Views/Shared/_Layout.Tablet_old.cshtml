@@ -1,0 +1,328 @@
+﻿@using sThuoc.App_Start
+@using sThuoc.Extensions
+@using sThuoc.Filter
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>@ViewBag.Title - Web Nhà Thuốc</title>
+        @Styles.Render("~/Content/css")
+        @Styles.Render("~/Content/themes/base/css")
+        <link rel="stylesheet" href="~/Content/font-awesome.min.css">
+        <meta name="description" content="The description of my page" />
+        @*Custom menu bar*@
+        <style type="text/css">
+            .marginBottom-0 {margin-bottom:0;}
+            .dropdown-submenu{position:relative;}
+            .dropdown-submenu>.dropdown-menu{top:0;left:100%;margin-top:-6px;margin-left:-1px;-webkit-border-radius:0 6px 6px 6px;-moz-border-radius:0 6px 6px 6px;border-radius:0 6px 6px 6px;}
+            .dropdown-submenu>a:after{display:block;content:" ";float:right;width:0;height:0;border-color:transparent;border-style:solid;border-width:5px 0 5px 5px;border-left-color:#cccccc;margin-top:5px;margin-right:-10px;}
+            .dropdown-submenu:hover>a:after{border-left-color:#555;}
+            .dropdown-submenu.pull-left{float:none;}.dropdown-submenu.pull-left>.dropdown-menu{left:-100%;margin-left:10px;-webkit-border-radius:6px 0 6px 6px;-moz-border-radius:6px 0 6px 6px;border-radius:6px 0 6px 6px;}
+            .navbar-header {
+                float: none;
+            }
+            .navbar > .container .navbar-brand, .navbar > .container-fluid .navbar-brand {
+                margin-left: 0;
+            }
+            
+        </style>
+    </head>
+    <body>
+        <input type="hidden" name="baseUrl" id="baseUrl" value="@Url.Action("Index", "Home", null, "http")"/>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+
+                <nav class="navbar-header">
+                    @*Home menu*@
+                    @if (User.Identity.IsAuthenticated)
+                {
+                <ul class="nav navbar-nav">
+                    @{ var tenNhaThuoc = this.GetNhaThuoc(false) != null ? this.GetNhaThuoc().TenNhaThuoc : "Chưa chọn nhà thuốc";}
+                    @if (this.GetNhaThuoc(false) != null)
+                    {
+                        <a href=@Url.Action("Index","Home") class="navbar-brand"><i class="fa fa-home" style="font-size:32px;color:#35A6CA"></i></a>
+                    }
+                    else
+                    {
+                        @Html.ActionLink("...", "ChonNhaThuocMacDinh", "Account", null, new { @class = "navbar-brand" })
+                    }
+
+                </ul>
+                <ul class="nav navbar-nav">
+                    @*Nhap Xuat Menu*@
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-refresh" style="font-size:32px;color:#35A6CA"></i></a>
+                        <ul class="dropdown-menu">
+                            @if (this.HasPermisson("phieuxuats", "Create"))
+                            {
+
+                                <li><a href=@Url.Action("Create","PhieuXuats") style="font-size:large;color:#35A6CA"><i class="fa fa-sign-out"></i>&nbsp;&nbsp;Bán hàng</a></li>
+                            }
+                            @if (this.HasPermisson("PhieuNhaps", "Create"))
+                            {
+                                <li class="divider"></li>
+
+                                <li><a href=@Url.Action("Create","PhieuNhaps") style="font-size:large;color:#35A6CA"><i class="fa fa-sign-in"></i>&nbsp;&nbsp;Nhập hàng</a></li>
+                            }
+                            @if (this.HasPermisson("PhieuNhaps", "Create"))
+                            {
+                                <li class="divider"></li>
+
+                                <li><a href=@Url.Action("Create","PhieuNhaps", new { loaiPhieu = "3" }, null) style="font-size:large;color:#35A6CA"><i class="fa fa-sign-in"></i>&nbsp;&nbsp;Khách hàng trả lại</a></li>
+
+                            }
+                            @if (this.HasPermisson("PhieuXuats", "Create"))
+                            {
+                                <li class="divider"></li>
+                                <li><a href=@Url.Action("Create","PhieuXuats", new { loaiPhieu = "4" }, null) style="font-size:large;color:#35A6CA"><i class="fa fa-sign-out"></i>&nbsp;&nbsp;Trả lại nhà cung cấp</a></li>
+                            }
+                            <li class="divider"></li>
+
+                            <li><a href=@Url.Action("Index","PhieuNhaps", new { loaiPhieu = "4" }, null) style="font-size:large;color:#35A6CA"><i class="fa fa-bars"></i>&nbsp;&nbsp;Danh sách phiếu Nhập-Xuất</a></li>
+                            <li class="divider"></li>
+
+                            <li><a href=@Url.Action("Index","PhieuNhaps", new { khoiphuc = 1 }, null) style="font-size:large;color:#35A6CA"><i class="fa fa-undo"></i>&nbsp;&nbsp;Khôi phục các chứng từ bị xóa</a></li>
+                        </ul>
+                    </li>
+                    @*Tim kiem menu*@
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-search" style="font-size:32px;color:#35A6CA"></i></a>
+                        <ul class="dropdown-menu">
+                            @if (this.HasPermisson("PhieuNhaps", "Index"))
+                            {
+                                @*<li style="font-size:large"><row>&nbsp;<i class="fa fa-search fa-fw" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Phiếu nhập-xuất  ", "Index", "PhieuNhaps")</li>*@
+                                <li><a href=@Url.Action("Index","PhieuNhaps") style="font-size:large;color:#35A6CA"><i class="fa fa-search"></i>&nbsp;&nbsp;Phiếu nhập-xuất</a></li>
+                                <li class="divider"></li>
+                            }
+                            @if (this.HasPermisson("PhieuThuChis", "Index"))
+                            {
+
+                                <li><a href=@Url.Action("Index","PhieuThuChis") style="font-size:large;color:#35A6CA"><i class="fa fa-search"></i>&nbsp;&nbsp;Phiếu thu-chi</a></li>
+                                <li class="divider"></li>
+                            }
+                            @if (this.HasPermisson("PhieuKiemKes", "Index"))
+                            {
+                                <li><a href=@Url.Action("Index","PhieuKiemKes") style="font-size:large;color:#35A6CA"><i class="fa fa-search"></i>&nbsp;&nbsp;Phiếu kiểm kê</a></li>
+                                <li class="divider"></li>
+                            }
+                            @if (this.HasPermisson("Thuocs", "Index"))
+                            {
+                                <li><a href=@Url.Action("Index","Thuocs") style="font-size:large;color:#35A6CA"><i class="fa fa-search"></i>&nbsp;&nbsp;Hàng hóa</a></li>
+                                <li class="divider"></li>
+                            }
+                            @if (this.HasPermisson("KhachHangs", "Index"))
+                            {
+                                <li><a href=@Url.Action("Index","KhachHangs") style="font-size:large;color:#35A6CA"><i class="fa fa-search"></i>&nbsp;&nbsp;Khách hàng</a></li>
+                                <li class="divider"></li>
+                            }
+                            @if (this.HasPermisson("NhaCungCaps", "Index"))
+                            {
+                                <li><a href=@Url.Action("Index","NhaCungCaps") style="font-size:large;color:#35A6CA"><i class="fa fa-search"></i>&nbsp;&nbsp;Nhà cung cấp</a></li>
+                                <li class="divider"></li>
+                            }
+                            @if (this.HasPermisson("BacSys", "Index"))
+                            {
+
+                                <li><a href=@Url.Action("Index","BacSys") style="font-size:large;color:#35A6CA"><i class="fa fa-search"></i>&nbsp;&nbsp;Bác sỹ</a></li>
+                                <li class="divider"></li>
+                            }
+                            @if (this.IsNhaThuocAdmin())
+                            {
+                                <li><a href=@Url.Action("Staff","Account") style="font-size:large;color:#35A6CA"><i class="fa fa-search"></i>&nbsp;&nbsp;Nhân viên</a></li>
+                                @*<li style="font-size:large"><row>&nbsp;<i class="fa fa-search fa-fw" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Nhân viên", "staff", "Account")</li>*@
+                            }
+                        </ul>
+                    </li>
+                    @*Báo cáo*@
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-file-text" style="font-size:32px;color:#35A6CA"></i></a>
+                        <ul class="dropdown-menu">
+                            @if (this.HasPermisson("Baocao", "Index"))
+                            {
+                                @*<li style="font-size:large"><row>&nbsp;<i class="fa fa-file-text" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Báo cáo tổng hợp  ", "Index", "Baocao")</row></li>*@
+                                <li><a href=@Url.Action("Index","Bacao") style="font-size:large;color:#35A6CA"><i class="fa fa-file-text"></i>&nbsp;&nbsp;Báo cáo tổng hợp</a></li>
+                                <li class="divider"></li>
+                            }
+                            @if (this.HasPermisson("Baocao", "TheoNhanVien"))
+                            {
+                                @*<li style="font-size:large"><row>&nbsp;<i class="fa fa-file-text fa-fw" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Theo nhân viên", "TheoNhanVien", "Baocao")</li>*@
+                                <li><a href=@Url.Action("TheoNhanVien","Baocao") style="font-size:large;color:#35A6CA"><i class="fa fa-file-text"></i>&nbsp;&nbsp;Theo nhân viên</a></li>
+                                <li class="divider"></li>
+                            }
+                            @if (this.HasPermisson("Baocao", "TheoKhachHang"))
+                            {
+                                @*<li style="font-size:large"><row>&nbsp;<i class="fa fa-file-text fa-fw" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Theo khách hàng", "TheoKhachHang", "Baocao")</li>*@
+                                <li><a href=@Url.Action("TheoKhachHang","Baocao") style="font-size:large;color:#35A6CA"><i class="fa fa-file-text"></i>&nbsp;&nbsp;Theo khách hàng</a></li>
+                                <li class="divider"></li>
+                            }
+                            @if (this.HasPermisson("Baocao", "TheoMatHang"))
+                            {
+
+                                <li><a href=@Url.Action("TheoMatang","Baocao") style="font-size:large;color:#35A6CA"><i class="fa fa-file-text"></i>&nbsp;&nbsp;Theo mặt hàng</a></li>
+                                <li class="divider"></li>
+                            }
+                            @if (this.HasPermisson("Baocao", "TheoBacSy"))
+                            {
+
+                                <li><a href=@Url.Action("TheoBacSy","Baocao") style="font-size:large;color:#35A6CA"><i class="fa fa-file-text"></i>&nbsp;&nbsp;Theo bác sỹ</a></li>
+                                <li class="divider"></li>
+                            }
+                            @if (this.HasPermisson("Baocao", "TheoNhaCungCap"))
+                            {
+
+
+                                <li><a href=@Url.Action("TheoNhaCungCap","Baocao") style="font-size:large;color:#35A6CA"><i class="fa fa-file-text"></i>&nbsp;&nbsp;Theo nhà cung cấp</a></li>
+                                <li class="divider"></li>
+                            }
+
+                            @if (this.HasPermisson("Baocao", "TheoKhoHang"))
+                            {
+
+                                <li><a href=@Url.Action("TheoKhoHang","Baocao") style="font-size:large;color:#35A6CA"><i class="fa fa-file-text"></i>&nbsp;&nbsp;Theo kho hàng</a></li>
+                            }
+
+                        </ul>
+                    </li>
+
+                    @*Cảnh báo*@
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-exclamation-triangle" style="font-size:32px;color:#35A6CA"></i></a>
+                        <ul class="dropdown-menu">
+                            @if (this.HasPermisson("TienIch", "Index"))
+                            {
+
+                                <li><a href=@Url.Action("Index","TienIch") style="font-size:large;color:#35A6CA"><i class="fa fa-exclamation-triangle"></i>&nbsp;&nbsp;Cảnh báo hàng hết</a></li>
+                                <li class="divider"></li>
+                            }
+                            @if (this.HasPermisson("TienIch", "CanhBaoHangHetHan"))
+                            {
+                                <li><a href=@Url.Action("CanhBaoHangHetHan","TienIch") style="font-size:large;color:#35A6CA"><i class="fa fa-exclamation-triangle"></i>&nbsp;&nbsp;Cảnh báo hàng hết hạn</a></li>
+                                <li class="divider"></li>
+                            }
+                            @if (this.HasPermisson("CanhBaoLoiNhuanAm", "TienIch"))
+                            {
+                                <li><a href=@Url.Action("CanhBaoLoiNhuanAm","TienIch") style="font-size:large;color:#35A6CA"><i class="fa fa-exclamation-triangle"></i>&nbsp;&nbsp;Cảnh báo hàng lợi nhuận âm</a></li>
+
+
+                            }
+
+                        </ul>
+                    </li>
+
+                    @*Menu bare - more*@
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars" style="font-size:32px;color:gr"></i></a>
+                        <ul class="dropdown-menu">
+
+                            <li class="dropdown dropdown-submenu">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown Link ab cdcd d d d d d d  4</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">Dropdown Submenu Link 4.1</a></li>
+                                    <li><a href="#">Dropdown Submenu Link 4.2</a></li>
+                                    <li><a href="#">Dropdown Submenu Link 4.3</a></li>
+                                    <li><a href="#">Dropdown Submenu Link 4.4</a></li>
+                                </ul>
+                            </li>
+                            <li class="divider"></li>
+                            <li class="dropdown dropdown-submenu">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown Link 5</a>
+                                <ul class="dropdown-menu">
+                                    <li class="dropdown dropdown-submenu">
+                                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown Submenu Link 5.4</a>
+                                        <ul class="dropdown-menu">
+                                            <li><a href="#">Dropdown Submenu Link 5.4.1</a></li>
+                                            <li><a href="#">Dropdown Submenu Link 5.4.2</a></li>
+                                            <li class="divider"></li>
+                                            <li class="dropdown dropdown-submenu">
+                                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown Submenu Link 5.4.3</a>
+                                                <ul class="dropdown-menu">
+                                                    <li><a href="#">Dropdown Submenu Link 5.4.3.1</a></li>
+                                                    <li><a href="#">Dropdown Submenu Link 5.4.3.2</a></li>
+                                                    <li><a href="#">Dropdown Submenu Link 5.4.3.3</a></li>
+                                                    <li><a href="#">Dropdown Submenu Link 5.4.3.4</a></li>
+                                                </ul>
+                                            </li>
+                                            <li class="dropdown dropdown-submenu">
+                                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown Submenu Link 5.4.4</a>
+                                                <ul class="dropdown-menu">
+                                                    <li><a href="#">Dropdown Submenu Link 5.4.4.1</a></li>
+                                                    <li><a href="#">Dropdown Submenu Link 5.4.4.2</a></li>
+                                                    <li><a href="#">Dropdown Submenu Link 5.4.4.3</a></li>
+                                                    <li><a href="#">Dropdown Submenu Link 5.4.4.4</a></li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+
+
+                </ul>
+                }
+
+
+
+
+
+                </nav>
+            </div>
+        </nav>
+            <div class="container body-content">
+                @RenderBody()
+                <hr style="margin-top:20px; margin-bottom:10px" />
+                <footer>
+                    @{
+                        var nhaThuoc = this.GetNhaThuoc(false);
+                    }
+                    @if (nhaThuoc != null)
+                    {
+                        <p style="padding:0px;margin:0px">@nhaThuoc.TenNhaThuoc - @nhaThuoc.DiaChi</p>
+                        <p style="padding:0px">Được phát triển bởi <a href="https://facebook.com/webnhathuoc"><strong style="color:#35A6CA">WEB</strong> <strong style="color:orange">NHÀ</strong> <strong style="color:#28CC28">THUỐC</strong></a></p>
+                    }
+                    else
+                    {
+                        <p style="padding:0px">Được phát triển bởi <a href="https://facebook.com/webnhathuoc"><strong style="color:#35A6CA">WEB</strong> <strong style="color:orange">NHÀ</strong> <strong style="color:#28CC28">THUỐC</strong></a></p>
+                    }
+
+                </footer>
+            </div>
+            @Scripts.Render("~/bundles/modernizr")
+            @Scripts.Render("~/bundles/jquery")
+            @Scripts.Render("~/bundles/bootstrap")
+            @Scripts.Render("~/bundles/jqueryui")
+            @RenderSection("scripts", required: false)
+            <script>
+                // Dropdown Menu Fade
+                //jQuery(document).ready(function () {
+                //    $(".dropdown").hover(
+
+                //        function () {
+                //            $('.dropdown-menu', this).stop().fadeIn("fast");
+                //        },
+
+                //        function () {
+                //            $('.dropdown-menu', this).stop().fadeOut("fast");
+                //        });
+                //    // hiden empty menu
+                //    jQuery('.dropdown-menu').each(function () {
+                //        if (jQuery(this).children().size() == 0) {
+                //            jQuery(this).parents('li.menu').remove();
+                //        }
+                //    });
+                //});
+                (function ($) {
+                    $(document).ready(function () {
+                        $('ul.dropdown-menu [data-toggle=dropdown]').on('click', function (event) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            $(this).parent().siblings().removeClass('open');
+                            $(this).parent().toggleClass('open');
+                        });
+                    });
+                })(jQuery);
+            </script>
+</body>
+</html>

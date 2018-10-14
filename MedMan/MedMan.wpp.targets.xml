@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <UseMsDeployExe>true</UseMsDeployExe>
+  </PropertyGroup>
+
+  <Target Name="AddCustomSkipRules">
+    <Message Text="Adding Custom Skip Rules" />
+    <ItemGroup>
+      <MsDeploySkipRules Include="SkipUploadsFolder">
+        <SkipAction>Delete</SkipAction>
+        <ObjectName>filePath</ObjectName>
+        <AbsolutePath>Uploads</AbsolutePath>
+      </MsDeploySkipRules>
+    </ItemGroup>
+  </Target>
+
+  <!-- this works! -->
+  <ItemGroup>
+    <ExcludeFromPackageFiles Include="favicon.ico">
+      <FromTarget>MedMan.wpp.targets</FromTarget>
+    </ExcludeFromPackageFiles>
+  </ItemGroup>
+
+</Project>

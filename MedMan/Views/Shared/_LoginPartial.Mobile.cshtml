@@ -1,0 +1,34 @@
+﻿@using System.Web.WebPages;
+@using System.Text.RegularExpressions;
+@using WebSecurity = sThuoc.Filter.WebSecurity;
+@if (Request.IsAuthenticated)
+{
+    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+    {
+        @Html.AntiForgeryToken()
+        string u = Request.ServerVariables["HTTP_USER_AGENT"];
+        Regex mobi = new Regex(@"(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+        Regex tabl = new Regex(@"(tablet|ipad|playbook|silk)|(android(?!.*mobile))", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+        if (mobi.IsMatch(u))
+        {
+            <ul class="nav navbar-nav navbar-right">
+                <li style="font-size:large"><row>&nbsp;&nbsp;&nbsp;<i class="fa fa-user fa-fw"></i>&nbsp;&nbsp;@Html.ActionLink(WebSecurity.CurrentUserFullName, "Manage", "Account", routeValues: null, htmlAttributes: new { title = "Manage" }) </li>
+                @*<li style="font-size:large"><row>&nbsp;&nbsp;&nbsp;<i class="fa fa-sign-out fa-fw"></i><a href="javascript:document.getElementById('logoutForm').submit()">&nbsp;&nbsp;&nbsp;Đăng xuất</a></li>*@
+            </ul>
+        }
+    }
+}
+else
+{
+    <ul class="nav navbar-nav navbar-right">
+        @*<li>@Html.ActionLink("Đăng Nhập", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>*@
+        <li style="font-size:large"><row>&nbsp;<i class="fa fa-sign-in" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Đăng Nhập", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+        @*<li class="dropdown">
+            <div ng-controller="GlobalInformController" data-ng-init="init()" ng-cloak>
+                <a class="dropdown-toggle count-info" data-toggle="dropdown" href="javascript:" ng-click="showSystemMesssage()">
+                    <i class="fa fa-envelope"></i>  <span class="label label-warning" ng-show="numberMessages > 0">{{numberMessages}}</span>
+                </a>
+            </div>
+        </li>*@
+    </ul>
+}

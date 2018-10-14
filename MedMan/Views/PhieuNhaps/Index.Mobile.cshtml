@@ -1,0 +1,662 @@
+﻿@using System.Text
+@using Med.Web.Extensions
+@using sThuoc.Models
+@using sThuoc.Filter
+@using PagedList.Mvc;
+@model PhieusModel
+
+@{
+    ViewBag.Title = "Tra cứu  phiếu nhập/xuất";
+    if (ViewBag.CurrentFilterKhoiPhuc > 0)
+    {
+        ViewBag.Title = "Khôi phục phiếu Nhập/Xuất";
+    }
+
+    <h4><b>@ViewBag.Title</b></h4>
+    <hr style="margin-top:0px" />
+}
+@{
+    var canModify = FunctionsService.Authorize(FunctionResource.BacSy, Operations.Modify, User.IsInRole("User") ? new[] { "User" } : new[] { "Admin" });
+}
+
+<div class="row">
+    <div class="col-md-3">
+        @using (Html.BeginForm("Index", "PhieuNhaps", FormMethod.Get))
+        {
+            <input type="hidden" name="khoiPhuc" value="@ViewBag.CurrentFilterKhoiPhuc" />
+
+            <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-map-marker fa-fw"></i></span>
+                @Html.DropDownList("loaiPhieu", new SelectList(ViewBag.LoaiPhieu, "MaLoaiXuatNhap", "TenLoaiXuatNhap"), htmlAttributes: new { @class = "form-control", placeholder = "Tìm theo" })
+            </div>
+
+            <div class="input-group margin-bottom-sm">
+                <span class="input-group-addon"><i class="fa fa-arrow-right fa-fw"></i></span>                
+                @Html.DropDownList("slType",
+                    new List<SelectListItem>() {
+                                new SelectListItem() { Text= "Mã sản phẩm", Value="2", Selected= (ViewBag.SearchFor == null|| ViewBag.SearchFor == "2"?true:false)},
+                                new SelectListItem() { Text= "Mã số phiếu", Value="1", Selected= (ViewBag.SearchFor == "1"?true:false)},
+                                new SelectListItem() { Text= "Tên nhân viên", Value="3", Selected= (ViewBag.SearchFor == "3"?true:false)},
+                                new SelectListItem() { Text= "Diễn giải", Value="4", Selected= (ViewBag.SearchFor == "4"?true:false)},
+                                new SelectListItem() { Text= "Số lô", Value="5", Selected= (ViewBag.SearchFor == "5"?true:false)},
+                                new SelectListItem() { Text= "Hạn dùng", Value="6", Selected= (ViewBag.SearchFor == "6"?true:false)}
+                            }
+                    , htmlAttributes: new { @class = "form-control" })
+                    @Html.TextBox("searchSoPhieu", ViewBag.CurrentFilterSoPhieu as string, htmlAttributes: new { @class = "form-control", placeholder = "Nhập số phiếu vào đây..." })
+                    @Html.TextBox("searchMaThuoc", ViewBag.CurrentFilterMaThuoc as string, htmlAttributes: new { @class = "form-control", placeholder = "Nhập mã thuốc vào đây..." })
+                    @Html.TextBox("searchTenNhanVien", ViewBag.CurrentFilterTenNhanVien as string, htmlAttributes: new { @class = "form-control", placeholder = "Nhập tên nhân viên vào đây..." })
+                    @Html.TextBox("searchDienGiai", ViewBag.CurrentFilterDienGiai as string, htmlAttributes: new { @class = "form-control", placeholder = "Nhập diễn giải vào đây..." })
+                    @Html.TextBox("searchSoLo", ViewBag.CurrentFilterSoLo as string, htmlAttributes: new { @class = "form-control", placeholder = "Nhập số lô vào đây..." })
+                    @Html.TextBox("searchHanDung", ViewBag.CurrentFilterHanDung as string, new { @class = "input-datetime form-control", placeholder = "Nhập hạn dùng vào đây..." })
+               
+            </div>
+            
+                if (ViewBag.CurrentFilterKhoiPhuc <= 0)
+                {
+                    <div class="input-group margin-bottom-sm">
+                        <span class="input-group-addon"><i class="fa fa-calendar fa-fw"></i></span>
+                        @Html.TextBox("searchNgay", null, new { @class = "datefield form-control input-datetimepicker from", placeholder = "Chọn ngày..." })
+                    </div>
+                }
+
+            <br />
+            <div>
+                @*<input type="submit" class="btn btn-default" value="Tìm" /><i class="fa fa-search fa-fw"></i>*@
+                <button class="btn btn-default" type="submit"><i class="fa fa-search fa-fw"></i></button>
+            </div>
+
+        }
+    </div>
+    <div class="col-md-9">
+        <div class="baocao-container">
+            @if (Model.PhieuNhaps.Any())
+            {
+                if (ViewBag.CurrentFilterLP == 1)
+                {
+                    <label>Danh sách phiếu nhập hàng</label>
+                }
+                else
+                {
+                    <label>Danh sách phiếu khách trả lại hàng</label>
+                }
+
+                <table class="table table-responsive table-bordered">
+                    <tr>
+                        <th style="background-color:darkgray">
+                            @*@Html.DisplayNameFor(model => model.PhieuNhaps[0].SoPhieuNhap)*@
+                            #
+                        </th>
+                        <th style="background-color:darkgray">
+                            @Html.DisplayNameFor(model => model.PhieuNhaps[0].NgayNhap)
+                        </th>
+                        @*<th style="background-color:darkgray">
+                                Nhân viên
+                            </th>*@
+                        @if (ViewBag.CurrentFilterLP == 1)
+                        {
+                            <th style="background-color:darkgray">
+                                Nhà CC
+                            </th>
+
+                        }
+                        else
+                        {
+                            <th style="background-color:darkgray">
+                                Khách hàng
+                            </th>
+                        }
+
+
+
+                        <th style="background-color:darkgray">
+                            @Html.DisplayNameFor(model => model.PhieuNhaps[0].TongTien)
+                        </th>
+                        <th style="background-color:darkgray;width: 70px"></th>
+                    </tr>
+                    @foreach (var item in Model.PhieuNhaps)
+                    {
+                    <tr>
+                        <td>
+                            @Html.ActionLink(item.SoPhieuNhap.ToString(), "Details", new { id = item.MaPhieuNhap })
+                        </td>
+
+                        <td>
+                            
+                            @string.Format("{0:dd/MM/yyyy}", item.NgayNhap)
+                        </td>
+                       
+                        <td>
+                            @if (ViewBag.CurrentFilterLP == 1)
+                            {
+                                @Html.DisplayFor(modelItem => item.NhaCungCap.TenNhaCungCap)
+                            }
+                            else
+                            {
+                                @Html.DisplayFor(modelItem => item.KhachHang.TenKhachHang)
+                            }
+                        </td>
+
+                        @if (ViewBag.CurrentFilterLP == 1 && !this.HasPermisson("thuocs", "ViewPriceInput"))
+                        {
+
+                            <td style="text-align:right">
+                                ***
+                            </td>
+                        }
+                        else
+                        {
+
+                            <td style="text-align:right">
+                                @string.Format("{0:0,###}", Math.Round(item.TongTien, 0))
+                            </td>
+                        }
+                      
+                        <td style="text-align:right">
+
+                            @if (ViewBag.CurrentFilterKhoiPhuc > 0)
+                            {
+                                <a href="@Url.Action("restore", new { id = item.MaPhieuNhap })"><i class="fa fa-undo fa-fw"></i></a>
+                            }
+                            else
+                            {
+                                <a href="@Url.Action("Edit", new { id = item.MaPhieuNhap })"><i class="fa fa-pencil fa-fw"></i></a>
+                                @:|
+                                <a href="@Url.Action("Delete", new { id = item.MaPhieuNhap })"><i class="fa fa-trash-o fa-fw"></i></a>
+                            }
+                        </td>
+                        @*}*@
+                    </tr>
+                    }
+                </table>
+
+                    @:Trang @(Model.PhieuNhaps.PageCount < Model.PhieuNhaps.PageNumber ? 0 : Model.PhieuNhaps.PageNumber) trong @Model.PhieuNhaps.PageCount
+                    @Html.PagedListPager(Model.PhieuNhaps, page => Url.Action("Index",
+                new
+                {
+                    page,
+                    loaiPhieu = ViewBag.CurrentFilterLP,
+                    searchTen = ViewBag.CurrentFilterTen,
+                    searchSoPhieu = ViewBag.CurrentFilterSoPhieu,
+                    searchMaThuoc = ViewBag.CurrentFilterMaThuoc,
+                    searchTenNhanVien = ViewBag.CurrentFilterTenNhanVien,
+                    searchDienGiai = ViewBag.CurrentFilterDienGiai,
+                    searchSoLo = ViewBag.CurrentFilterSoLo,
+                    searchHanDung = ViewBag.CurrentFilterHanDung,
+                    searchNgay = ViewBag.CurrentFilterNgay,
+                    khoiPhuc = ViewBag.CurrentFilterKhoiPhuc
+                }))
+            }
+
+            @if (Model.PhieuXuats.Any())
+            {
+                if (ViewBag.CurrentFilterLP == 2)
+                {
+                    <label>Danh sách phiếu xuất bán</label>
+                }
+                else
+                {
+                    <label>Danh sách phiếu trả lại nhà cung cấp</label>
+                }
+                <table class="table table-responsive table-bordered">
+                    <tr>
+                        <th style="background-color:darkgray">
+                            @*@Html.DisplayNameFor(model => model.PhieuXuats[0].SoPhieuXuat)*@
+                            #
+                        </th>
+                        <th style="background-color:darkgray">
+                            @Html.DisplayNameFor(model => model.PhieuXuats[0].NgayXuat)
+
+                        </th>
+                        @*<th style="background-color:darkgray">
+                                Nhân viên
+                            </th>*@
+                        @if (ViewBag.CurrentFilterLP == 2)
+                        {
+                            <th style="background-color:darkgray">
+                                @Html.DisplayNameFor(model => model.PhieuXuats[0].KhachHang.TenKhachHang)
+                            </th>
+                        }
+                        else
+                        {
+                            <th style="background-color:darkgray">
+                                Nhà CC
+                            </th>
+                        }
+
+
+                        <th style="background-color:darkgray">
+                            @Html.DisplayNameFor(model => model.PhieuXuats[0].TongTien)
+                        </th>
+                        <th style="background-color:darkgray;text-align:right;width:70px"></th>
+                    </tr>
+
+                    @foreach (var item in Model.PhieuXuats)
+                    {
+                        <tr>
+                            <td>
+                                @Html.ActionLink(item.SoPhieuXuat.ToString(), "Details", "PhieuXuats", new { id = item.MaPhieuXuat }, null)
+                            </td>
+                            <td>
+                                @*@Html.DisplayFor(modelItem => item.NgayXuat)*@
+                                @string.Format("{0:dd/MM/yyyy}", item.NgayXuat)
+
+                            </td>
+                            @*<td>
+                                    @Html.DisplayFor(modelItem => item.CreatedBy.UserName)
+                                </td>*@
+                            <td>
+                                @if (ViewBag.CurrentFilterLP == 2)
+                                {
+                                    @Html.DisplayFor(modelItem => item.KhachHang.TenKhachHang)
+                                }
+                                else
+                                {
+                                    @Html.DisplayFor(modelItem => item.NhaCungCap.TenNhaCungCap)
+                                }
+                            </td>
+                            <td style="text-align:right">
+                                @string.Format("{0:0,###}", Math.Round(item.TongTien,0))
+                            </td>
+                            <td style="text-align:right">
+
+                                @*@if (canModify)
+                                    {*@
+
+                                @if (ViewBag.CurrentFilterKhoiPhuc > 0)
+                                {
+                                    @*@Html.ActionLink("Khôi phục", "restore", "PhieuXuats", new { id = item.MaPhieuXuat }, null)
+                                        @:| @Html.ActionLink("Xóa", "Delete4ever", "PhieuXuats", new { id = item.MaPhieuXuat }, new { @title = "Xóa vĩnh viễn", @data_type = ViewBag.CurrentFilterLP, @data_id = item.MaPhieuXuat, @class = "btn-delete4ever" })*@
+                                    <a href="@Url.Action("restore", "PhieuXuats", new { id = item.MaPhieuXuat })"><i class="fa fa-undo fa-fw"></i></a>
+                                    @*@:|
+                                        <a href="@Url.Action("Delete4ever", "PhieuXuats", new { id = item.MaPhieuXuat })><i class="fa fa-times fa-fw"></i></a>*@
+                                }
+                                else
+                                {
+                                    @*@Html.ActionLink("Sửa", "Edit", "PhieuXuats", new { id = item.MaPhieuXuat }, null)
+                                        @:| @Html.ActionLink("Xóa", "Delete", "PhieuXuats", new { id = item.MaPhieuXuat }, new { @data_type = ViewBag.CurrentFilterLP, @data_id = item.MaPhieuXuat, @class = "btn-delete" })*@
+                                    <a href="@Url.Action("Edit", "PhieuXuats", new { id = item.MaPhieuXuat })"><i class="fa fa-pencil fa-fw"></i></a>
+                                    @:|
+                                    <a href="@Url.Action("Delete", "PhieuXuats", new { id = item.MaPhieuXuat })"><i class="fa fa-trash-o fa-fw"></i></a>
+                                }
+
+                                @*}*@
+                            </td>
+                        </tr>
+                    }
+                </table>
+
+                @:Trang @(Model.PhieuXuats.PageCount < Model.PhieuXuats.PageNumber ? 0 : Model.PhieuXuats.PageNumber) trong @Model.PhieuXuats.PageCount
+                @Html.PagedListPager(Model.PhieuXuats, page => Url.Action("Index",
+                                    new
+                                    {
+                                        page,
+                                        loaiPhieu = ViewBag.CurrentFilterLP,
+                                        searchTen = ViewBag.CurrentFilterTen,
+                                        searchSoPhieu = ViewBag.CurrentFilterSoPhieu,
+                                        searchMaThuoc = ViewBag.CurrentFilterMaThuoc,
+                                        searchTenNhanVien = ViewBag.CurrentFilterTenNhanVien,
+                                        searchDienGiai = ViewBag.CurrentFilterDienGiai,
+                                        searchSoLo = ViewBag.CurrentFilterSoLo,
+                                        searchHanDung = ViewBag.CurrentFilterHanDung,
+                                        searchNgay = ViewBag.CurrentFilterNgay,
+                                        khoiPhuc = ViewBag.CurrentFilterKhoiPhuc,
+                                        export = 0
+                                    }))
+            }
+            @if (!Model.PhieuNhaps.Any() && !Model.PhieuXuats.Any())
+            {
+                <p class="text-danger"><b>Không tìm thấy dữ liệu</b></p>
+            }
+        </div>
+
+    </div>
+</div>
+
+
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/datepicker-vi.js"></script>
+    <script type="text/javascript">
+        var cache = {};
+        var currentTerm = "";
+
+        $(function () {
+            //bind date
+            var datefield = $(".datefield");
+            datefield.removeClass('hasDatepicker');
+            datefield.datepicker({
+                dateFormat: "dd/mm/yy",
+                changeMonth: true,
+                changeYear: true,
+                onClose: function () {
+                    $(this).parent().parent().find('input.save-thuoc').focus();
+                }
+            });
+
+            $("#slType").off("change");
+            $("#slType").on("change", function () {
+                if ($(this).val() > 0) {
+                    ChangeEditValue($(this).val());
+                }
+            }).trigger('change');
+
+            //Show/hide the upload
+            $("#dvUpPhieuXuat").hide();
+            $("#dvUpPhieuNhap2").hide();
+            $("#dvUpPhieuXuat2").hide();
+            $("#loaiPhieu").change(function () {
+                var type = $(this).val();
+                BindAutocomplete($("#searchSoPhieu"), "soPhieu", type);
+
+                changingLoaiPhieu($(this).val());
+            });
+            changingLoaiPhieu($("#loaiPhieu").val());
+
+            InitAutocomplete();
+        });
+
+        function checkchangeLoaPhieu(val) {
+
+            //bind select
+            var checkinital = true;
+
+            if (getUrlParameter("searchMaThuoc") != "") {
+                $("#slType").val(2);
+                ChangeEditValue(2);
+                checkinital = false;
+            }
+            if (getUrlParameter("searchSoPhieu") != "") {
+                $("#slType").val(1);
+                ChangeEditValue(1);
+                checkinital = false;
+            }
+            if (getUrlParameter("searchTenNhanVien") != "") {
+                $("#slType").val(3);
+                ChangeEditValue(3);
+                checkinital = false;
+            }
+            if (getUrlParameter("searchDienGiai") != "") {
+                $("#slType").val(4);
+                ChangeEditValue(4);
+                checkinital = false;
+            }
+            if (val == 1) {
+                if (getUrlParameter("searchSoLo") != "") {
+                    $("#slType").val(5);
+                    ChangeEditValue(5);
+                    checkinital = false;
+                }
+                if (getUrlParameter("searchHanDung") != "") {
+                    $("#slType").val(6);
+                    ChangeEditValue(6);
+                    checkinital = false;
+                }
+            }
+            //nếu chưa có dữ liệu tìm kiềm thì mặc định là 2
+            if (checkinital) {
+                $("#slType").val(2);
+                ChangeEditValue(2);
+            }
+
+        }
+
+        function changingLoaiPhieu(val) {
+            var selectbox = document.getElementById("slType");
+            if (val == 1) {
+                $("#dvUpPhieuXuat").hide();
+                $("#dvUpPhieuXuat2").hide();
+                $("#dvUpPhieuNhap2").hide();
+                $("#dvUpPhieuNhap").show();
+                //
+                $('#ten-khachang-nhacc').text('Tên Nhà Cung Cấp:');
+                //
+                var checkSoLo = false;
+                var checkHanDung = false;
+                for (var i = 0; i < selectbox.options.length; i++) {
+                    if (selectbox.options[i].value == '5')
+                        checkSoLo = true;
+                    if (selectbox.options[i].value == '6')
+                        checkHanDung = true;
+                }
+                if (!checkSoLo) {
+                    var solo = document.createElement("option");
+                    solo.text = "Số lô";
+                    solo.value = "5";
+                    selectbox.add(solo);
+                }
+                if (!checkHanDung) {
+                    var handung = document.createElement("option");
+                    handung.text = "Hạn dùng";
+                    handung.value = "6";
+                    selectbox.add(handung);
+                }
+                checkchangeLoaPhieu(1);
+            } else if (val == 2) {
+                $("#dvUpPhieuXuat").show();
+                $("#dvUpPhieuNhap").hide();
+                $("#dvUpPhieuNhap2").hide();
+                $("#dvUpPhieuXuat2").hide();
+                $('#ten-khachang-nhacc').text('Tên Khách Hàng:');
+                //       
+                for (var i = 0; i < selectbox.options.length; i++) {
+                    if (selectbox.options[i].value == '5')
+                        selectbox.remove(i);
+                    if (selectbox.options[i].value == '6')
+                        selectbox.remove(i);
+                }
+                //
+                checkchangeLoaPhieu(2);
+            } else if (val == 3) {
+                $("#dvUpPhieuXuat").hide();
+                $("#dvUpPhieuNhap").hide();
+                $("#dvUpPhieuNhap2").show();
+                $("#dvUpPhieuXuat2").hide();
+                $('#ten-khachang-nhacc').text('Tên Khách Hàng:');
+                //               
+
+                for (var i = 0; i < selectbox.options.length; i++) {
+                    if (selectbox.options[i].value == '5')
+                        selectbox.remove(i);
+                    if (selectbox.options[i].value == '6')
+                        selectbox.remove(i);
+                }
+                //
+                checkchangeLoaPhieu(3);
+            } else if (val == 4) {
+                $("#dvUpPhieuXuat").hide();
+                $("#dvUpPhieuNhap").hide();
+                $("#dvUpPhieuNhap2").hide();
+                $("#dvUpPhieuXuat2").show();
+                $('#ten-khachang-nhacc').text('Tên Nhà Cung Cấp:');
+                //                              
+                //       
+                for (var i = 0; i < selectbox.options.length; i++) {
+                    if (selectbox.options[i].value == '5')
+                        selectbox.remove(i);
+                    if (selectbox.options[i].value == '6')
+                        selectbox.remove(i);
+                }
+                //
+                checkchangeLoaPhieu(4);
+            } else {
+                $("#dvUpPhieuXuat").hide();
+                $("#dvUpPhieuNhap").hide();
+            }
+        }
+
+        //Change the show/hide of the value textbox
+
+        function ChangeEditValue(type) {
+            if (type == 1) {
+                $("#searchSoPhieu").show();
+                $("#searchMaThuoc").val("");
+                $("#searchMaThuoc").hide();
+                $("#searchTenNhanVien").val("");
+                $("#searchTenNhanVien").hide();
+                $("#searchDienGiai").val("");
+                $("#searchDienGiai").hide();
+                $("#searchSoLo").val("");
+                $("#searchSoLo").hide();
+                $("#searchHanDung").val("");
+                $("#searchHanDung").hide();
+            } else if (type == 2) {
+                $("#searchMaThuoc").show();
+                $("#searchSoPhieu").val("");
+                $("#searchSoPhieu").hide();
+                $("#searchTenNhanVien").val("");
+                $("#searchTenNhanVien").hide();
+                $("#searchDienGiai").val("");
+                $("#searchDienGiai").hide();
+                $("#searchSoLo").val("");
+                $("#searchSoLo").hide();
+                $("#searchHanDung").val("");
+                $("#searchHanDung").hide();
+            } else if (type == 3) {
+                $("#searchTenNhanVien").show();
+                $("#searchSoPhieu").val("");
+                $("#searchSoPhieu").hide();
+                $("#searchMaThuoc").val("");
+                $("#searchMaThuoc").hide();
+                $("#searchDienGiai").val("");
+                $("#searchDienGiai").hide();
+                $("#searchSoLo").val("");
+                $("#searchSoLo").hide();
+                $("#searchHanDung").val("");
+                $("#searchHanDung").hide();
+            } else if (type == 4) {
+                $("#searchDienGiai").show();
+                $("#searchSoPhieu").val("");
+                $("#searchSoPhieu").hide();
+                $("#searchMaThuoc").val("");
+                $("#searchMaThuoc").hide();
+                $("#searchTenNhanVien").val("");
+                $("#searchTenNhanVien").hide();
+                $("#searchSoLo").val("");
+                $("#searchSoLo").hide();
+                $("#searchHanDung").val("");
+                $("#searchHanDung").hide();
+            } else if (type == 5) {
+                $("#searchSoLo").show();
+                $("#searchDienGiai").hide();
+                $("#searchDienGiai").val("");
+                $("#searchSoPhieu").val("");
+                $("#searchSoPhieu").hide();
+                $("#searchMaThuoc").val("");
+                $("#searchMaThuoc").hide();
+                $("#searchTenNhanVien").val("");
+                $("#searchTenNhanVien").hide();
+                $("#searchHanDung").val("");
+                $("#searchHanDung").hide();
+            } else if (type == 6) {
+                $("#searchHanDung").show();
+                $("#searchSoLo").val("");
+                $("#searchSoLo").hide();
+                $("#searchDienGiai").hide();
+                $("#searchDienGiai").val("");
+                $("#searchSoPhieu").val("");
+                $("#searchSoPhieu").hide();
+                $("#searchMaThuoc").val("");
+                $("#searchMaThuoc").hide();
+                $("#searchTenNhanVien").val("");
+                $("#searchTenNhanVien").hide();
+
+            }
+        }
+
+        function getUrlParameter(sParam) {
+            var sPageURL = window.location.search.substring(1);
+            var sURLVariables = sPageURL.split('&');
+            for (var i = 0; i < sURLVariables.length; i++) {
+                var sParameterName = sURLVariables[i].split('=');
+                if (sParameterName[0] == sParam) {
+                    return decodeURIComponent(sParameterName[1]);
+                }
+            }
+            return "";
+        }
+
+        //Upload the excel file
+        $('.upload-form').on('submit', function (event) {
+            var check = CheckFileName($(this));
+            if (!check) {
+                event.preventDefault();
+            }
+        });
+
+        function OpenFileDialog(sender, type) {
+            $("#fileupload" + type).trigger('click');
+        }
+
+        $('input[name=uploadFile]').on('change', function () {
+            $(this).parents('.upload-form').trigger('submit');
+        });
+        function CheckFileName(el) {
+            var fileName = el.find("input[name=uploadFile]").val();
+            //debugger;
+            var fileExtension = fileName.split(".");
+            fileExtension = fileExtension[fileExtension.length - 1];
+            if (fileName == "") {
+                alert("Chưa chọn tệp tin Excel tải lên");
+                return false;
+
+            } else if (fileExtension.toUpperCase() == "XLS" || fileExtension.toUpperCase() == "XLSX")
+                return true;
+            else {
+                alert("Tên file " + fileName.split(".")[1] + " không đúng. Cần tải file có đuôi xls/xlsx");
+                return false;
+            }
+            return true;
+        }
+
+        //Autocomplete init
+        function InitAutocomplete() {
+            var type = $("#loaiPhieu").val();
+            BindAutocomplete($("#searchMaThuoc"), "maThuoc", 0);
+            BindAutocomplete($("#searchSoPhieu"), "soPhieu", type);
+        }
+
+        function BindAutocomplete(selectorElem, selectorOutput, type) {
+            var url = $('input[name=baseUrl]').val() + "PhieuNhaps/GetMaSoPhieu";
+            if (selectorOutput == "maThuoc") {
+                url = $('input[name=baseUrl]').val() + "Thuocs/GetThuocsByMaOrTen";
+            }
+            $(selectorElem).autocomplete({
+                minLength: 2,
+                source: function (request, response) {
+                    var term = request.term;
+                    currentTerm = selectorElem + term;
+                    if (term in cache) {
+                        response(cache[selectorElem + term]);
+                        return;
+                    }
+                    $.getJSON(url, request, function (data, status, xhr) {
+                        cache[selectorElem + term] = data;
+                        response(data);
+                    });
+                },
+                messages: {
+                    noResults: "Không tìm thấy"//,
+                    // results: ""
+                },
+                focus: function (event, ui) {
+                    $(this).val(ui.item.maThuoc);
+                    return false;
+                },
+                select: function (event, ui) {
+                    $(this).val(ui.item.maThuoc);
+                    $(selectorOutput).val(ui.item.value);
+                    return false;
+                }
+            }).each(function () {
+                $(this).autocomplete('instance')._renderItem = function (ul, item) {
+                    return $("<li>")
+                        .append("<a>" + item.desc + "</a>")
+                        .append('<input type="hidden" name="price" value="' + item.price + '"/>')
+                        .append('<input type="hidden" name="unit" value="' + item.unit + '"/>')
+                        .appendTo(ul);
+                };
+            });
+        }
+    </script>
+}

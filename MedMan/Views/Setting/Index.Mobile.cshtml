@@ -1,0 +1,45 @@
+﻿@using Med.Web.Extensions
+@using sThuoc.Models
+@using sThuoc.Filter
+@model IEnumerable<Setting>
+
+@{
+    ViewBag.Title = "Thiết lập chung";
+    Layout = null;
+}
+
+
+@{
+    var canCreate = FunctionsService.Authorize("Setting", "Create", this.GetNhaThuoc());
+    var canModify = FunctionsService.Authorize("Setting", "Edit", this.GetNhaThuoc());
+}
+<span class="text-danger txt-error"></span>
+<div id="setting-form-holder">
+
+</div>
+<div class="setting-list">
+    <table class="table">
+        @foreach (var item in Model)
+        {
+            <tr class="@string.Format("setting-{0}",item.Id)">
+                <td>
+                    @Html.DisplayFor(modelItem => item.Key)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Value)
+                </td>
+                <td>
+                    @if (canModify)
+                    {
+                        @*@: @Html.ActionLink("Sửa", "Edit", new { id = item.Id }, new { @class = "setting-edit", @data_id = item.Id })*@
+                        @*@:| @Html.ActionLink("Xóa", "Delete", new { id = item.Id }, new { @class = "setting-delete", @data_id = item.Id })*@
+                        @*<a href="/setting/edit/@item.Id" class="setting-edit">Sửa</a>*@
+                        @: <a class="setting-edit" data-id="item.id" href="@Url.Action("Edit", "Setting", new { id = item.Id })"><i class="fa fa-pencil fa-fw" style="text-align:right"></i></a> 
+                    }
+                </td>
+            </tr>
+        }
+
+    </table>
+
+</div>

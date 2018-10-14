@@ -19,7 +19,7 @@ namespace Med.Service.Receipt
             List<MinModifiedDateItem> minModifiedDateItems);
         Dictionary<int, double> GetReceiptRefQuantityByDeliveryItems(string drugStoreCode, 
             params int[] deliveryItemIds);
-        int DeleteReceiptNote(string drugStoreCode, int noteId);
+        int DeleteReceiptNote(string drugStoreCode, int noteId, int? actorId);
         long GetNewReceiptNoteNumber(string drugStoreCode);
     }
 }

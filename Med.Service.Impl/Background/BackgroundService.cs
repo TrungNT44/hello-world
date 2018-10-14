@@ -1,290 +1,132 @@
 ﻿using App.Common.Data;
-using global::System.Collections.Generic;
-using Med.Service.Log;
-using Med.Entity.Log;
 using Med.DbContext;
 using App.Common.DI;
 using Med.Service.Base;
-using Med.ServiceModel.Log;
 using global::System;
-using Newtonsoft.Json;
 using Med.Entity;
 using global::System.Linq;
 using App.Common.Helpers;
-using Med.Common.Enums;
 using Med.Service.Background;
 using Med.Service.Report;
 using Med.Service.Utilities;
-using Med.Common;
-using Med.ServiceModel.Common;
-using Med.Service.Caching;
 using Med.Service.Drug;
-using Med.ServiceModel.Drug;
+using Med.Entity.Report;
 using Med.Entity.Drug;
-using App.Constants.Enums;
+using Med.Common.Enums;
 
 namespace Med.Service.Impl.Background
 {
     public class BackgroundService : MedBaseService, IBackgroundService
-    {
-        public void UpdateDrugExpiredDate4InitInventory(string drugStoreCode, int drugId)
+    {  
+        public void MakeAffectedChangesRelatedDeliveryNotes(string drugStoreID, params int[] noteIds)
         {
-            var noteRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuNhap>>();
-            var noteItems = noteRepo.GetAll().Where(i => i.NhaThuoc_MaNhaThuoc == drugStoreCode && !i.Xoa);
-            var receiptNoteId = noteItems.Where(r => r.LoaiXuatNhap_MaLoaiXuatNhap == (int)NoteInOutType.InitialInventory)
-               .Select(i => i.MaPhieuNhap).FirstOrDefault();
-            if (receiptNoteId <= 0) return;
-            var drugRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, Thuoc>>();
-            var expiredDate = drugRepo.GetAll().Where(i => i.NhaThuoc_MaNhaThuoc == drugStoreCode && i.ThuocId == drugId)
-               .Select(i => i.HanDung).FirstOrDefault();
-            var noteItemRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuNhapChiTiet>>();
+            LogHelper.Debug("Make affected changed related to delivery notes: {0}.", string.Join(",", noteIds));
 
-            noteItemRepo.UpdateMany(i => i.NhaThuoc_MaNhaThuoc == drugStoreCode
-                && i.PhieuNhap_MaPhieuNhap == receiptNoteId
-                && i.Thuoc_ThuocId == drugId, i => new PhieuNhapChiTiet() { HanDung = expiredDate, RequestUpdateFromBkgService = true });
-        }
-        
-        public void UpdateLastInventoryQuantity4CacheDrugs(string drugStoreCode, int[] drugIds)
-        {
-            var invService = IoC.Container.Resolve<IInventoryService>();
-            //var forceRecache = !MedCacheManager.Instance.HasRemainQuantityCaching(drugStoreCode);
-            var inventories = invService.GenerateInventory4Drugs(drugStoreCode, false, false, drugIds);
-        }
-        public void UpdateExtraInfo4DeliveryNotes(string drugStoreCode, params int[] noteIds)
-        {
-            LogHelper.Debug("Update real quantity of delivery notes: {0}.", string.Join(",", noteIds));
-            IBaseRepository<PhieuXuat> noteRepo = null;
-            var notes = _dataFilterService.GetValidDeliveryNotes(drugStoreCode, out noteRepo);
             var noteItemRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuXuatChiTiet>>();
-            var drugs = _dataFilterService.GetValidDrugs(drugStoreCode);
-            var noteItems = (from n in notes
-                                 join ni in noteItemRepo.GetAll() on n.MaPhieuXuat equals ni.PhieuXuat_MaPhieuXuat
-                                 join dr in drugs on ni.Thuoc_ThuocId equals dr.ThuocId
-                                 where ni.SoLuong > 0 && ni.NhaThuoc_MaNhaThuoc == drugStoreCode
-                                    && noteIds.Contains(n.MaPhieuXuat)
-                                 select new ItemInfoCandidate
-                                 {
-                                     NoteId = n.MaPhieuXuat,
-                                     NoteItemId = ni.MaPhieuXuatCt,
-                                     Quantity = (double)ni.SoLuong,
-                                     DrugId = dr.ThuocId,
-                                     ItemUnitId = ni.DonViTinh_MaDonViTinh,
-                                     RetailUnitId = dr.DonViXuatLe_MaDonViTinh,
-                                     UnitId = dr.DonViThuNguyen_MaDonViTinh,
-                                     Factors = dr.HeSo,
-                                     NoteType = n.MaLoaiXuatNhap,
-                                     NoteDate = n.NgayXuat,
-                                     Price = (double)ni.GiaXuat,
-                                     VAT = (double)n.VAT,
-                                     Discount = (double)ni.ChietKhau,
-                                     ReduceQuantity = ni.ReduceQuantity ?? 0
-                                 }).ToList();
-            if (!noteItems.Any()) return;
+            var drugIds = noteItemRepo.GetAll().Where(i => noteIds.Contains(i.PhieuXuat_MaPhieuXuat.Value)
+                && i.IsModified && i.NhaThuoc_MaNhaThuoc == drugStoreID)
+                .Select(i => i.Thuoc_ThuocId.Value).ToArray();
+            if (!drugIds.Any()) return;
 
-            var updateCands = new List<PhieuXuatChiTiet>();
-            foreach (var item in noteItems)
-            {
-                var factors = 1.0;
-                if (item.UnitId.HasValue && item.ItemUnitId == item.UnitId.Value && item.Factors > MedConstants.EspQuantity)
-                {
-                    factors = item.Factors;
-                }
-                item.RetailQuantity = item.Quantity * factors;
-                item.RetailPrice = item.Price / factors;
+            // Generate inventory for drugs.
+            var invService = IoC.Container.Resolve<IInventoryService>();
+            invService.TryToGenerateInventory4Drugs(drugStoreID, false, false, true, drugIds);
 
-                updateCands.Add(new PhieuXuatChiTiet()
-                {
-                    MaPhieuXuatCt = item.NoteItemId,
-                    RetailQuantity = item.RetailQuantity,
-                    RetailPrice = item.RetailPrice,
-                    ReduceQuantity = 0,
-                    ReduceNoteItemIds = string.Empty,
-                    HandledStatusId = (int)NoteItemHandledStatus.None,
-                    IsModified = true
-                });
-            }
-
-            noteItemRepo.UpdateMany(updateCands, d => d.MaPhieuXuatCt, d => d.RetailQuantity,
-                d => d.RetailPrice, d => d.ReduceQuantity, d => d.ReduceNoteItemIds, d => d.HandledStatusId,
-                d => d.IsModified);
-
-            // Update last delivery price of drugs
-            var invRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, Inventory>>();
-            var drugPrices = noteItems.GroupBy(i => i.DrugId).ToDictionary(i => i.Key,
-                i => i.Select(d => d.RetailPrice).OrderByDescending(d => d).First());
-
-            var drugIds = drugPrices.Keys;
-            var updateInvs = invRepo.Table.Where(i => i.DrugStoreID == drugStoreCode
-                && drugIds.Contains(i.DrugID) && i.RecordStatusID == (byte)RecordStatus.Activated).ToList();
-            updateInvs.ForEach(i =>
-            {
-                if (drugPrices.ContainsKey(i.DrugID))
-                {
-                    i.LastOutPrice = drugPrices[i.DrugID];
-                }
-            });
-            invRepo.UpdateMany(updateInvs);
-            invRepo.Commit();
+            // Make affected changes
+            var rtpHelperService = IoC.Container.Resolve<IReportHelperService>();
+            rtpHelperService.TryMakeAffectedChangesByDeliveryNotes(drugStoreID, noteIds);
         }
-        public void UpdateExtraInfo4ReceiptNotes(string drugStoreCode, params int[] noteIds)
+        public void MakeAffectedChangesRelatedReceiptNotes(string drugStoreID, params int[] noteIds)
         {
-            LogHelper.Debug("Update real quantity of receipt notes: {0}.", string.Join(",", noteIds));
-            IBaseRepository<PhieuNhap> noteRepo = null;
-            var notes = _dataFilterService.GetValidReceiptNotes(drugStoreCode, out noteRepo);
+            LogHelper.Debug("Make affected changed related to receipt notes: {0}.", string.Join(",", noteIds));
+            var noteRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuNhap>>();
             var noteItemRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuNhapChiTiet>>();
-            var drugs = _dataFilterService.GetValidDrugs(drugStoreCode);
-            var noteItems = (from n in notes
-                             join ni in noteItemRepo.GetAll() on n.MaPhieuNhap equals ni.PhieuNhap_MaPhieuNhap
-                             join dr in drugs on ni.Thuoc_ThuocId equals dr.ThuocId
-                             where ni.SoLuong > 0 && ni.NhaThuoc_MaNhaThuoc == drugStoreCode
-                                && noteIds.Contains(n.MaPhieuNhap)
-                             select new ItemInfoCandidate
+            var noteItems = (from ni in noteItemRepo.GetAll()
+                             join n in noteRepo.GetAll() on ni.PhieuNhap_MaPhieuNhap equals n.MaPhieuNhap
+                             where noteIds.Contains(n.MaPhieuNhap)
+                                 && ni.IsModified && n.NhaThuoc_MaNhaThuoc == drugStoreID
+                             select new
                              {
-                                 NoteId = n.MaPhieuNhap,
-                                 NoteItemId = ni.MaPhieuNhapCt,
-                                 Quantity = (double)ni.SoLuong,
-                                 DrugId = dr.ThuocId,
-                                 ItemUnitId = ni.DonViTinh_MaDonViTinh,
-                                 RetailUnitId = dr.DonViXuatLe_MaDonViTinh,
-                                 UnitId = dr.DonViThuNguyen_MaDonViTinh,
-                                 Factors = dr.HeSo,
-                                 NoteType = n.LoaiXuatNhap_MaLoaiXuatNhap ?? 0,
-                                 NoteDate = n.NgayNhap,
-                                 Price = (double)ni.GiaNhap,
-                                 VAT = (double)n.VAT,
-                                 Discount = (double)ni.ChietKhau,
-                                 ReduceQuantity = ni.ReduceQuantity ?? 0,
-                                 OutPrice = (double)ni.GiaBanLe,
-                                 RetailBatchOutPrice = (double)dr.GiaBanBuon,
-                                 PrevRetailOutPrice = (double)dr.GiaBanLe,
+                                 DrugID = ni.Thuoc_ThuocId.Value,
+                                 NoteTypeID = n.LoaiXuatNhap_MaLoaiXuatNhap.Value,
+                                 ni.RetailOutPrice,
+                                 ni.RetailPrice
                              }).ToList();
             if (!noteItems.Any()) return;
-
-            var updateCands = new List<PhieuNhapChiTiet>();
-            foreach (var item in noteItems)
+            var receiptNoteItems = noteItems.Where(i => i.NoteTypeID == (int)NoteInOutType.Receipt).ToList();
+            var dsSettings = IoC.Container.Resolve<IUtilitiesService>().GetDrugStoreSetting(drugStoreID);
+            if (dsSettings != null && dsSettings.AutoUpdateInOutPriceOnNote && receiptNoteItems.Any())
             {
-                var factors = 1.0;
-                if (item.UnitId.HasValue && item.ItemUnitId == item.UnitId.Value && item.Factors > MedConstants.EspQuantity)
+                var drugPrices = receiptNoteItems.GroupBy(i => i.DrugID).Select(i => new Thuoc()
                 {
-                    factors = item.Factors;
-                }
-                item.RetailQuantity = item.Quantity * factors;
-                item.RetailPrice = item.Price / factors;
-                item.RetailOutPrice = item.OutPrice / factors;
-                if (item.RetailPrice <= MedConstants.EspPrice)
-                {
-                    item.RetailPrice = item.PrevRetailOutPrice;
-                }
-                if (item.RetailOutPrice <= MedConstants.EspPrice)
-                {
-                    item.RetailOutPrice = item.PrevRetailOutPrice;
-                }
-
-                updateCands.Add(new PhieuNhapChiTiet()
-                {
-                    MaPhieuNhapCt = item.NoteItemId,
-                    RetailQuantity = item.RetailQuantity,
-                    RetailPrice = item.RetailPrice,
-                    ReduceQuantity = 0,
-                    ReduceNoteItemIds = string.Empty,
-                    HandledStatusId = (int)NoteItemHandledStatus.None,
-                    IsModified = true,          
-                });
+                    ThuocId = i.Key,
+                    GiaNhap = (Decimal)i.First().RetailPrice,
+                    GiaBanLe = (Decimal)i.First().RetailOutPrice,
+                }).ToList();
+                var drugRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, Thuoc>>();
+                drugRepo.UpdateMany(drugPrices, i => i.GiaNhap, i => i.GiaBanLe);
             }
+            var drugIds = noteItems.Select(i => i.DrugID).Distinct().ToArray();
 
-            noteItemRepo.UpdateMany(updateCands, d => d.MaPhieuNhapCt, d => d.RetailQuantity,
-                d => d.RetailPrice, d => d.ReduceQuantity, d => d.ReduceNoteItemIds, d => d.HandledStatusId,
-                d => d.IsModified);
+            // Generate inventory for drugs.
+            var invService = IoC.Container.Resolve<IInventoryService>();
+            invService.TryToGenerateInventory4Drugs(drugStoreID, false, false, true, drugIds);
 
-            // Update last receipt price of drugs
-            var drugRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, Thuoc>>();
+            // Make affected changes
+            var rtpHelperService = IoC.Container.Resolve<IReportHelperService>();
+            rtpHelperService.TryToMakeAffectedChangesByReceiptNotes(drugStoreID, noteIds);
+        }
+
+        public void MakeAffectedChangesByUpdatedDrugs(string drugStoreID, params int[] drugIds)
+        {
+            var rtpHelperService = IoC.Container.Resolve<IReportHelperService>();
+            rtpHelperService.MakeAffectedChangesByUpdatedDrugs(drugStoreID, drugIds);
+        }
+
+        public void DeleteForeverDrugs(string drugStoreID, params int[] drugIds)
+        {
+            if (drugIds == null || !drugIds.Any()) return;
+
+            var rNoteItemRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuNhapChiTiet>>();
+            var dNoteItemRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuXuatChiTiet>>();
+            var invNoteItemRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuKiemKeChiTiet>>();
+            var sumPeriodNoteItemRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, TongKetKyChiTiet>>();
+            var sumPeriodNoteRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, TongKetKy>>();
             var invRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, Inventory>>();
-            var drugPrices = noteItems.GroupBy(i => i.DrugId).ToDictionary(i => i.Key, 
-                i => i.OrderByDescending(d => d.NoteDate).First());
+            var drugMappingRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, DrugMapping>>();
+            var drugRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, Thuoc>>();
+       
+            var priceRefRepo = IoC.Container.Resolve<BaseRepositoryV2<MedReportContext, ReceiptDrugPriceRef>>();
+            var reduceRepo = IoC.Container.Resolve<BaseRepositoryV2<MedReportContext, ReduceNoteItem>>();
+            var snapshotRepo = IoC.Container.Resolve<BaseRepositoryV2<MedReportContext, DeliveryNoteItemSnapshotInfo>>();
 
-            var updateDrugs = new List<Thuoc>();
-            var drugIds = drugPrices.Keys;
-            var updateInvs = invRepo.Table.Where(i => i.DrugStoreID == drugStoreCode
-                && drugIds.Contains(i.DrugID) && i.RecordStatusID == (byte)RecordStatus.Activated).ToList();
-            updateInvs.ForEach(i =>
+            using (var trans = TransactionScopeHelper.CreateReadCommittedForWrite())
             {
-                if (drugPrices.ContainsKey(i.DrugID))
-                {
-                    var drugPrice = drugPrices[i.DrugID];
-                    i.LastInPrice = drugPrice.RetailPrice;
-                    i.RetailOutPrice = drugPrice.RetailOutPrice;
-                    i.RetailBatchOutPrice = drugPrice.RetailBatchOutPrice;
-                    updateDrugs.Add(new Thuoc()
-                    {
-                        ThuocId = i.DrugID,
-                        GiaBanLe = (decimal)drugPrice.RetailOutPrice,                      
-                        GiaNhap = (decimal)drugPrice.RetailPrice
-                    });
-                }
-            });
-            invRepo.UpdateMany(updateInvs);
-            invRepo.Commit();
-            var dsSettings = IoC.Container.Resolve<IUtilitiesService>().GetDrugStoreSetting(drugStoreCode);
-            if (dsSettings != null && dsSettings.AutoUpdateInOutPriceOnNote)
-            {
-                drugRepo.UpdateMany(updateDrugs, i => i.ThuocId, i => i.GiaNhap, i => i.GiaBanLe);
+                priceRefRepo.Delete(i => i.DrugStoreCode == drugStoreID
+                   && drugIds.Contains(i.DrugId));
+                reduceRepo.Delete(i => i.DrugStoreCode == drugStoreID
+                   && drugIds.Contains(i.DrugID));
+                snapshotRepo.Delete(i => i.DrugStoreCode == drugStoreID
+                   && drugIds.Contains(i.DrugId));
+
+                rNoteItemRepo.Delete(i => i.NhaThuoc_MaNhaThuoc == drugStoreID
+                    && drugIds.Contains(i.Thuoc_ThuocId.Value));
+                dNoteItemRepo.Delete(i => i.NhaThuoc_MaNhaThuoc == drugStoreID
+                   && drugIds.Contains(i.Thuoc_ThuocId.Value));
+                invNoteItemRepo.Delete(i => drugIds.Contains(i.Thuoc_ThuocId.Value));
+                sumPeriodNoteItemRepo.Delete(i => i.NhaThuoc_MaNhaThuoc == drugStoreID
+                   && drugIds.Contains(i.Thuoc_ThuocId.Value));
+                sumPeriodNoteRepo.Delete(i => i.NhaThuoc_MaNhaThuoc == drugStoreID
+                   && drugIds.Contains(i.Thuoc_ThuocId.Value));
+                invRepo.Delete(i => i.DrugStoreID == drugStoreID
+                   && drugIds.Contains(i.DrugID));
+                drugMappingRepo.Delete(i => i.DrugStoreID == drugStoreID
+                   && drugIds.Contains(i.SlaveDrugID));
+                drugRepo.Delete(i => i.NhaThuoc_MaNhaThuoc == drugStoreID
+                   && drugIds.Contains(i.ThuocId));
+
+                trans.Complete();
             }
-            // Update drug mapping
-            var drugMapRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, DrugMapping>>();
-            var drugMaps = drugMapRepo.TableAsNoTracking.Where(i => i.DrugStoreID == drugStoreCode
-                && drugIds.Contains(i.SlaveDrugID)).ToList();
-            var updateDrugMaps = new List<DrugMapping>();
-            drugMaps.ForEach(i =>
-            {
-                if (drugPrices.ContainsKey(i.SlaveDrugID))
-                {
-                    var prices = drugPrices[i.SlaveDrugID];
-                    if (prices.NoteDate > i.InLastUpdateDate)
-                    {
-                        var drugMapUpdate = false;
-                        if (prices.RetailPrice > MedConstants.EspPrice)
-                        {
-                            i.InPrice = (decimal)prices.RetailPrice;
-                            i.InLastUpdateDate = prices.NoteDate;
-                            drugMapUpdate = true;
-                        }
-                        if (prices.RetailOutPrice > MedConstants.EspPrice)
-                        {
-                            i.OutPrice = (decimal)prices.RetailOutPrice;
-                            i.OutLastUpdateDate = prices.NoteDate;
-                            drugMapUpdate = true;
-                        }
-                        if (drugMapUpdate)
-                        {
-                            updateDrugMaps.Add(i);
-                        }
-                    }
-                    else if (prices.NoteDate.Value.Date == i.InLastUpdateDate.Value.Date)
-                    {
-                        var drugMapUpdate = false;
-                        if (prices.RetailPrice > MedConstants.EspPrice
-                            && prices.RetailPrice < (double)i.InPrice)
-                        {
-                            i.InPrice = (decimal)prices.RetailPrice;
-                            i.InLastUpdateDate = prices.NoteDate;
-                            drugMapUpdate = true;
-                        }
-                        if (prices.RetailOutPrice > MedConstants.EspPrice
-                            && prices.RetailOutPrice < (double)i.InPrice)
-                        {
-                            i.OutPrice = (decimal)prices.RetailOutPrice;
-                            i.OutLastUpdateDate = prices.NoteDate;
-                            drugMapUpdate = true;
-                        }
-                        if (drugMapUpdate)
-                        {
-                            updateDrugMaps.Add(i);
-                        }
-                    }
-                }
-            });
-            drugMapRepo.UpdateMany(updateDrugMaps);
-            drugMapRepo.Commit();
         }
     }
 }

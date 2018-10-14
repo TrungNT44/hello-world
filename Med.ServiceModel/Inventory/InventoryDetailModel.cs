@@ -11,7 +11,7 @@ namespace Med.ServiceModel.Inventory
         public int Id { get; set; }
         public int? UserId { get; set; }
         public string FullName { get; set; }
-        public DateTime? CreateTime { get; set; }
+        public DateTime CreateTime { get; set; }
         public bool DaCanKho { get; set; }
         public int DrugQuantity { get; set; }
         public List<ThuocModel> MedicineList { get; set; }

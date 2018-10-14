@@ -1,0 +1,143 @@
+﻿@using System.Globalization
+@model sThuoc.Models.PhieuThuChi
+
+@{
+    ViewBag.Title = "Xóa phiếu thu/chi";
+}
+
+
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+        var loaiPhieu = "PHIẾU THU";
+        var phieuThuChi = "thu";
+        if (ViewBag.LoaiPhieu == 2)
+        {
+            loaiPhieu = "PHIẾU CHI";
+            phieuThuChi = "chi";
+        }
+        else if (ViewBag.LoaiPhieu == 3)
+        {
+            loaiPhieu = "PHIẾU THU KHÁC";
+            phieuThuChi = "thu";
+        }
+        else if (ViewBag.LoaiPhieu == 4)
+        {
+            loaiPhieu = "PHIẾU CHI KHÁC";
+            phieuThuChi = "chi";
+        }
+        else if (ViewBag.LoaiPhieu == 5)
+        {
+            loaiPhieu = "CHI PHÍ KINH DOANH";
+            phieuThuChi = "chi";
+        }
+        @*<h4><b>Bạn có chắc chắn xóa phiếu @phieuThuChi này?</b></h4>
+        <hr />*@
+    <div class="form-horizontal">      
+        @*<div class="form-group">
+            <label class="control-label col-md-2">Loại phiếu</label>
+            <div class="col-md-10">               
+                <div class="form-control">@loaiPhieu</div>
+            </div>
+        </div>*@
+        <input type="hidden" value="@ViewBag.LoaiPhieu" name="loaiPhieu" />
+        <h2 style="font-size: 30px; text-align: center; color: coral; padding:0px;margin-top:-16px;margin-bottom:10px">@loaiPhieu </h2>
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div style="position:absolute;right:10%;font-size: 15px">
+            Mã số: <strong>@ViewBag.SoPhieu</strong>
+        </div>
+        <div style="text-align: center;font-size: 15px"><span id="dvNgayTao" style="width: 10%; padding:0px">Ngày @Model.NgayTao.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)</span></div>
+
+        @*<div class="form-group">
+            <label class="control-label col-md-2">Mã số</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.SoPhieu, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Ngày tạo</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.NgayTao, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            </div>
+        </div>*@        
+
+        @if (Model.LoaiPhieu == 1)
+        {
+     
+             <div class="form-group">
+                <label class="control-label col-md-2">Khách hàng</label>
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.KhachHang.TenKhachHang, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                </div>
+            </div>
+        }
+        else if (Model.LoaiPhieu == 2)
+        {    
+            <div class="form-group">
+                <label class="control-label col-md-2">Nhà cung cấp</label>
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.NhaCungCap.TenNhaCungCap, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+                </div>
+            </div>
+        }
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Số tiền</label>
+            <div class="col-md-10">
+                @*<input type="text" value="Quay lại" class="btn btn-default" onclick=" javascript:window.history.go(-1); " />*@
+                @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @data_inputmask = "'alias': 'numeric', 'groupSeparator': ',', 'autoGroup': true, 'digits': 0, 'digitsOptional': false, 'suffix': '', 'placeholder': '0'" } })
+                @*@Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly", @data_inputmask = "'alias': 'numeric', 'groupSeparator': ',', 'autoGroup': true, 'digits': 0, 'digitsOptional': false, 'suffix': '', 'placeholder': '0'" } })*@
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Diễn giải</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.DienGiai, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Người lập</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.CreatedBy.TenDayDu, new { htmlAttributes = new { @class = "form-control", @readonly = "readonly" } })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <hr />
+                <b class="text-danger"> <h4>Bạn có chắc là muốn xóa phiếu này?</h4></b>
+                <div class="form-inline">
+                    <input type="button" value="Quay lại" class="btn btn-default" onclick=" javascript:window.history.go(-1); " />
+                    <span class="btn-separator"></span>
+                    <input type="submit" value="Xác nhận" class="btn btn-default btn-danger" />
+                </div>
+            </div>
+        </div>
+
+    </div>      
+    }
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script src="~/Scripts/datepicker-vi.js"></script>
+    <script src="~/Scripts/Custom/phieuThuChi.js"></script>
+    <script src="~/Scripts/jquery.inputmask/inputmask.js"></script>
+    <script src="~/Scripts/jquery.inputmask/jquery.inputmask.js"></script>
+    <script src="~/Scripts/jquery.inputmask/inputmask.numeric.extensions.js"></script>
+    <script type="text/javascript">
+        var maNhaThuoc = '@ViewBag.MaNhaThuoc';
+        $(function () {
+            InitPage(true);
+            // input masks
+            inputmask.extendDefaults({
+                'autoUnmask': true,
+                'removeMaskOnSubmit': true
+            });
+            $(":input,span").inputmask();
+        });
+
+    </script>
+}

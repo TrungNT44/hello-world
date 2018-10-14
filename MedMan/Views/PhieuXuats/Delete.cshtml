@@ -1,0 +1,258 @@
+﻿@using System.Globalization
+@using Med.Web.Controllers
+@using sThuoc.Models
+@model sThuoc.Models.PhieuXuatEditModel
+
+@{
+
+    ViewBag.Title = "PHIẾU XUẤT HÀNG " + "#" + Model.SoPhieuXuat;
+    var title = "Phiếu Xuất Hàng";
+    if (ViewBag.LoaiPhieu == 4)
+    {
+        ViewBag.Title = "Trả Lại Hàng Nhà Cung Cấp" + "#" + Model.SoPhieuXuat;
+        title = "TRẢ LẠI HÀNG NHÀ CUNG CẤP";
+    }
+    ViewBag.NgayXuat = Model.NgayXuat;
+}
+<link href="~/Content/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/phieuStyle.css" rel="stylesheet" />
+@using (Html.BeginForm("Delete", "PhieuXuats", FormMethod.Post, new { id = "frmPhieuXuat", onkeydown = "return event.keyCode!=13" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <h2 style="font-size: 30px; text-align: center;color: coral">@title</h2>
+        <div style="text-align: center;font-size: 15px">
+            <div style=" position:absolute;right:10%;top:5">
+                Mã số: <strong>@ViewBag.SoPhieu</strong>
+            </div>
+            @*<span id="" style="width: 10%">@string.Format("Ngày {0}/{1}/{2}", Model.NgayXuat.Value.Day, Model.NgayXuat.Value.Month, Model.NgayXuat.Value.Year)</span>*@
+            <span id="" style="width: 10%">Ngày @ViewBag.NgayXuat.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)</span>
+
+        </div>
+
+        @Html.HiddenFor(model => model.NgayXuat, new { @Value = DateTime.Now.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture) })
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.MaPhieuXuat, new { @Value = "0" })
+        @*@Html.HiddenFor(model => model.NgayTao, new { @Value = DateTime.Now.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture) })*@
+        @*<div class="form-group">
+                @if (ViewBag.LoaiPhieu != "3")
+                {
+                    <a style="cursor: pointer" onclick="location.href='@Url.Action("Create", "PhieuXuats")?loaiPhieu=3'">Nhập từ khách hàng</a>
+                }
+                else
+                {
+                    <a style="cursor: pointer" onclick="location.href='@Url.Action("Create", "PhieuXuats")?loaiPhieu=1'">Nhập Hàng</a>
+                }
+            </div>*@
+
+        @Html.HiddenFor(model => model.MaLoaiXuatNhap, new { @Value = ViewBag.LoaiPhieu })
+        <table class="table borderless table-condensed">
+            <tr>
+                @if (ViewBag.LoaiPhieu == 2)
+                {
+                    @*<td style="text-align: right"><label class="control-label">Khách hàng:</label></td>
+                        <td style="text-align: left">
+                            <label class="control-label" style="font-weight: normal">@Html.DisplayFor(model => model.TenKhachHang)</label>
+                            @Html.ValidationMessageFor(model => model.MaKhachHang, "", new { @class = "text-danger" })
+                        </td>*@
+                    <td style="text-align: left">
+                        <label class="control-label">Khách hàng:</label>
+                        <label class="control-label" style="font-weight: normal">@Html.DisplayFor(model => model.TenKhachHang)</label>
+                        @Html.ValidationMessageFor(model => model.MaKhachHang, "", new { @class = "text-danger" })
+                    </td>
+
+                    <td style="text-align: right"><label class="control-label">Bác sỹ:</label></td>
+                    <td style="text-align: left">
+                        <label class="control-label" style="font-weight: normal">@(string.IsNullOrEmpty(Model.TenBacSy) ? "Không có" : Model.TenBacSy)</label>
+
+                    </td>
+                }
+                else if (ViewBag.LoaiPhieu == 4)
+                {
+                    @*<td style="text-align: right">
+                            <label class="control-label">Nhà cung cấp:</label>
+                        </td>
+                        <td style="text-align: left">
+                            <label class="control-label" style="font-weight: normal">@Html.DisplayFor(model => model.TenNhaCungCap)</label>
+                        </td>*@
+                    <td style="text-align: left">
+                        <label class="control-label">Nhà cung cấp:</label>
+                        <label class="control-label" style="font-weight: normal">@Html.DisplayFor(model => model.TenNhaCungCap)</label>
+                    </td>
+                }
+
+            </tr>
+        </table>
+        <table class="table-condensed table-responsive display table-bordered" id="tblCt" style="width:100%">
+            <thead>
+                <tr>
+                    @*<th style="width: 10px">STT</th>
+                        <th style="width: 55px">Mã</th>
+                        <th>Tên Hàng</th>
+                        <th style="width: 50px;">Đơn Vị</th>
+                        <th style="width: 55px;text-align: right">SL</th>
+                        <th style="width: 70px;text-align: right">Đơn Giá</th>
+                        <th style="width: 10px;text-align: right">C.K</th>
+                        <th style="width: 100px;text-align: right">Thành Tiền</th>*@
+
+                    <th style="width: 10px">STT</th>
+                    <th style="width: 70px">Mã</th>
+                    <th>Tên Hàng</th>
+                    <th style="width: 100px;">Đơn Vị</th>
+                    <th style="width: 100px; text-align: right">SL</th>
+                    <th style="width: 150px; text-align: right">Đơn Giá</th>
+                    <th style="width: 80px; text-align: right">C.K</th>
+                    <th style="width: 150px; text-align: right">Thành Tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.PhieuXuatChiTiets != null)
+                {
+                    for (var i = Model.PhieuXuatChiTiets.Count - 1; i >= 0; i--)
+                    {
+                        <tr>
+
+                            <td>@(Model.PhieuXuatChiTiets.Count - i)</td>
+                            <td>
+                                <span class="" id="dMaThuoc@(i)"> @Html.DisplayFor(model => Model.PhieuXuatChiTiets[i].MaThuoc)</span>
+                            </td>
+                            <td>
+                                <span class="" id="PhieuXuatChiTiets_@(i)__TenSp">@Html.DisplayFor(model => Model.PhieuXuatChiTiets[i].TenThuoc)</span>
+                            </td>
+                            <td>
+                                <span class="display-mode" id="PhieuXuatChiTiets_@(i)__MaDonViTinhSp">@Html.DisplayFor(model => Model.PhieuXuatChiTiets[i].TenDonViTinh)</span>
+                            </td>
+                            <td>
+                                <span class="display-mode pNumber" id="PhieuXuatChiTiets_@(i)__SoLuongSp">@string.Format("{0:#,##0}", Model.PhieuXuatChiTiets[i].SoLuong)</span>
+
+                            </td>
+                            <td>
+                                <span class="display-mode pNumber" id="PhieuXuatChiTiets_@(i)__GiaXuatSp">@string.Format("{0:#,##0}", Model.PhieuXuatChiTiets[i].GiaXuat)</span>
+
+                            </td>
+                            <td>
+                                <span class="display-mode pNumber" id="PhieuXuatChiTiets_@(i)__ChietKhauSp">
+                                    @string.Format("{0:#0.##} %", Model.PhieuXuatChiTiets[i].ChietKhau)
+                                </span>
+
+                            </td>
+                            @*<td class=" pNumber">
+                                    @string.Format("{0:0,### VND}", Model.PhieuXuatChiTiets[i].SoLuong * Model.PhieuXuatChiTiets[i].GiaXuat - Model.PhieuXuatChiTiets[i].ChietKhau / 100 * (Model.PhieuXuatChiTiets[i].SoLuong * Model.PhieuXuatChiTiets[i].GiaXuat))
+                                </td>*@
+                            <td>
+                                @{var chietkhau = decimal.Parse(Model.PhieuXuatChiTiets[i].ChietKhau) / 100;}
+                                <span class="display-mode pNumber" id="PhieuXuatChiTiets_@(i)__GiaXuatSp">@string.Format("{0:#,##0}", Model.PhieuXuatChiTiets[i].SoLuong * Model.PhieuXuatChiTiets[i].GiaXuat - chietkhau * (Model.PhieuXuatChiTiets[i].SoLuong * Model.PhieuXuatChiTiets[i].GiaXuat))</span>
+                            </td>
+
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        <br />
+
+        <div class="row">
+            <div class="col-md-3">
+                <b>Tổng Số Tiền : &nbsp;<span id="spanSumAll"></span></b>@string.Format("{0:#,##0}", Model.TongTien)
+            </div>
+            <div class="col-md-2">
+                @if (Model.VAT > 0)
+                {
+                    <b>VAT : &nbsp;</b><span>@string.Format("{0:#0} %", Model.VAT)</span>
+                }
+            </div>
+            <div class="col-md-3">
+                <span style="font-weight: bold" id="spSumfinal">
+                    @if (Model.VAT > 0)
+                    {
+                        <span>Tổng Cộng :  @string.Format("{0:#,##0}", Model.TongTien + Model.TongTien * Model.VAT / 100)</span>
+                    }
+                </span>
+            </div>
+            <div class="col-md-5">
+                <table style="padding: 5px">
+                    @if (ViewBag.LoaiPhieu == 2)
+                    {
+                        <tr>
+                            <td>
+                                Đã Trả : @string.Format("{0:#,##0}", Model.DaTra)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span id="spDebt" style="color: red">Còn nợ: @string.Format("{0:#,##0}", Model.TongTien - Model.DaTra)</span></td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        </div>
+
+        @*<div class="form-group">
+                @Html.LabelFor(model => model.DienGiai, htmlAttributes: new { @class = "control-label col-md-2", style = "text-align:left" })
+                <div class="col-md-10">
+                    <label style="padding-top:7px;font-weight: normal">
+                        @Html.DisplayFor(model => model.DienGiai)
+                    </label>
+                </div>
+            </div>*@
+
+        <table class="table borderless table-condensed">
+            <tr>
+                <td style="text-align:left">
+                    <label class="control-label">Diến giải: </label>
+                    <label class="control-label" style="font-weight: normal">@Html.DisplayFor(model => model.DienGiai)</label>
+                </td>
+                @*<td style="text-align:right">
+            <label class="control-label">  Người lập phiếu: </label>
+            <label class="control-label" style="font-weight: normal">@Html.DisplayFor(model => model.NguoiLapPhieu)</label>
+        </td>*@
+                <td style="text-align:right; font-weight: normal; color:GrayText">
+                    <label class="control-label" style="font-weight: normal">[Người lập: </label>
+                    <label class="control-label" style="font-weight: normal">@Html.DisplayFor(model => model.NguoiLapPhieu)]</label>
+                </td>
+                <td style="text-align:right; font-weight: normal; color:GrayText">
+                    <label class="control-label" style="font-weight: normal">[Ngày lập: </label>
+                    <label class="control-label" style="font-weight: normal">@Model.NgayLapPhieu.Value.ToString("dd/MM/yyyy")]</label>
+                </td>
+            </tr>
+        </table>
+        <hr />
+        @*<label class="text-danger"> Bạn có chắc là muốn xóa phiếu này?</label>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <div class="form-inline">
+                        <input type="button" value="Quay lại" class="btn btn-default" onclick="javascript:window.history.go(-1);" />
+                        <span class="btn-separator">|</span>
+                        <input type="submit" value="Xác Nhận Xóa" class="btn btn-default btn-danger"/>
+                    </div>
+                </div>
+            </div>*@
+       
+        <b class="text-danger"> <h4>Bạn có chắc là muốn xóa phiếu này?</h4></b>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="form-inline">
+                    <input type="button" value="Quay lại" class="btn btn-default" onclick="javascript:window.history.go(-1);" />
+                    @if (Model.Locked.HasValue && Model.Locked.Value.Equals(true))
+                    {
+                        <span class="btn-separator"></span>
+                        <input type="submit" value="Xác nhận" class="btn btn-default btn-danger disabled" />
+                        <button class="btn btn-default" disabled="disabled"><i class="fa fa-lock fa-lg"></i></button>
+                    }
+                    else
+                    {
+                        <span class="btn-separator"></span>
+                        <input type="submit" value="Xác nhận" class="btn btn-default btn-danger" />
+                    }
+                   
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts{
+
+}

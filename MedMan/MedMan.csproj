@@ -1,0 +1,2380 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0D093AD6-EDB5-40F8-8C50-47A1E4EA952E}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Med.Web</RootNamespace>
+    <AssemblyName>Med.Web</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <DeployManagedRuntimeVersion>v4.0</DeployManagedRuntimeVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <UseGlobalApplicationHostFile />
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <IncludeIisSettings>false</IncludeIisSettings>
+    <ExcludeGeneratedDebugSymbol>true</ExcludeGeneratedDebugSymbol>
+    <!-- <ExcludeFilesFromDeployment>Readme.txt</ExcludeFilesFromDeployment>  -->
+    <!-- <ExcludeFoldersFromDeployment>Uploads</ExcludeFoldersFromDeployment> -->
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <!-- <ExcludeFilesFromDeployment>Readme.txt</ExcludeFilesFromDeployment>  -->
+    <!-- <ExcludeFoldersFromDeployment>Uploads</ExcludeFoldersFromDeployment> -->
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="App.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AppFrameworks\App.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="App.Configuration, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AppFrameworks\App.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="App.Constants, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AppFrameworks\App.Constants.dll</HintPath>
+    </Reference>
+    <Reference Include="App.Utility, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AppFrameworks\App.Utility.dll</HintPath>
+    </Reference>
+    <Reference Include="BarcodeLib, Version=1.0.0.22, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>DLLs\BarcodeLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Castle.Windsor, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AppFrameworks\Castle.Windsor.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\..\..\AppFrameworks\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.Extended">
+      <HintPath>..\..\..\AppFrameworks\EntityFramework.Extended.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\..\..\AppFrameworks\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus, Version=4.0.3.0, Culture=neutral, PublicKeyToken=ea159fdaa78159a1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>DLLs\EPPlus.dll</HintPath>
+    </Reference>
+    <Reference Include="Excel">
+      <HintPath>..\libs\Excel.dll</HintPath>
+    </Reference>
+    <Reference Include="Hangfire.Core, Version=1.6.14.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AppFrameworks\Hangfire.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Hangfire.SqlServer">
+      <HintPath>..\..\..\AppFrameworks\Hangfire.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="LinqToExcel, Version=1.10.1.0, Culture=neutral, PublicKeyToken=9c8ea65a58f03f1f, processorArchitecture=x86">
+      <HintPath>..\packages\LinqToExcel.1.10.1\lib\LinqToExcel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AppFrameworks\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.4.0.0\lib\net451\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.4.0.0\lib\net451\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ReportViewer.WebForms, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <HintPath>..\packages\MicosoftReportViewerWebForms_v11.1.0.1\lib\Microsoft.ReportViewer.WebForms.DLL</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Web.Helpers">
+      <HintPath>..\packages\Microsoft.AspNet.WebHelpers.3.0.0\lib\net45\Microsoft.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.RedisSessionStateProvider, Version=2.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.RedisSessionStateProvider.2.2.3\lib\net40\Microsoft.Web.RedisSessionStateProvider.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="migrate">
+      <HintPath>..\packages\EntityFramework.6.1.2\tools\migrate.exe</HintPath>
+    </Reference>
+    <Reference Include="MvcJqGrid">
+      <HintPath>..\packages\MvcJqGrid.1.0.15\lib\net40\MvcJqGrid.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AppFrameworks\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="PagedList">
+      <HintPath>..\packages\PagedList.1.17.0.0\lib\net40\PagedList.dll</HintPath>
+    </Reference>
+    <Reference Include="PagedList.Mvc">
+      <HintPath>..\packages\PagedList.Mvc.4.5.0.0\lib\net40\PagedList.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="Remotion, Version=1.13.52.2, Culture=neutral, PublicKeyToken=0669cf0452175907, processorArchitecture=MSIL">
+      <HintPath>..\packages\LinqToExcel.1.10.1\lib\Remotion.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Remotion.Data.Linq, Version=1.13.52.2, Culture=neutral, PublicKeyToken=0669cf0452175907, processorArchitecture=MSIL">
+      <HintPath>..\packages\LinqToExcel.1.10.1\lib\Remotion.Data.Linq.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Remotion.Interfaces, Version=1.13.52.2, Culture=neutral, PublicKeyToken=0669cf0452175907, processorArchitecture=MSIL">
+      <HintPath>..\packages\LinqToExcel.1.10.1\lib\Remotion.Interfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ReportViewerForMvc, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ReportViewerForMvc.1.0.1\lib\net45\ReportViewerForMvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="StackExchange.Redis.StrongName, Version=1.1.608.0, Culture=neutral, PublicKeyToken=c219ff1ca8c2ce46, processorArchitecture=MSIL">
+      <HintPath>..\packages\StackExchange.Redis.StrongName.1.1.608\lib\net45\StackExchange.Redis.StrongName.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AppFrameworks\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web.Cors">
+      <HintPath>..\..\..\AppFrameworks\System.Web.Cors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AppFrameworks\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.Cors">
+      <HintPath>..\..\..\AppFrameworks\System.Web.Http.Cors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\AppFrameworks\System.Web.Http.WebHost.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.2\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\..\..\AppFrameworks\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.2\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WebGrease, Version=1.5.2.14234, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="WebMatrix.Data, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.Data.3.0.0\lib\net45\WebMatrix.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="WebMatrix.WebData, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.WebData.3.2.2\lib\net45\WebMatrix.WebData.dll</HintPath>
+    </Reference>
+    <Reference Include="Zen.Barcode.Core, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Zen.Barcode.Core.Code128.3.1.0\lib\net45\Zen.Barcode.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Areas\Utilities\Views\Barcode\MobileBarcodeScanner.cshtml" />
+    <Content Include="Areas\Production\Views\Utilities\NegativeRevenueWarning.cshtml" />
+    <Content Include="Areas\Production\Views\InOutCommingNote\InOutCommingNote.cshtml" />
+    <Content Include="Areas\Production\Views\InOutCommingNote\WarehouseTransitionDialog.cshtml" />
+    <Content Include="Areas\Production\Views\Utilities\NearExpiredDrugWarning.cshtml" />
+    <Content Include="Areas\Production\Views\Admin\Partial\RoleAction.cshtml" />
+    <Content Include="Areas\Production\Views\Admin\SetupRoleAction.cshtml" />
+    <Content Include="Areas\Production\Views\Reports\TransHistoryReport.cshtml" />
+    <Content Include="Areas\Production\Views\Reports\Partial\TransHistoryReceiptItemTablePartial.cshtml" />
+    <Content Include="Areas\Production\Views\Reports\Partial\TransHistoryDeliveryItemTablePartial.cshtml" />
+    <Content Include="Areas\Production\Views\Notification\History.cshtml" />
+    <Content Include="Areas\Production\Views\Notification\List.cshtml" />
+    <Content Include="Areas\Production\Views\Inventory\Index.cshtml" />
+    <Content Include="Areas\Production\Views\Inventory\Create.cshtml" />
+    <Content Include="Areas\Production\Views\Inventory\Details.cshtml" />
+    <Content Include="Areas\Production\Views\Inventory\Delete.cshtml" />
+    <Content Include="Areas\Production\Views\Inventory\Index.Mobile.cshtml" />
+    <Content Include="Areas\Production\Views\Inventory\Details.Mobile.cshtml" />
+    <Content Include="Areas\Production\Views\Inventory\Edit.cshtml" />
+    <Content Include="Areas\Production\Views\Inventory\DrugsNotInventoried.cshtml" />
+    <Content Include="Areas\Production\Views\Inventory\Partial\UpdateInventoryItemDialog.cshtml" />
+    <None Include="Areas\Utilities\Views\Barcode\MobilecamBarcodeReader.cshtml" />
+    <Content Include="Areas\Production\Views\Notification\Create.cshtml" />
+    <None Include="Areas\Utilities\Views\Barcode\MobilecamBarcodeReader.cshtml" />
+    <Content Include="bower_components\ag-grid\ag-grid.js" />
+    <Content Include="bower_components\ag-grid\ag-grid.min.js" />
+    <Content Include="bower_components\ag-grid\ag-grid.min.noStyle.js" />
+    <Content Include="bower_components\ag-grid\ag-grid.noStyle.js" />
+    <Content Include="bower_components\ag-grid\styles\ag-grid.css" />
+    <Content Include="bower_components\ag-grid\styles\theme-blue.css" />
+    <Content Include="bower_components\ag-grid\styles\theme-bootstrap-striped.css" />
+    <Content Include="bower_components\ag-grid\styles\theme-bootstrap.css" />
+    <Content Include="bower_components\ag-grid\styles\theme-dark.css" />
+    <Content Include="bower_components\ag-grid\styles\theme-fresh.css" />
+    <Content Include="bower_components\ag-grid\styles\theme-material.css" />
+    <Content Include="bower_components\angular-bootstrap\index.js" />
+    <Content Include="bower_components\angular-bootstrap\ui-bootstrap-csp.css" />
+    <Content Include="bower_components\angular-bootstrap\ui-bootstrap-tpls.js" />
+    <Content Include="bower_components\angular-bootstrap\ui-bootstrap-tpls.min.js" />
+    <Content Include="bower_components\angular-bootstrap\ui-bootstrap.js" />
+    <Content Include="bower_components\angular-bootstrap\ui-bootstrap.min.js" />
+    <Content Include="bower_components\angular-cache\angular-cache.js" />
+    <Content Include="bower_components\angular-cache\angular-cache.min.js" />
+    <Content Include="bower_components\angular-number-input\angular-number-input.js" />
+    <Content Include="bower_components\angular-route\angular-route.js" />
+    <Content Include="bower_components\angular-route\angular-route.min.js" />
+    <Content Include="bower_components\angular-route\index.js" />
+    <Content Include="bower_components\angular-ui-select\select.css" />
+    <Content Include="bower_components\angular-ui-select\select.js" />
+    <Content Include="bower_components\angular-ui-select\select.min.css" />
+    <Content Include="bower_components\angular-ui-select\select.min.js" />
+    <Content Include="bower_components\angular-ui-select\select2-spinner.gif" />
+    <Content Include="bower_components\angular-ui-select\select2.css" />
+    <Content Include="bower_components\angular-ui-select\select2.png" />
+    <Content Include="bower_components\angular\angular-csp.css" />
+    <Content Include="bower_components\angular\angular-sanitize.js" />
+    <Content Include="bower_components\angular\angular-sanitize.min.js" />
+    <Content Include="bower_components\angular\angular.js" />
+    <Content Include="bower_components\angular\angular.min.js" />
+    <Content Include="bower_components\angular\index.js" />
+    <Content Include="bower_components\angular\ng-google-chart.js" />
+    <Content Include="bower_components\angular\ng-google-chart.min.js" />
+    <Content Include="bower_components\barcode\kissy-min.js" />
+    <Content Include="bower_components\barcode\load-image.all.min.js" />
+    <Content Include="bower_components\barcode\quaggaJS\adapter-latest.js" />
+    <Content Include="bower_components\barcode\quaggaJS\frame_grabber.js" />
+    <Content Include="bower_components\barcode\quaggaJS\input_stream.js" />
+    <Content Include="bower_components\barcode\quaggaJS\quagga.js" />
+    <Content Include="bower_components\barcode\quaggaJS\quagga.min.js" />
+    <Content Include="bower_components\bootbox\bootbox.js" />
+    <Content Include="bower_components\bootstrap-datepicker\js\bootstrap-datepicker.min.js" />
+    <Content Include="bower_components\bootstrap-datepicker\css\bootstrap-datepicker.css" />
+    <Content Include="bower_components\bootstrap-datepicker\locales\bootstrap-datepicker.vi.min.js" />
+    <Content Include="bower_components\bootstrap\dist\css\bootstrap-theme.css" />
+    <Content Include="bower_components\bootstrap\dist\css\bootstrap-theme.min.css" />
+    <Content Include="bower_components\bootstrap\dist\css\bootstrap.css" />
+    <Content Include="bower_components\bootstrap\dist\css\bootstrap.min.css" />
+    <Content Include="bower_components\bootstrap\dist\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="bower_components\bootstrap\dist\js\bootstrap.js" />
+    <Content Include="bower_components\bootstrap\dist\js\bootstrap.min.js" />
+    <Content Include="bower_components\bootstrap\dist\js\npm.js" />
+    <Content Include="bower_components\bootstrap\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="bower_components\bootstrap\Gruntfile.js" />
+    <Content Include="bower_components\bootstrap\grunt\bs-commonjs-generator.js" />
+    <Content Include="bower_components\bootstrap\grunt\bs-glyphicons-data-generator.js" />
+    <Content Include="bower_components\bootstrap\grunt\bs-lessdoc-parser.js" />
+    <Content Include="bower_components\bootstrap\grunt\bs-raw-files-generator.js" />
+    <Content Include="bower_components\bootstrap\js\affix.js" />
+    <Content Include="bower_components\bootstrap\js\alert.js" />
+    <Content Include="bower_components\bootstrap\js\button.js" />
+    <Content Include="bower_components\bootstrap\js\carousel.js" />
+    <Content Include="bower_components\bootstrap\js\collapse.js" />
+    <Content Include="bower_components\bootstrap\js\dropdown.js" />
+    <Content Include="bower_components\bootstrap\js\modal.js" />
+    <Content Include="bower_components\bootstrap\js\popover.js" />
+    <Content Include="bower_components\bootstrap\js\scrollspy.js" />
+    <Content Include="bower_components\bootstrap\js\tab.js" />
+    <Content Include="bower_components\bootstrap\js\tooltip.js" />
+    <Content Include="bower_components\bootstrap\js\transition.js" />
+    <Content Include="bower_components\bootstrap\package.js" />
+    <Content Include="bower_components\bootstrap-datepicker\angular-datepicker.js" />
+    <Content Include="bower_components\bootstrap-datepicker\js\bootstrap-datepicker.js" />
+    <Content Include="bower_components\image-viewer\jquery.imgpreload.js" />
+    <Content Include="bower_components\image-viewer\jquery.smoothZoom.js" />
+    <Content Include="bower_components\image-viewer\pre-loader.js" />
+    <Content Include="bower_components\jquery\datepicker-vi.js" />
+    <Content Include="bower_components\jquery\jquery-2.1.3.js" />
+    <Content Include="bower_components\jquery\jquery-2.1.3.min.js" />
+    <Content Include="bower_components\jquery\jquery-ui-1.11.2.js" />
+    <Content Include="bower_components\jquery\jquery-ui-1.11.2.min.js" />
+    <Content Include="bower_components\jquery\jquery-ui.min.css" />
+    <Content Include="bower_components\jquery\jquery.cookie.js" />
+    <Content Include="bower_components\jquery\jquery.number.js" />
+    <Content Include="bower_components\jquery\jquery.number.min.js" />
+    <Content Include="bower_components\loader\jquery.loading.min.js" />
+    <Content Include="bower_components\loader\loading.min.css" />
+    <Content Include="bower_components\loader\loading.min.js" />
+    <Content Include="bower_components\moment\locales.js" />
+    <Content Include="bower_components\moment\locales.min.js" />
+    <Content Include="bower_components\moment\moment-with-locales.js" />
+    <Content Include="bower_components\moment\moment-with-locales.min.js" />
+    <Content Include="bower_components\moment\moment.min.js" />
+    <Content Include="bower_components\multiple-select\multiple-select.css" />
+    <Content Include="bower_components\multiple-select\multiple-select.js" />
+    <Content Include="bower_components\multiple-select\multiple-select.min.css" />
+    <Content Include="bower_components\multiple-select\multiple-select.min.js" />
+    <Content Include="bower_components\numeral-js\angular-numeraljs.js" />
+    <Content Include="bower_components\numeral-js\angular-numeraljs.min.js" />
+    <Content Include="bower_components\numeral-js\numeral.js" />
+    <Content Include="bower_components\select2\select2-bootstrap.css" />
+    <Content Include="bower_components\select2\select2.css" />
+    <Content Include="bower_components\select2\select2.min.js" />
+    <Content Include="bower_components\selectize\css\selectize.bootstrap2.css" />
+    <Content Include="bower_components\selectize\css\selectize.bootstrap3.css" />
+    <Content Include="bower_components\selectize\css\selectize.css" />
+    <Content Include="bower_components\selectize\css\selectize.default.css" />
+    <Content Include="bower_components\selectize\css\selectize.legacy.css" />
+    <Content Include="bower_components\selectize\js\selectize.js" />
+    <Content Include="bower_components\selectize\js\selectize.min.js" />
+    <Content Include="bower_components\selectize\js\standalone\selectize.js" />
+    <Content Include="bower_components\selectize\js\standalone\selectize.min.js" />
+    <Content Include="bower_components\tableExport\excellentexport.js" />
+    <Content Include="bower_components\tableExport\excellentexport.min.js" />
+    <Content Include="bower_components\tableExport\html2canvas.js" />
+    <Content Include="bower_components\tableExport\jquery.base64.js" />
+    <Content Include="bower_components\tableExport\jspdf\jspdf.js" />
+    <Content Include="bower_components\tableExport\jspdf\libs\base64.js" />
+    <Content Include="bower_components\tableExport\jspdf\libs\sprintf.js" />
+    <Content Include="bower_components\tableExport\tableExport.js" />
+    <Content Include="bower_components\tr-ng-grid\relnotes.html" />
+    <Content Include="bower_components\tr-ng-grid\trNgGrid.css" />
+    <Content Include="bower_components\tr-ng-grid\trNgGrid.js" />
+    <Content Include="bower_components\tr-ng-grid\trNgGrid.min.css" />
+    <Content Include="bower_components\ui-select\select.css" />
+    <Content Include="bower_components\ui-select\select.js" />
+    <Content Include="bower_components\ui-select\select.min.css" />
+    <Content Include="bower_components\ui-select\select.min.js" />
+    <Content Include="bower_components\ui-select\select2.css" />
+    <Content Include="bower_components\utility\angular-dateparser.js" />
+    <Content Include="bower_components\utility\angular-object-diff.js" />
+    <Content Include="bower_components\utility\date.js" />
+    <Content Include="bower_components\utility\dynamic-number.js" />
+    <Content Include="bower_components\utility\dynamic-number.min.js" />
+    <Content Include="bower_components\utility\loader.js" />
+    <Content Include="bower_components\utility\math.js" />
+    <Content Include="bower_components\utility\math.min.js" />
+    <Content Include="bower_components\utility\mousetrap-global-bind.min.js" />
+    <Content Include="bower_components\utility\mousetrap.min.js" />
+    <Content Include="bower_components\utility\socketProxy.js" />
+    <Content Include="bower_components\utility\sprintf.min.js" />
+    <Content Include="bower_components\utility\string.js" />
+    <Content Include="Content\baocao.css" />
+    <Content Include="Content\mobile-barcode-scanner.css" />
+    <Content Include="Content\barcode-mobile.css" />
+    <Content Include="Content\BillWithBarcode.css" />
+    <Content Include="Content\CamBCScanner.css" />
+    <Content Include="Content\bootstrap-theme.css" />
+    <Content Include="Content\bootstrap-theme.min.css" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\dataTables.tableTools.min.css" />
+    <Content Include="Content\font-awesome.css" />
+    <Content Include="Content\font-awesome.min.css" />
+    <Content Include="Content\images\bg_capture.png" />
+    <Content Include="Content\images\barcodeFavicon.ico" />
+    <Content Include="Content\images\loading.gif" />
+    <Content Include="Content\images\ScanQRCode.jpg" />
+    <Content Include="Content\images\ui-anim_basic_16x16.gif" />
+    <Content Include="Content\jquery.dataTables.min.css" />
+    <Content Include="Content\jquery.jqGrid\ellipsis-xbl.xml" />
+    <Content Include="Content\jquery.jqGrid\ui.jqgrid.css" />
+    <Content Include="Content\jquery.tree.css" />
+    <Content Include="Content\PagedList.css" />
+    <Content Include="Content\phieuin.css" />
+    <Content Include="Content\phieuStyle.css" />
+    <Content Include="Content\selectize.bootstrap3.css" />
+    <Content Include="Content\app.css" />
+    <Content Include="Content\Style.css" />
+    <Content Include="Content\themes\base\accordion.css" />
+    <Content Include="Content\themes\base\all.css" />
+    <Content Include="Content\themes\base\autocomplete.css" />
+    <Content Include="Content\themes\base\base.css" />
+    <Content Include="Content\themes\base\button.css" />
+    <Content Include="Content\themes\base\core.css" />
+    <Content Include="Content\themes\base\datepicker.css" />
+    <Content Include="Content\themes\base\dialog.css" />
+    <Content Include="Content\themes\base\draggable.css" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\menu.css" />
+    <Content Include="Content\themes\base\progressbar.css" />
+    <Content Include="Content\themes\base\resizable.css" />
+    <Content Include="Content\themes\base\selectable.css" />
+    <Content Include="Content\themes\base\selectmenu.css" />
+    <Content Include="Content\themes\base\slider.css" />
+    <Content Include="Content\themes\base\sortable.css" />
+    <Content Include="Content\themes\base\spinner.css" />
+    <Content Include="Content\themes\base\tabs.css" />
+    <Content Include="Content\themes\base\theme.css" />
+    <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="Content\themes\inspinia\animate.css" />
+    <Content Include="Content\themes\inspinia\drop.png" />
+    <Content Include="Content\themes\inspinia\dropdown.css" />
+    <Content Include="Content\themes\inspinia\email.css" />
+    <Content Include="Content\themes\inspinia\freelancer.css" />
+    <Content Include="Content\themes\inspinia\landing\avatar_all.png" />
+    <Content Include="Content\themes\inspinia\landing\header_one.jpg" />
+    <Content Include="Content\themes\inspinia\landing\header_two.jpg" />
+    <Content Include="Content\themes\inspinia\landing\word_map.png" />
+    <Content Include="Content\themes\inspinia\patterns\congruent_pentagon.png" />
+    <Content Include="Content\themes\inspinia\patterns\header-profile-skin-1.png" />
+    <Content Include="Content\themes\inspinia\patterns\header-profile-skin-2.png" />
+    <Content Include="Content\themes\inspinia\patterns\header-profile-skin-3.png" />
+    <Content Include="Content\themes\inspinia\patterns\header-profile.png" />
+    <Content Include="Content\themes\inspinia\patterns\otis_redding.png" />
+    <Content Include="Content\themes\inspinia\patterns\shattered.png" />
+    <Content Include="Content\themes\inspinia\patterns\triangular.png" />
+    <Content Include="Content\themes\inspinia\plugins\awesome-bootstrap-checkbox\._awesome-bootstrap-checkbox.css" />
+    <Content Include="Content\themes\inspinia\plugins\awesome-bootstrap-checkbox\awesome-bootstrap-checkbox.css" />
+    <Content Include="Content\themes\inspinia\plugins\blueimp\css\blueimp-gallery-indicator.css" />
+    <Content Include="Content\themes\inspinia\plugins\blueimp\css\blueimp-gallery-video.css" />
+    <Content Include="Content\themes\inspinia\plugins\blueimp\css\blueimp-gallery.css" />
+    <Content Include="Content\themes\inspinia\plugins\blueimp\css\blueimp-gallery.min.css" />
+    <Content Include="Content\themes\inspinia\plugins\blueimp\css\demo.css" />
+    <Content Include="Content\themes\inspinia\plugins\blueimp\img\error.png" />
+    <Content Include="Content\themes\inspinia\plugins\blueimp\img\error.svg" />
+    <Content Include="Content\themes\inspinia\plugins\blueimp\img\loading.gif" />
+    <Content Include="Content\themes\inspinia\plugins\blueimp\img\play-pause.png" />
+    <Content Include="Content\themes\inspinia\plugins\blueimp\img\play-pause.svg" />
+    <Content Include="Content\themes\inspinia\plugins\blueimp\img\video-play.png" />
+    <Content Include="Content\themes\inspinia\plugins\blueimp\img\video-play.svg" />
+    <Content Include="Content\themes\inspinia\plugins\bootstrap-rtl\bootstrap-rtl.css" />
+    <Content Include="Content\themes\inspinia\plugins\bootstrap-rtl\bootstrap-rtl.min.css" />
+    <Content Include="Content\themes\inspinia\plugins\chartist\chartist.min.css" />
+    <Content Include="Content\themes\inspinia\plugins\chosen\chosen-sprite%402x.png" />
+    <Content Include="Content\themes\inspinia\plugins\chosen\chosen-sprite.png" />
+    <Content Include="Content\themes\inspinia\plugins\chosen\chosen.css" />
+    <Content Include="Content\themes\inspinia\plugins\clockpicker\._clockpicker.css" />
+    <Content Include="Content\themes\inspinia\plugins\clockpicker\clockpicker.css" />
+    <Content Include="Content\themes\inspinia\plugins\codemirror\ambiance.css" />
+    <Content Include="Content\themes\inspinia\plugins\codemirror\codemirror.css" />
+    <Content Include="Content\themes\inspinia\plugins\colorpicker\bootstrap-colorpicker.min.css" />
+    <Content Include="Content\themes\inspinia\plugins\cropper\cropper.min.css" />
+    <Content Include="Content\themes\inspinia\plugins\datapicker\angular-datapicker.css" />
+    <Content Include="Content\themes\inspinia\plugins\datapicker\datepicker3.css" />
+    <Content Include="Content\themes\inspinia\plugins\dataTables\dataTables.bootstrap.css" />
+    <Content Include="Content\themes\inspinia\plugins\dataTables\dataTables.responsive.css" />
+    <Content Include="Content\themes\inspinia\plugins\dataTables\dataTables.tableTools.min.css" />
+    <Content Include="Content\themes\inspinia\plugins\daterangepicker\._daterangepicker-bs3.css" />
+    <Content Include="Content\themes\inspinia\plugins\daterangepicker\daterangepicker-bs3.css" />
+    <Content Include="Content\themes\inspinia\plugins\datetimepicker\datetimepicker.css" />
+    <Content Include="Content\themes\inspinia\plugins\dropzone\basic.css" />
+    <Content Include="Content\themes\inspinia\plugins\dropzone\dropzone.css" />
+    <Content Include="Content\themes\inspinia\plugins\footable\._footable.core.css" />
+    <Content Include="Content\themes\inspinia\plugins\footable\fonts\._footable.svg" />
+    <Content Include="Content\themes\inspinia\plugins\footable\fonts\footable.svg" />
+    <Content Include="Content\themes\inspinia\plugins\footable\footable.core.css" />
+    <Content Include="Content\themes\inspinia\plugins\fullcalendar\fullcalendar.css" />
+    <Content Include="Content\themes\inspinia\plugins\fullcalendar\fullcalendar.print.css" />
+    <Content Include="Content\themes\inspinia\plugins\iCheck\custom.css" />
+    <Content Include="Content\themes\inspinia\plugins\iCheck\green%402x.png" />
+    <Content Include="Content\themes\inspinia\plugins\iCheck\green.png" />
+    <Content Include="Content\themes\inspinia\plugins\images\bootstrap-colorpicker\alpha-horizontal.png" />
+    <Content Include="Content\themes\inspinia\plugins\images\bootstrap-colorpicker\alpha.png" />
+    <Content Include="Content\themes\inspinia\plugins\images\bootstrap-colorpicker\hue-horizontal.png" />
+    <Content Include="Content\themes\inspinia\plugins\images\bootstrap-colorpicker\hue.png" />
+    <Content Include="Content\themes\inspinia\plugins\images\bootstrap-colorpicker\saturation.png" />
+    <Content Include="Content\themes\inspinia\plugins\images\sort.png" />
+    <Content Include="Content\themes\inspinia\plugins\images\sort_asc.png" />
+    <Content Include="Content\themes\inspinia\plugins\images\sort_both.png" />
+    <Content Include="Content\themes\inspinia\plugins\images\sort_desc.png" />
+    <Content Include="Content\themes\inspinia\plugins\images\sprite-skin-flat.png" />
+    <Content Include="Content\themes\inspinia\plugins\images\sprite-skin-flat2.png" />
+    <Content Include="Content\themes\inspinia\plugins\images\sprite-skin-nice.png" />
+    <Content Include="Content\themes\inspinia\plugins\images\sprite-skin-simple.png" />
+    <Content Include="Content\themes\inspinia\plugins\images\spritemap%402x.png" />
+    <Content Include="Content\themes\inspinia\plugins\images\spritemap.png" />
+    <Content Include="Content\themes\inspinia\plugins\ionRangeSlider\ion.rangeSlider.css" />
+    <Content Include="Content\themes\inspinia\plugins\ionRangeSlider\ion.rangeSlider.skinFlat.css" />
+    <Content Include="Content\themes\inspinia\plugins\ionRangeSlider\ion.rangeSlider.skinNice.css" />
+    <Content Include="Content\themes\inspinia\plugins\ionRangeSlider\ion.rangeSlider.skinSimple.css" />
+    <Content Include="Content\themes\inspinia\plugins\jasny\jasny-bootstrap.min.css" />
+    <Content Include="Content\themes\inspinia\plugins\jqGrid\ui.jqgrid.css" />
+    <Content Include="Content\themes\inspinia\plugins\jQueryUI\images\animated-overlay.gif" />
+    <Content Include="Content\themes\inspinia\plugins\jQueryUI\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\inspinia\plugins\jQueryUI\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\inspinia\plugins\jQueryUI\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\inspinia\plugins\jQueryUI\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\inspinia\plugins\jQueryUI\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\inspinia\plugins\jQueryUI\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\inspinia\plugins\jQueryUI\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\inspinia\plugins\jQueryUI\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\inspinia\plugins\jQueryUI\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\inspinia\plugins\jQueryUI\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\inspinia\plugins\jQueryUI\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\inspinia\plugins\jQueryUI\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\inspinia\plugins\jQueryUI\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\inspinia\plugins\jQueryUI\jquery-ui-1.10.4.custom.min.css" />
+    <Content Include="Content\themes\inspinia\plugins\jsTree\32px.png" />
+    <Content Include="Content\themes\inspinia\plugins\jsTree\39px.png" />
+    <Content Include="Content\themes\inspinia\plugins\jsTree\40px.png" />
+    <Content Include="Content\themes\inspinia\plugins\jsTree\style.css" />
+    <Content Include="Content\themes\inspinia\plugins\jsTree\style.min.css" />
+    <Content Include="Content\themes\inspinia\plugins\jsTree\throbber.gif" />
+    <Content Include="Content\themes\inspinia\plugins\morris\morris-0.4.3.min.css" />
+    <Content Include="Content\themes\inspinia\plugins\nouslider\jquery.nouislider.css" />
+    <Content Include="Content\themes\inspinia\plugins\social-buttons\social-buttons.css" />
+    <Content Include="Content\themes\inspinia\plugins\steps\jquery.steps.css" />
+    <Content Include="Content\themes\inspinia\plugins\summernote\summernote-bs3.css" />
+    <Content Include="Content\themes\inspinia\plugins\summernote\summernote.css" />
+    <Content Include="Content\themes\inspinia\plugins\sweetalert\._sweetalert.css" />
+    <Content Include="Content\themes\inspinia\plugins\sweetalert\sweetalert.css" />
+    <Content Include="Content\themes\inspinia\plugins\switchery\switchery.css" />
+    <Content Include="Content\themes\inspinia\plugins\toastr\toastr.min.css" />
+    <Content Include="Content\themes\inspinia\style.css" />
+    <Content Include="DLLs\BarcodeLib.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="DLLs\EPPlus.dll" />
+    <Content Include="favicon.ico" />
+    <Content Include="fonts\font-awesome\css\font-awesome.css" />
+    <Content Include="fonts\font-awesome\css\font-awesome.min.css" />
+    <Content Include="fonts\font-awesome\fonts\fontawesome-webfont.svg" />
+    <Content Include="fonts\fontawesome-webfont.svg" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Icon.png" />
+    <Content Include="Images\bin.png" />
+    <Content Include="Images\favicon.ico" />
+    <Content Include="Images\loading1.gif" />
+    <Content Include="img\1400x940_DEMO.jpg" />
+    <Content Include="img\1400x940_TET_2017_1.jpg" />
+    <Content Include="img\1400x940_TET_2017_4.jpg" />
+    <Content Include="img\bg_1400_900.jpg" />
+    <Content Include="img\bg_895x420.jpg" />
+    <Content Include="img\employee.png" />
+    <Content Include="img\home_header-N-1.jpg" />
+    <Content Include="img\home_header-Stand-1.jpg" />
+    <Content Include="img\MESSAGE.jpg" />
+    <Content Include="img\dm_thuoc.png" />
+    <Content Include="img\start.png" />
+    <Content Include="img\phatrienkinhdoanh.jpg" />
+    <Content Include="img\place_red.png" />
+    <Content Include="img\plan.png" />
+    <Content Include="img\thietbi.png" />
+    <Content Include="img\tien_ich.jpg" />
+    <Content Include="img\tracuu.jpg" />
+    <Content Include="img\otc-meds-org-1800-813.jpg" />
+    <Content Include="img\otc-meds-org-message.png" />
+    <Content Include="img\otc-meds-org.png" />
+    <Content Include="img\sms.png" />
+    <Content Include="img\support.png" />
+    <Content Include="img\extend_full_e.jpg" />
+    <Content Include="img\SUPPORT2.png" />
+    <Content Include="img\TeamViewer.png" />
+    <Content Include="img\tet-1800.jpg" />
+    <Content Include="img\WEB-ICON.jpg" />
+    <Content Include="img\web_icon_300.png" />
+    <Content Include="img\tuyendung.jpeg" />
+    <Content Include="MedMan.wpp.targets.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="ReportViewerWebForm.aspx" />
+    <Content Include="Scripts\app-web-socket.js" />
+    <Content Include="Scripts\base\base-controller.js" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\control\reload-directive.js" />
+    <Content Include="Scripts\control\table-filter.js" />
+    <Content Include="Scripts\control\table-row-number.js" />
+    <Content Include="Scripts\control\table-selection.js" />
+    <Content Include="Scripts\control\valid-number.js" />
+    <Content Include="Scripts\copy_csv_xls_pdf.swf" />
+    <Content Include="Scripts\Custom\account.js" />
+    <Content Include="Scripts\Custom\baocao.js" />
+    <Content Include="Scripts\Custom\CamBCScanner.js" />
+    <Content Include="Scripts\Custom\BCScanner.js" />
+    <Content Include="Scripts\Custom\phieuNhapMobile.js" />
+    <Content Include="Scripts\Custom\PhieuXuatMobile.js" />
+    <Content Include="Scripts\Custom\Utility.js" />
+    <Content Include="Scripts\Custom\phieuKiemKe.js" />
+    <Content Include="Scripts\Custom\phieuThuChi.js" />
+    <Content Include="Scripts\Custom\BillWithBarcode.js" />
+    <Content Include="Scripts\dataTables.tableTools.min.js" />
+    <Content Include="DAL\SQL scripts\funcFirstCharacters.sql" />
+    <Content Include="DAL\SQL scripts\spGetThuocs.sql" />
+    <Content Include="DAL\SQL scripts\spGetThuocsByMa.sql" />
+    <Content Include="packages.config" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="Content\bootstrap-theme.css.map" />
+    <Content Include="Content\bootstrap.css.map" />
+    <Content Include="fonts\fontawesome-webfont.woff2" />
+    <Content Include="fonts\fontawesome-webfont.woff" />
+    <Content Include="fonts\fontawesome-webfont.ttf" />
+    <Content Include="fonts\fontawesome-webfont.eot" />
+    <Content Include="fonts\FontAwesome.otf" />
+    <Content Include="Reports\DSPhieuXuat.xsc">
+      <DependentUpon>DSPhieuXuat.xsd</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="bower_components\angular-cache\angular-cache.js.map" />
+    <Content Include="bower_components\angular-cache\angular-cache.min.map" />
+    <Content Include="bower_components\angular\.bower.json" />
+    <Content Include="bower_components\angular\angular.min.js.gzip" />
+    <Content Include="bower_components\angular\angular.min.js.map" />
+    <Content Include="bower_components\angular\bower.json" />
+    <Content Include="bower_components\angular\LICENSE.md" />
+    <Content Include="bower_components\angular\package.json" />
+    <Content Include="bower_components\angular\README.md" />
+    <Content Include="bower_components\angular-bootstrap\.bower.json" />
+    <Content Include="bower_components\angular-bootstrap\.gitignore" />
+    <Content Include="bower_components\angular-bootstrap\.npmignore" />
+    <Content Include="bower_components\angular-bootstrap\bower.json" />
+    <Content Include="bower_components\angular-bootstrap\package.json" />
+    <Content Include="bower_components\tr-ng-grid\.bower.json" />
+    <Content Include="bower_components\tr-ng-grid\bower.json" />
+    <Content Include="bower_components\tr-ng-grid\LICENSE" />
+    <Content Include="bower_components\tr-ng-grid\package.json" />
+    <Content Include="bower_components\tr-ng-grid\README.md" />
+    <Content Include="bower_components\angular-route\.bower.json" />
+    <Content Include="bower_components\angular-route\angular-route.min.js.map" />
+    <Content Include="bower_components\angular-route\bower.json" />
+    <Content Include="bower_components\angular-route\package.json" />
+    <Content Include="bower_components\angular-route\README.md" />
+    <Content Include="bower_components\bootstrap\.bower.json" />
+    <Content Include="bower_components\bootstrap\bower.json" />
+    <Content Include="bower_components\bootstrap\dist\css\bootstrap-theme.css.map" />
+    <Content Include="bower_components\bootstrap\dist\css\bootstrap.css.map" />
+    <Content Include="bower_components\bootstrap\dist\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="bower_components\bootstrap\dist\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="bower_components\bootstrap\dist\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="bower_components\bootstrap\dist\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="bower_components\bootstrap\fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="bower_components\bootstrap\fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="bower_components\bootstrap\fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="bower_components\bootstrap\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="bower_components\bootstrap\grunt\.jshintrc" />
+    <Content Include="bower_components\bootstrap\grunt\configBridge.json" />
+    <Content Include="bower_components\bootstrap\grunt\sauce_browsers.yml" />
+    <Content Include="bower_components\bootstrap\js\.jscsrc" />
+    <Content Include="bower_components\bootstrap\js\.jshintrc" />
+    <Content Include="bower_components\bootstrap\less\.csscomb.json" />
+    <Content Include="bower_components\bootstrap\less\.csslintrc" />
+    <Content Include="bower_components\bootstrap\less\alerts.less" />
+    <Content Include="bower_components\bootstrap\less\badges.less" />
+    <Content Include="bower_components\bootstrap\less\bootstrap.less" />
+    <Content Include="bower_components\bootstrap\less\breadcrumbs.less" />
+    <Content Include="bower_components\bootstrap\less\button-groups.less" />
+    <Content Include="bower_components\bootstrap\less\buttons.less" />
+    <Content Include="bower_components\bootstrap\less\carousel.less" />
+    <Content Include="bower_components\bootstrap\less\close.less" />
+    <Content Include="bower_components\bootstrap\less\code.less" />
+    <Content Include="bower_components\bootstrap\less\component-animations.less" />
+    <Content Include="bower_components\bootstrap\less\dropdowns.less" />
+    <Content Include="bower_components\bootstrap\less\forms.less" />
+    <Content Include="bower_components\bootstrap\less\glyphicons.less" />
+    <Content Include="bower_components\bootstrap\less\grid.less" />
+    <Content Include="bower_components\bootstrap\less\input-groups.less" />
+    <Content Include="bower_components\bootstrap\less\jumbotron.less" />
+    <Content Include="bower_components\bootstrap\less\labels.less" />
+    <Content Include="bower_components\bootstrap\less\list-group.less" />
+    <Content Include="bower_components\bootstrap\less\media.less" />
+    <Content Include="bower_components\bootstrap\less\mixins.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\alerts.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\background-variant.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\border-radius.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\buttons.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\center-block.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\clearfix.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\forms.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\gradients.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\grid-framework.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\grid.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\hide-text.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\image.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\labels.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\list-group.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\nav-divider.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\nav-vertical-align.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\opacity.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\pagination.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\panels.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\progress-bar.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\reset-filter.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\reset-text.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\resize.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\responsive-visibility.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\size.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\tab-focus.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\table-row.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\text-emphasis.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\text-overflow.less" />
+    <Content Include="bower_components\bootstrap\less\mixins\vendor-prefixes.less" />
+    <Content Include="bower_components\bootstrap\less\modals.less" />
+    <Content Include="bower_components\bootstrap\less\navbar.less" />
+    <Content Include="bower_components\bootstrap\less\navs.less" />
+    <Content Include="bower_components\bootstrap\less\normalize.less" />
+    <Content Include="bower_components\bootstrap\less\pager.less" />
+    <Content Include="bower_components\bootstrap\less\pagination.less" />
+    <Content Include="bower_components\bootstrap\less\panels.less" />
+    <Content Include="bower_components\bootstrap\less\popovers.less" />
+    <Content Include="bower_components\bootstrap\less\print.less" />
+    <Content Include="bower_components\bootstrap\less\progress-bars.less" />
+    <Content Include="bower_components\bootstrap\less\responsive-embed.less" />
+    <Content Include="bower_components\bootstrap\less\responsive-utilities.less" />
+    <Content Include="bower_components\bootstrap\less\scaffolding.less" />
+    <Content Include="bower_components\bootstrap\less\tables.less" />
+    <Content Include="bower_components\bootstrap\less\theme.less" />
+    <Content Include="bower_components\bootstrap\less\thumbnails.less" />
+    <Content Include="bower_components\bootstrap\less\tooltip.less" />
+    <Content Include="bower_components\bootstrap\less\type.less" />
+    <Content Include="bower_components\bootstrap\less\utilities.less" />
+    <Content Include="bower_components\bootstrap\less\variables.less" />
+    <Content Include="bower_components\bootstrap\less\wells.less" />
+    <Content Include="bower_components\bootstrap\LICENSE" />
+    <Content Include="bower_components\bootstrap\package.json" />
+    <Content Include="bower_components\bootstrap\README.md" />
+    <Content Include="Areas\Production\Views\web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Areas\Production\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Common\Views\web.config" />
+    <Content Include="Areas\Common\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Common\Views\Notice\InputBox.cshtml" />
+    <Content Include="Areas\Common\Views\Notice\NoticeDialog.cshtml" />
+    <Content Include="Areas\Common\Views\Notice\NoticeView.cshtml" />
+    <Content Include="fonts\font-awesome\fonts\fontawesome-webfont.eot" />
+    <Content Include="fonts\font-awesome\fonts\fontawesome-webfont.ttf" />
+    <Content Include="fonts\font-awesome\fonts\fontawesome-webfont.woff" />
+    <Content Include="fonts\font-awesome\fonts\fontawesome-webfont.woff2" />
+    <Content Include="fonts\font-awesome\fonts\FontAwesome.otf" />
+    <Content Include="fonts\font-awesome\less\animated.less" />
+    <Content Include="fonts\font-awesome\less\bordered-pulled.less" />
+    <Content Include="fonts\font-awesome\less\core.less" />
+    <Content Include="fonts\font-awesome\less\fixed-width.less" />
+    <Content Include="fonts\font-awesome\less\font-awesome.less" />
+    <Content Include="fonts\font-awesome\less\icons.less" />
+    <Content Include="fonts\font-awesome\less\larger.less" />
+    <Content Include="fonts\font-awesome\less\list.less" />
+    <Content Include="fonts\font-awesome\less\mixins.less" />
+    <Content Include="fonts\font-awesome\less\path.less" />
+    <Content Include="fonts\font-awesome\less\rotated-flipped.less" />
+    <Content Include="fonts\font-awesome\less\stacked.less" />
+    <Content Include="fonts\font-awesome\less\variables.less" />
+    <Content Include="fonts\font-awesome\scss\font-awesome.scss" />
+    <Content Include="fonts\font-awesome\scss\_animated.scss" />
+    <Content Include="fonts\font-awesome\scss\_bordered-pulled.scss" />
+    <Content Include="fonts\font-awesome\scss\_core.scss" />
+    <Content Include="fonts\font-awesome\scss\_fixed-width.scss" />
+    <Content Include="fonts\font-awesome\scss\_icons.scss" />
+    <Content Include="fonts\font-awesome\scss\_larger.scss" />
+    <Content Include="fonts\font-awesome\scss\_list.scss" />
+    <Content Include="fonts\font-awesome\scss\_mixins.scss" />
+    <Content Include="fonts\font-awesome\scss\_path.scss" />
+    <Content Include="fonts\font-awesome\scss\_rotated-flipped.scss" />
+    <Content Include="fonts\font-awesome\scss\_stacked.scss" />
+    <Content Include="fonts\font-awesome\scss\_variables.scss" />
+    <Content Include="Areas\Production\Views\Reports\ReportExample.cshtml" />
+    <Content Include="Areas\Production\Views\Reports\Partial\RpExampleDialog.cshtml" />
+    <Content Include="bower_components\tableExport\README.md" />
+    <Content Include="bower_components\tableExport\tableExport.jquery.json" />
+    <Content Include="Areas\Production\Views\Drug\Partial\UpdateDrugInPriceDialog.cshtml" />
+    <Content Include="Areas\Production\Views\Reports\RevenueDetailsByDay.cshtml" />
+    <Content Include="fonts\code128.ttf" />
+    <Content Include="Areas\Production\Views\Drug\Partial\UpdateDrugBatchDialog.cshtml" />
+    <Content Include="Areas\Production\Views\Drug\Partial\UpdateDrugOutPriceDialog.cshtml" />
+    <Content Include="Areas\Production\Views\Reports\SynthesisReport.cshtml" />
+    <Content Include="machine.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Areas\Common\Views\Filter\ReportDateRageFilterControl.cshtml" />
+    <Content Include="Areas\Production\Views\System\SystemMessagesDialog.cshtml" />
+    <Content Include="Areas\Production\Views\Reports\CustomizeReport.cshtml" />
+    <Content Include="Areas\Common\Views\Filter\DrugSearchFilterControl.cshtml" />
+    <Content Include="Areas\Production\Views\Reports\WarehouseReport.cshtml" />
+    <Content Include="Areas\Common\Views\Filter\ReportGroupTypeFilterControl.cshtml" />
+    <Content Include="bower_components\selectize\less\plugins\drag_drop.less" />
+    <Content Include="bower_components\selectize\less\plugins\dropdown_header.less" />
+    <Content Include="bower_components\selectize\less\plugins\optgroup_columns.less" />
+    <Content Include="bower_components\selectize\less\plugins\remove_button.less" />
+    <Content Include="bower_components\selectize\less\selectize.bootstrap2.less" />
+    <Content Include="bower_components\selectize\less\selectize.bootstrap3.less" />
+    <Content Include="bower_components\selectize\less\selectize.default.less" />
+    <Content Include="bower_components\selectize\less\selectize.legacy.less" />
+    <Content Include="bower_components\selectize\less\selectize.less" />
+    <Content Include="Areas\Production\Views\Drug\CreateReserve.cshtml" />
+    <Content Include="Areas\Production\Views\Drug\InventoryWarning.cshtml" />
+    <Content Include="Areas\Production\Views\Drug\Partial\UpdateDrugExpriedDateDialog.cshtml" />
+    <Content Include="Areas\Production\Views\Drug\Partial\UpdateDrugPriceDialog.cshtml" />
+    <Content Include="Areas\Production\Views\Recruitment\CreateRecruit.cshtml" />
+    <Content Include="Areas\Production\Views\Recruitment\UpdateRecruit.cshtml" />
+    <Content Include="Areas\Production\Views\Recruitment\ListRecruits.cshtml" />
+    <Content Include="Areas\Production\Views\Recruitment\ViewRecruit.cshtml" />
+    <Content Include="Areas\Production\Views\Recruitment\DeleteRecruit.cshtml" />
+    <Content Include="Areas\Production\Views\Recruitment\ListRecruitActive.cshtml" />
+    <Content Include="Areas\Production\Views\Recruitment\ListRecruits.Mobile.cshtml" />
+    <Content Include="Areas\Production\Views\Reports\ReportByStaff.cshtml" />
+    <Content Include="Areas\Production\Views\Reports\ReportByDoctor.cshtml" />
+    <Content Include="Areas\Production\Views\Delivery\DeliveryNoteWithBarcode.cshtml" />
+    <Content Include="Areas\Production\Views\Reports\ReportByGoods.cshtml" />
+    <Content Include="Areas\Production\Views\Reports\ReportByCustomer.cshtml" />
+    <Content Include="Areas\Utilities\Views\web.config" />
+    <Content Include="Areas\Utilities\Views\_ViewStart.cshtml" />
+    <Content Include="Content\themes\inspinia\plugins\bootstrap-rtl\bootstrap-rtl.css.map" />
+    <Content Include="Content\themes\inspinia\plugins\footable\._fonts" />
+    <Content Include="Content\themes\inspinia\plugins\footable\fonts\._footable.eot" />
+    <Content Include="Content\themes\inspinia\plugins\footable\fonts\._footable.ttf" />
+    <Content Include="Content\themes\inspinia\plugins\footable\fonts\._footable.woff" />
+    <Content Include="Content\themes\inspinia\plugins\footable\fonts\footable.eot" />
+    <Content Include="Content\themes\inspinia\plugins\footable\fonts\footable.ttf" />
+    <Content Include="Content\themes\inspinia\plugins\footable\fonts\footable.woff" />
+    <Content Include="Docs\knbh_nhanvien.pdf" />
+    <Content Include="Docs\kngt_nhanvien.pdf" />
+    <Content Include="Docs\tddt_chunhathuoc.pdf" />
+    <Content Include="Docs\Danhgia_Luachon_DiaDiem.pdf" />
+    <Content Include="Docs\Danhmuc_HangPhothong.pdf" />
+    <Content Include="Docs\Kehoach_taichinh_mo_nhathuoc.xlsx" />
+    <Content Include="Docs\Giayto_Thutuc_GPP.pdf" />
+    <None Include="Properties\PublishProfiles\MedMan.pubxml" />
+    <None Include="Reports\DSPhieuXuat.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DSPhieuXuat.Designer.cs</LastGenOutput>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Content Include="Reports\DSPhieuXuat.xss">
+      <DependentUpon>DSPhieuXuat.xsd</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Scripts\production\inventory\detail-inventory-controller.js" />
+    <Content Include="Scripts\production\inventory\edit-inventory-controller.js" />
+    <Content Include="Scripts\production\inventory\drug-not-inventoried-controller.js" />
+    <Content Include="Scripts\production\inventory\list-inventory-controller.js" />
+    <Content Include="Scripts\production\inventory\update-inventory-iem-dialog.js" />
+    <Content Include="Scripts\inspinia\plugins\chartist\._chartist.min.js.map" />
+    <Content Include="Scripts\inspinia\plugins\chartist\chartist.min.js.map" />
+    <Content Include="Scripts\inspinia\plugins\diff_match_patch\COPYING" />
+    <Content Include="Scripts\inspinia\plugins\justified-gallery\README.md" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\.gitignore" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\bower.json" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\component.json" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\composer.json" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\CONTRIBUTING.md" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\LICENSE" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\package.json" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\README.md" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\release.sh" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2.jquery.json" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_en.js.template" />
+    <None Include="Scripts\jquery-2.1.3.intellisense.js" />
+    <Content Include="Scripts\Custom\formUtil.js" />
+    <Content Include="Scripts\Custom\phieuNhap.js" />
+    <Content Include="Scripts\Custom\PhieuXuat.js" />
+    <Content Include="Scripts\datepicker-vi.js" />
+    <Content Include="Scripts\extensions\countdown.js" />
+    <Content Include="Scripts\filter\app-date-filter.js" />
+    <Content Include="Scripts\helpers\div-ready-directive.js" />
+    <Content Include="Scripts\i18n\grid.locale-vi.js" />
+    <Content Include="Scripts\inspinia\app\inspinia.js" />
+    <Content Include="Scripts\inspinia\app\inspinia.min.js" />
+    <Content Include="Scripts\inspinia\app\skin.config.min.js" />
+    <Content Include="Scripts\inspinia\plugins\blueimp\jquery.blueimp-gallery.min.js" />
+    <Content Include="Scripts\inspinia\plugins\chartist\._chartist.min.js" />
+    <Content Include="Scripts\inspinia\plugins\chartist\chartist.min.js" />
+    <Content Include="Scripts\inspinia\plugins\chartJs\Chart.min.js" />
+    <Content Include="Scripts\inspinia\plugins\chosen\chosen.jquery.js" />
+    <Content Include="Scripts\inspinia\plugins\clockpicker\._clockpicker.js" />
+    <Content Include="Scripts\inspinia\plugins\clockpicker\clockpicker.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\codemirror.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\apl\apl.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\apl\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\asterisk\asterisk.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\asterisk\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\clike\clike.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\clike\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\clike\scala.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\clojure\clojure.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\clojure\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\cobol\cobol.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\cobol\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\coffeescript\coffeescript.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\coffeescript\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\commonlisp\commonlisp.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\commonlisp\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\css\css.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\css\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\css\less.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\css\less_test.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\css\scss.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\css\scss_test.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\css\test.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\cypher\cypher.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\cypher\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\diff\diff.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\diff\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\django\django.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\django\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\dtd\dtd.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\dtd\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\dylan\dylan.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\dylan\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\d\d.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\d\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\ecl\ecl.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\ecl\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\eiffel\eiffel.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\eiffel\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\erlang\erlang.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\erlang\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\fortran\fortran.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\fortran\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\gas\gas.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\gas\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\gfm\gfm.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\gfm\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\gfm\test.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\gherkin\gherkin.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\gherkin\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\go\go.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\go\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\groovy\groovy.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\groovy\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\haml\haml.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\haml\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\haml\test.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\haskell\haskell.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\haskell\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\haxe\haxe.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\haxe\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\htmlembedded\htmlembedded.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\htmlembedded\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\htmlmixed\htmlmixed.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\htmlmixed\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\http\http.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\http\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\jade\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\jade\jade.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\javascript\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\javascript\javascript.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\javascript\json-ld.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\javascript\test.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\javascript\typescript.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\jinja2\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\jinja2\jinja2.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\julia\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\julia\julia.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\kotlin\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\kotlin\kotlin.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\livescript\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\livescript\livescript.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\lua\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\lua\lua.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\markdown\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\markdown\markdown.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\markdown\test.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\meta.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\mirc\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\mirc\mirc.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\mllike\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\mllike\mllike.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\modelica\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\modelica\modelica.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\nginx\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\nginx\nginx.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\ntriples\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\ntriples\ntriples.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\octave\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\octave\octave.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\pascal\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\pascal\pascal.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\pegjs\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\pegjs\pegjs.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\perl\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\perl\perl.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\php\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\php\php.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\php\test.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\pig\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\pig\pig.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\properties\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\properties\properties.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\puppet\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\puppet\puppet.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\python\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\python\python.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\q\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\q\q.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\rpm\changes\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\rpm\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\rpm\rpm.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\rst\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\rst\rst.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\ruby\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\ruby\ruby.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\ruby\test.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\rust\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\rust\rust.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\r\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\r\r.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\sass\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\sass\sass.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\scheme\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\scheme\scheme.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\shell\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\shell\shell.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\shell\test.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\sieve\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\sieve\sieve.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\slim\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\slim\slim.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\slim\test.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\smalltalk\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\smalltalk\smalltalk.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\smartymixed\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\smartymixed\smartymixed.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\smarty\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\smarty\smarty.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\solr\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\solr\solr.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\sparql\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\sparql\sparql.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\sql\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\sql\sql.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\stex\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\stex\stex.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\stex\test.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\tcl\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\tcl\tcl.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\textile\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\textile\test.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\textile\textile.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\tiddlywiki\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\tiddlywiki\tiddlywiki.css" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\tiddlywiki\tiddlywiki.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\tiki\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\tiki\tiki.css" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\tiki\tiki.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\toml\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\toml\toml.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\tornado\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\tornado\tornado.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\turtle\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\turtle\turtle.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\vbscript\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\vbscript\vbscript.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\vb\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\vb\vb.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\velocity\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\velocity\velocity.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\verilog\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\verilog\test.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\verilog\verilog.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\xml\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\xml\test.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\xml\xml.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\xquery\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\xquery\test.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\xquery\xquery.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\yaml\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\yaml\yaml.js" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\z80\index.html" />
+    <Content Include="Scripts\inspinia\plugins\codemirror\mode\z80\z80.js" />
+    <Content Include="Scripts\inspinia\plugins\colorpicker\bootstrap-colorpicker.min.js" />
+    <Content Include="Scripts\inspinia\plugins\cropper\cropper.min.js" />
+    <Content Include="Scripts\inspinia\plugins\datapicker\angular-datepicker.js" />
+    <Content Include="Scripts\inspinia\plugins\datapicker\bootstrap-datepicker.js" />
+    <Content Include="Scripts\inspinia\plugins\dataTables\dataTables.bootstrap.js" />
+    <Content Include="Scripts\inspinia\plugins\dataTables\dataTables.responsive.js" />
+    <Content Include="Scripts\inspinia\plugins\dataTables\dataTables.tableTools.min.js" />
+    <Content Include="Scripts\inspinia\plugins\dataTables\jquery.dataTables.js" />
+    <Content Include="Scripts\inspinia\plugins\dataTables\jquery.dataTables.min.js" />
+    <Content Include="Scripts\inspinia\plugins\dataTables\swf\copy_csv_xls.swf" />
+    <Content Include="Scripts\inspinia\plugins\dataTables\swf\copy_csv_xls_pdf.swf" />
+    <Content Include="Scripts\inspinia\plugins\daterangepicker\._daterangepicker.js" />
+    <Content Include="Scripts\inspinia\plugins\daterangepicker\angular-daterangepicker.js" />
+    <Content Include="Scripts\inspinia\plugins\daterangepicker\daterangepicker.js" />
+    <Content Include="Scripts\inspinia\plugins\datetimepicker\datetimepicker.js" />
+    <Content Include="Scripts\inspinia\plugins\diff_match_patch\javascript\diff_match_patch.js" />
+    <Content Include="Scripts\inspinia\plugins\diff_match_patch\README.txt" />
+    <Content Include="Scripts\inspinia\plugins\dropzone\dropzone.js" />
+    <Content Include="Scripts\inspinia\plugins\easypiechart\easypiechart.js" />
+    <Content Include="Scripts\inspinia\plugins\easypiechart\jquery.easypiechart.js" />
+    <Content Include="Scripts\inspinia\plugins\flot\curvedLines.js" />
+    <Content Include="Scripts\inspinia\plugins\flot\excanvas.min.js" />
+    <Content Include="Scripts\inspinia\plugins\flot\jquery.flot.js" />
+    <Content Include="Scripts\inspinia\plugins\flot\jquery.flot.pie.js" />
+    <Content Include="Scripts\inspinia\plugins\flot\jquery.flot.resize.js" />
+    <Content Include="Scripts\inspinia\plugins\flot\jquery.flot.spline.js" />
+    <Content Include="Scripts\inspinia\plugins\flot\jquery.flot.symbol.js" />
+    <Content Include="Scripts\inspinia\plugins\flot\jquery.flot.time.js" />
+    <Content Include="Scripts\inspinia\plugins\flot\jquery.flot.tooltip.min.js" />
+    <Content Include="Scripts\inspinia\plugins\footable\._footable.all.min.js" />
+    <Content Include="Scripts\inspinia\plugins\footable\footable.all.min.js" />
+    <Content Include="Scripts\inspinia\plugins\fullcalendar\fullcalendar.min.js" />
+    <Content Include="Scripts\inspinia\plugins\fullcalendar\moment.min.js" />
+    <Content Include="Scripts\inspinia\plugins\gritter\images\gritter-light.png" />
+    <Content Include="Scripts\inspinia\plugins\gritter\images\gritter-long.png" />
+    <Content Include="Scripts\inspinia\plugins\gritter\images\gritter.png" />
+    <Content Include="Scripts\inspinia\plugins\gritter\images\ie-spacer.gif" />
+    <Content Include="Scripts\inspinia\plugins\gritter\jquery.gritter.css" />
+    <Content Include="Scripts\inspinia\plugins\gritter\jquery.gritter.min.js" />
+    <Content Include="Scripts\inspinia\plugins\iCheck\icheck.min.js" />
+    <Content Include="Scripts\inspinia\plugins\idle-timer\idle-timer.min.js" />
+    <Content Include="Scripts\inspinia\plugins\ionRangeSlider\ion.rangeSlider.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jasny\jasny-bootstrap.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jeditable\jquery.jeditable.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-ar.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-bg.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-bg1251.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-cat.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-cn.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-cs.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-da.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-de.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-dk.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-el.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-en.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-es.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-fa.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-fi.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-fr.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-gl.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-he.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-hr.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-hr1250.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-hu.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-id.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-is.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-it.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-ja.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-kr.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-lt.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-mne.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-nl.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-no.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-pl.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-pt-br.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-pt.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-ro.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-ru.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-sk.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-sr-latin.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-sr.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-sv.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-th.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-tr.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-tw.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-ua.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\i18n\grid.locale-vi.js" />
+    <Content Include="Scripts\inspinia\plugins\jqGrid\jquery.jqGrid.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery-ui-i18n.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-af.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-ar-DZ.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-ar.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-az.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-be.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-bg.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-bs.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-ca.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-cs.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-cy-GB.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-da.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-de.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-el.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-en-AU.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-en-GB.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-en-NZ.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-eo.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-es.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-et.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-eu.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-fa.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-fi.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-fo.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-fr-CA.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-fr-CH.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-fr.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-gl.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-he.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-hi.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-hr.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-hu.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-hy.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-id.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-is.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-it.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-ja.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-ka.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-kk.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-km.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-ko.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-ky.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-lb.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-lt.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-lv.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-mk.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-ml.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-ms.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-nb.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-nl-BE.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-nl.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-nn.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-no.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-pl.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-pt-BR.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-pt.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-rm.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-ro.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-ru.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-sk.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-sl.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-sq.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-sr-SR.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-sr.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-sv.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-ta.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-th.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-tj.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-tr.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-uk.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-vi.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-zh-CN.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-zh-HK.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\i18n\jquery.ui.datepicker-zh-TW.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\images\animated-overlay.gif" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\images\ui-icons_222222_256x240.png" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\images\ui-icons_454545_256x240.png" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\images\ui-icons_888888_256x240.png" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\jquery-ui.css" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\jquery-ui.js" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\jquery-ui.min.css" />
+    <Content Include="Scripts\inspinia\plugins\jquery-ui\jquery-ui.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jsKnob\jquery.knob.js" />
+    <Content Include="Scripts\inspinia\plugins\jsTree\jstree.min.js" />
+    <Content Include="Scripts\inspinia\plugins\justified-gallery\jquery.justifiedgallery.css" />
+    <Content Include="Scripts\inspinia\plugins\justified-gallery\jquery.justifiedgallery.js" />
+    <Content Include="Scripts\inspinia\plugins\justified-gallery\jquery.justifiedgallery.min.css" />
+    <Content Include="Scripts\inspinia\plugins\justified-gallery\jquery.justifiedgallery.min.js" />
+    <Content Include="Scripts\inspinia\plugins\justified-gallery\loading.gif" />
+    <Content Include="Scripts\inspinia\plugins\jvectormap\jquery-jvectormap-1.2.2.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jvectormap\jquery-jvectormap-2.0.2.css" />
+    <Content Include="Scripts\inspinia\plugins\jvectormap\jquery-jvectormap-2.0.2.min.js" />
+    <Content Include="Scripts\inspinia\plugins\jvectormap\jquery-jvectormap-world-mill-en.js" />
+    <Content Include="Scripts\inspinia\plugins\metisMenu\metisMenu.min.js" />
+    <Content Include="Scripts\inspinia\plugins\morris\morris.js" />
+    <Content Include="Scripts\inspinia\plugins\morris\raphael-2.1.0.min.js" />
+    <Content Include="Scripts\inspinia\plugins\nestable\jquery.nestable.js" />
+    <Content Include="Scripts\inspinia\plugins\nouslider\jquery.nouislider.min.js" />
+    <Content Include="Scripts\inspinia\plugins\pace\pace.min.js" />
+    <Content Include="Scripts\inspinia\plugins\peity\jquery.peity.min.js" />
+    <Content Include="Scripts\inspinia\plugins\preetyTextDiff\jquery.pretty-text-diff.min.js" />
+    <Content Include="Scripts\inspinia\plugins\rickshaw\rickshaw.min.js" />
+    <Content Include="Scripts\inspinia\plugins\rickshaw\vendor\d3.v3.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2-bootstrap.css" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2-spinner.gif" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2.css" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2.min.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2.png" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2x2.png" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_ar.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_az.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_bg.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_ca.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_cs.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_da.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_de.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_el.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_es.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_et.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_eu.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_fa.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_fi.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_fr.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_gl.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_he.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_hr.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_hu.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_id.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_is.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_it.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_ja.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_ka.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_ko.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_lt.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_lv.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_mk.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_ms.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_nb.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_nl.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_pl.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_pt-BR.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_pt-PT.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_ro.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_rs.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_ru.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_sk.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_sv.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_th.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_tr.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_ug-CN.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_uk.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_vi.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_zh-CN.js" />
+    <Content Include="Scripts\inspinia\plugins\select2-3.5.3\select2_locale_zh-TW.js" />
+    <Content Include="Scripts\inspinia\plugins\SheetJS\jszip.js" />
+    <Content Include="Scripts\inspinia\plugins\SheetJS\xlsx.full.min.js" />
+    <Content Include="Scripts\inspinia\plugins\slimscroll\jquery.slimscroll.min.js" />
+    <Content Include="Scripts\inspinia\plugins\sparkline\jquery.sparkline.min.js" />
+    <Content Include="Scripts\inspinia\plugins\staps\jquery.steps.min.js" />
+    <Content Include="Scripts\inspinia\plugins\summernote\summernote.min.js" />
+    <Content Include="Scripts\inspinia\plugins\sweetalert\._sweetalert.min.js" />
+    <Content Include="Scripts\inspinia\plugins\sweetalert\sweetalert.min.js" />
+    <Content Include="Scripts\inspinia\plugins\switchery\switchery.js" />
+    <Content Include="Scripts\inspinia\plugins\tinycon\tinycon.min.js" />
+    <Content Include="Scripts\inspinia\plugins\toastr\toastr.min.js" />
+    <Content Include="Scripts\inspinia\plugins\validate\jquery.validate.min.js" />
+    <Content Include="Scripts\inspinia\plugins\velocity\velocity.min.js" />
+    <Content Include="Scripts\inspinia\plugins\velocity\velocity.ui.min.js" />
+    <Content Include="Scripts\inspinia\plugins\video\responsible-video.js" />
+    <Content Include="Scripts\jquery-2.1.3.js" />
+    <Content Include="Scripts\jquery-2.1.3.min.js" />
+    <Content Include="Scripts\jquery-barcode.js" />
+    <Content Include="Scripts\jquery-barcode.min.js" />
+    <Content Include="Scripts\jquery-ui-1.11.2.js" />
+    <Content Include="Scripts\jquery-ui-1.11.2.min.js" />
+    <Content Include="Scripts\jquery.dataTables.min.js" />
+    <Content Include="Scripts\jquery.inputmask\inputmask.date.extensions.js" />
+    <Content Include="Scripts\jquery.inputmask\inputmask.date.extensions.min.js" />
+    <Content Include="Scripts\jquery.inputmask\inputmask.extensions.js" />
+    <Content Include="Scripts\jquery.inputmask\inputmask.extensions.min.js" />
+    <Content Include="Scripts\jquery.inputmask\inputmask.js" />
+    <Content Include="Scripts\jquery.inputmask\inputmask.min.js" />
+    <Content Include="Scripts\jquery.inputmask\inputmask.numeric.extensions.js" />
+    <Content Include="Scripts\jquery.inputmask\inputmask.numeric.extensions.min.js" />
+    <Content Include="Scripts\jquery.inputmask\inputmask.phone.extensions.js" />
+    <Content Include="Scripts\jquery.inputmask\inputmask.phone.extensions.min.js" />
+    <Content Include="Scripts\jquery.inputmask\inputmask.regex.extensions.js" />
+    <Content Include="Scripts\jquery.inputmask\inputmask.regex.extensions.min.js" />
+    <Content Include="Scripts\jquery.inputmask\jquery.inputmask.js" />
+    <Content Include="Scripts\jquery.inputmask\jquery.inputmask.min.js" />
+    <Content Include="Scripts\jquery.jqGrid.js" />
+    <Content Include="Scripts\jquery.jqGrid.min.js" />
+    <Content Include="Scripts\jquery.selectize.js" />
+    <Content Include="Scripts\jquery.tree.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\mobile\barcode-scanner.js" />
+    <Content Include="Scripts\modules\common\directive\repeat-done-directive.js" />
+    <Content Include="Scripts\modules\common\directive\enter-key-capture-directive.js" />
+    <Content Include="Scripts\modules\filter\drug-search-directive.js" />
+    <Content Include="Scripts\modules\filter\report-group-type-directive.js" />
+    <Content Include="Scripts\modules\filter\report-date-range-directive.js" />
+    <Content Include="Scripts\modules\global-inform\global-inform-controller.js" />
+    <Content Include="Scripts\modules\notice\input-box-controller.js" />
+    <Content Include="Scripts\modules\notice\notice-dialog-controller.js" />
+    <Content Include="Scripts\modules\notice\notice-global-register.js" />
+    <Content Include="Scripts\modules\notice\notice-view-controller.js" />
+    <Content Include="Scripts\NhaThuocPicker.js" />
+    <Content Include="Scripts\npm.js" />
+    <Content Include="Scripts\app.js" />
+    <Content Include="Scripts\production\admin\role-action-directive.js" />
+    <Content Include="Scripts\production\admin\setup-role-action-controller.js" />
+    <Content Include="Scripts\production\common\cache-service.js" />
+    <Content Include="Scripts\production\common\constant.js" />
+    <Content Include="Scripts\app-version.js" />
+    <Content Include="Scripts\production\drug\drug-catalog-controler.js" />
+    <Content Include="Scripts\production\drug\mapping-catalog-controler.js" />
+    <Content Include="Scripts\production\inout-note\warehouse-transition-dialog-controler.js" />
+    <Content Include="Scripts\production\inout-note\in-out-coming-note-controler.js" />
+    <Content Include="Scripts\production\delivery\delivery-note-with-barcode-controler.js" />
+    <Content Include="Scripts\production\delivery\delivery-note-controler.js" />
+    <Content Include="Scripts\production\drug\create-reserve.js" />
+    <Content Include="Scripts\production\drug\drug-update-expried-date-dialog-controler.js" />
+    <Content Include="Scripts\production\drug\drug-update-batch-dialog-controler.js" />
+    <Content Include="Scripts\production\drug\drug-update-out-price-dialog-controler.js" />
+    <Content Include="Scripts\production\drug\drug-update-in-price-dialog-controler.js" />
+    <Content Include="Scripts\production\drug\drug-management-controler.js" />
+    <Content Include="Scripts\production\drug\inventory-warning-controller.js" />
+    <Content Include="Scripts\production\notification\list-notification-controller.js" />
+    <Content Include="Scripts\production\notification\notification-controller.js" />
+    <Content Include="Scripts\production\receipt\receipt-note-controler.js" />
+    <Content Include="Scripts\production\recruitment\create-recruit.js" />
+    <Content Include="Scripts\production\recruitment\list-recruit-active.js" />
+    <Content Include="Scripts\production\recruitment\list-recruits.js" />
+    <Content Include="Scripts\production\reports\customize-report-controller.js" />
+    <Content Include="Scripts\production\reports\report-by-customer-controler.js" />
+    <Content Include="Scripts\production\reports\report-by-doctor-controler.js" />
+    <Content Include="Scripts\production\reports\report-by-goods-controler.js" />
+    <Content Include="Scripts\production\reports\report-by-staff-controler.js" />
+    <Content Include="Scripts\production\reports\TransHistoryDeliveryItemTableController.js" />
+    <Content Include="Scripts\production\reports\TransHistoryReceiptItemTableController.js" />
+    <Content Include="Scripts\production\reports\TransHistoryReportController.js" />
+    <Content Include="Scripts\production\reports\warehouse-report-controler.js" />
+    <Content Include="Scripts\production\reports\synthesis-report-controler.js" />
+    <Content Include="Scripts\production\reports\revenue-details-by-day-controler.js" />
+    <Content Include="Scripts\production\reports\test\report-example-controler.js" />
+    <Content Include="Scripts\production\reports\test\rp-example-dialog-controler.js" />
+    <Content Include="Scripts\production\system\system-message-dialog-controler.js" />
+    <Content Include="Scripts\production\utilities\BCScanner.js" />
+    <Content Include="Scripts\production\utilities\expiry_warning.js" />
+    <Content Include="Scripts\production\utilities\jquery.scannerdetection.compatibility.js" />
+    <Content Include="Scripts\production\utilities\jquery.scannerdetection.js" />
+    <Content Include="Scripts\mobile\barcode-reader.js" />
+    <Content Include="Scripts\production\utilities\NearExpiredDrugWarningController.js" />
+    <Content Include="Scripts\production\utilities\negative-revenue-warning-controler.js" />
+    <Content Include="Scripts\quagga.js" />
+    <Content Include="Scripts\quagga.min.js" />
+    <Content Include="Scripts\setting.js" />
+    <Content Include="Scripts\settings.js" />
+    <Content Include="Scripts\UserPicker.js" />
+    <Content Include="Scripts\utility\ajaxLoader.js" />
+    <Content Include="Scripts\utility\ajaxService.js" />
+    <Content Include="Scripts\helpers\angular-helper.js" />
+    <Content Include="Scripts\utility\pack-helpers.js" />
+    <Content Include="Scripts\utility\required-control-directive.js" />
+    <Content Include="Scripts\utility\utils.js" />
+    <Content Include="Scripts\YesNoDialog.js" />
+    <Content Include="Uploads\Dummy.txt" />
+    <Content Include="Views\Account\InvalidUserName.cshtml" />
+    <Content Include="Views\Account\_ChangePasswordPartial.cshtml" />
+    <Content Include="Views\Account\_RemoveExternalLoginsPartial.cshtml" />
+    <Content Include="Views\Account\Manage.cshtml" />
+    <Content Include="Views\Account\PasswordResetFailure.cshtml" />
+    <Content Include="Views\Account\PasswordResetSuccess.cshtml" />
+    <Content Include="Views\Account\Register.cshtml" />
+    <Content Include="Views\Account\ResetPassword.cshtml" />
+    <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
+    <Content Include="Views\Account\ResetPwStepTwo.cshtml" />
+    <Content Include="Views\Emails\ChngPasswordEmail.cshtml" />
+    <Content Include="Views\Emails\RegEmail.cshtml" />
+    <Content Include="Views\Emails\_ViewStart.cshtml" />
+    <Content Include="Views\Home\About.cshtml" />
+    <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Home\ReadFoo.cshtml" />
+    <Content Include="Views\Home\WriteFoo.cshtml" />
+    <Content Include="Views\PhieuXuats\BarcodeScannerTest.html" />
+    <Content Include="Views\Shared\_LoginPartial.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Scripts\jquery-1.8.2.intellisense.js" />
+    <Content Include="Global.asax" />
+    <Content Include="Scripts\jquery-2.1.3.min.map" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Views\Thuocs\Create.cshtml" />
+    <Content Include="Views\Web.Config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Views\Account\UserRoles.cshtml" />
+    <Content Include="Views\Account\Index.cshtml" />
+    <Content Include="Views\Account\Edit.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\SelectOperationViewModel.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\SelectFunctionViewModel.cshtml" />
+    <Content Include="Views\BacSys\Create.cshtml" />
+    <Content Include="Views\BacSys\Delete.cshtml" />
+    <Content Include="Views\BacSys\Details.cshtml" />
+    <Content Include="Views\BacSys\Edit.cshtml" />
+    <Content Include="Views\BacSys\Index.cshtml" />
+    <Content Include="Views\DangBaoChes\Create.cshtml" />
+    <Content Include="Views\DangBaoChes\Delete.cshtml" />
+    <Content Include="Views\DangBaoChes\Details.cshtml" />
+    <Content Include="Views\DangBaoChes\Edit.cshtml" />
+    <Content Include="Views\DangBaoChes\Index.cshtml" />
+    <Content Include="Views\DonViTinhs\Create.cshtml" />
+    <Content Include="Views\DonViTinhs\Delete.cshtml" />
+    <Content Include="Views\DonViTinhs\Details.cshtml" />
+    <Content Include="Views\DonViTinhs\Edit.cshtml" />
+    <Content Include="Views\DonViTinhs\Index.cshtml" />
+    <Content Include="Views\NhomKhachHangs\Create.cshtml" />
+    <Content Include="Views\NhomKhachHangs\Delete.cshtml" />
+    <Content Include="Views\NhomKhachHangs\Details.cshtml" />
+    <Content Include="Views\NhomKhachHangs\Edit.cshtml" />
+    <Content Include="Views\NhomKhachHangs\Index.cshtml" />
+    <Content Include="Views\NhomNhaCungCaps\Create.cshtml" />
+    <Content Include="Views\NhomNhaCungCaps\Delete.cshtml" />
+    <Content Include="Views\NhomNhaCungCaps\Details.cshtml" />
+    <Content Include="Views\NhomNhaCungCaps\Edit.cshtml" />
+    <Content Include="Views\NhomNhaCungCaps\Index.cshtml" />
+    <Content Include="Views\NhomThuocs\Create.cshtml" />
+    <Content Include="Views\NhomThuocs\Delete.cshtml" />
+    <Content Include="Views\NhomThuocs\Details.cshtml" />
+    <Content Include="Views\NhomThuocs\Edit.cshtml" />
+    <Content Include="Views\NhomThuocs\Index.cshtml" />
+    <Content Include="Views\Nuocs\Create.cshtml" />
+    <Content Include="Views\Nuocs\Delete.cshtml" />
+    <Content Include="Views\Nuocs\Details.cshtml" />
+    <Content Include="Views\Nuocs\Edit.cshtml" />
+    <Content Include="Views\Nuocs\Index.cshtml" />
+    <Content Include="Views\NhaCungCaps\Create.cshtml" />
+    <Content Include="Views\NhaCungCaps\Delete.cshtml" />
+    <Content Include="Views\NhaCungCaps\Details.cshtml" />
+    <Content Include="Views\NhaCungCaps\Edit.cshtml" />
+    <Content Include="Views\NhaCungCaps\Index.cshtml" />
+    <Content Include="Views\KhachHangs\Create.cshtml" />
+    <Content Include="Views\KhachHangs\Delete.cshtml" />
+    <Content Include="Views\KhachHangs\Details.cshtml" />
+    <Content Include="Views\KhachHangs\Edit.cshtml" />
+    <Content Include="Views\KhachHangs\Index.cshtml" />
+    <Content Include="Views\LoaiXuatNhaps\Create.cshtml" />
+    <Content Include="Views\LoaiXuatNhaps\Delete.cshtml" />
+    <Content Include="Views\LoaiXuatNhaps\Details.cshtml" />
+    <Content Include="Views\LoaiXuatNhaps\Edit.cshtml" />
+    <Content Include="Views\LoaiXuatNhaps\Index.cshtml" />
+    <Content Include="Views\Thuocs\Delete.cshtml" />
+    <Content Include="Views\Thuocs\Details.cshtml" />
+    <Content Include="Views\Thuocs\Edit.cshtml" />
+    <Content Include="Views\Thuocs\Index.cshtml" />
+    <Content Include="Views\PhieuNhaps\Create.cshtml" />
+    <Content Include="Views\PhieuNhaps\Delete.cshtml" />
+    <Content Include="Views\PhieuNhaps\Details.cshtml" />
+    <Content Include="Views\PhieuNhaps\Edit.cshtml" />
+    <Content Include="Views\PhieuNhaps\Index.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\PhieuNhapChiTietViewModel.cshtml" />
+    <Content Include="Views\PhieuXuats\Create.cshtml" />
+    <Content Include="Views\PhieuXuats\Delete.cshtml" />
+    <Content Include="Views\PhieuXuats\Details.cshtml" />
+    <Content Include="Views\PhieuXuats\Edit.cshtml" />
+    <Content Include="Views\PhieuXuats\Index.cshtml" />
+    <Content Include="Views\Thuocs\GridIndex.cshtml" />
+    <Content Include="Views\Thuocs\KiemKe.cshtml" />
+    <Content Include="Views\PhieuKiemKes\Create.cshtml" />
+    <Content Include="Views\PhieuKiemKes\Delete.cshtml" />
+    <Content Include="Views\PhieuKiemKes\Details.cshtml" />
+    <Content Include="Views\PhieuKiemKes\Edit.cshtml" />
+    <Content Include="Views\PhieuKiemKes\Index.cshtml" />
+    <Content Include="Views\PhieuThuChis\Create.cshtml" />
+    <Content Include="Views\PhieuThuChis\Delete.cshtml" />
+    <Content Include="Views\PhieuThuChis\Details.cshtml" />
+    <Content Include="Views\PhieuThuChis\Edit.cshtml" />
+    <Content Include="Views\PhieuThuChis\Index.cshtml" />
+    <Content Include="Views\BaoCao\TongKetDoanhThu.cshtml" />
+    <Content Include="Views\NhaThuoc\Index.cshtml" />
+    <Content Include="Views\NhaThuoc\Details.cshtml" />
+    <Content Include="Views\NhaThuoc\Create.cshtml" />
+    <Content Include="Views\Shared\UserPicker.cshtml" />
+    <Content Include="Views\Shared\NoPermission.cshtml" />
+    <Content Include="Views\Account\ConfirmDeleteAccount.cshtml" />
+    <Content Include="Views\Account\ChonNhaThuocMacDinh.cshtml" />
+    <Content Include="Views\Account\Staff.cshtml" />
+    <Content Include="Views\Account\CreateStaff.cshtml" />
+    <Content Include="Views\Account\EditStaff.cshtml" />
+    <Content Include="Views\Account\DeleteStaff.cshtml" />
+    <Content Include="Views\Account\StaffPermission.cshtml" />
+    <Content Include="Views\Account\_StaffPermission.cshtml" />
+    <Content Include="Views\Account\_StaffPermissionItem.cshtml" />
+    <Content Include="Views\NhaThuoc\ThongTin.cshtml" />
+    <Content Include="Views\NhaThuoc\Settings.cshtml" />
+    <Content Include="Views\PhieuNhaps\InDetails.cshtml" />
+    <Content Include="Views\PhieuXuats\In.cshtml" />
+    <Content Include="Views\BaoCao\Index.cshtml" />
+    <Content Include="Views\BaoCao\TheoNhanVien.cshtml" />
+    <Content Include="Views\BaoCao\TheoKhachHang.cshtml" />
+    <Content Include="Views\BaoCao\TheoBacSy.cshtml" />
+    <Content Include="Views\BaoCao\TheoMatHang.cshtml" />
+    <Content Include="Views\BaoCao\TheoNhaCungCap.cshtml" />
+    <Content Include="Views\BaoCao\TheoKhoHang.cshtml" />
+    <Content Include="Views\Account\ResetPasswordForce.cshtml" />
+    <Content Include="Views\Account\ResetPasswordForceSuccess.cshtml" />
+    <Content Include="Views\Thuocs\DialogDetail.cshtml" />
+    <Content Include="Views\PhieuThuChis\In.cshtml" />
+    <Content Include="Views\PhieuThuChis\_In.cshtml" />
+    <Content Include="Views\Account\ResetPasswordForStaff.cshtml" />
+    <Content Include="Views\NhaThuoc\EditInfo.cshtml" />
+    <Content Include="Views\Upload\Index.cshtml" />
+    <Content Include="Views\Shared\_Layout.Mobile.cshtml" />
+    <Content Include="Views\Shared\_LoginPartial.Mobile.cshtml" />
+    <Content Include="Views\Account\Login.Mobile.cshtml" />
+    <Content Include="Views\Account\Staff.Mobile.cshtml" />
+    <Content Include="Views\NhomKhachHangs\Index.Mobile.cshtml" />
+    <Content Include="Views\KhachHangs\Index.Mobile.cshtml" />
+    <Content Include="Views\NhomNhaCungCaps\Index.Mobile.cshtml" />
+    <Content Include="Views\NhaCungCaps\Index.Mobile.cshtml" />
+    <Content Include="Views\BacSys\Index.Mobile.cshtml" />
+    <Content Include="Views\PhieuNhaps\Index.Mobile.cshtml" />
+    <Content Include="Views\PhieuThuChis\Index.Mobile.cshtml" />
+    <Content Include="Views\PhieuKiemKes\Index.Mobile.cshtml" />
+    <Content Include="Views\PhieuKiemKes\Details.Mobile.cshtml" />
+    <Content Include="Views\TienIch\Index.cshtml" />
+    <Content Include="Views\TienIch\CanhBaoHangHetHan.cshtml" />
+    <Content Include="Views\TienIch\CanhBaoLoiNhuanAm.cshtml" />
+    <Content Include="Views\Setting\Index.cshtml" />
+    <Content Include="Views\Setting\Create.cshtml" />
+    <Content Include="Views\Setting\Edit.cshtml" />
+    <Content Include="Views\TienIch\Dutru.cshtml" />
+    <Content Include="Views\Thuocs\Index.Mobile.cshtml" />
+    <Content Include="Views\PhieuXuats\CreateWithBcScanner.cshtml" />
+    <Content Include="Views\NhomThuocs\Index.Mobile.cshtml" />
+    <Content Include="Views\DonViTinhs\Index.Mobile.cshtml" />
+    <Content Include="Views\Setting\Index.Mobile.cshtml" />
+    <Content Include="Views\Setting\Edit.Mobile.cshtml" />
+    <Content Include="Views\DangBaoChes\Index.Mobile.cshtml" />
+    <Content Include="Views\DonViTinhs\Create.Mobile.cshtml" />
+    <Content Include="Views\PhieuNhaps\Create.Mobile.cshtml" />
+    <Content Include="Views\PhieuNhaps\Edit.Mobile.cshtml" />
+    <Content Include="Views\BaoCao\TheoNgay.cshtml" />
+    <Content Include="Views\PhieuXuats\Create.Mobile.cshtml" />
+    <Content Include="Views\PhieuXuats\Edit.Mobile.cshtml" />
+    <Content Include="Views\PhieuThuChis\InDetail.cshtml" />
+    <Content Include="Views\PhieuXuats\InDetails.cshtml" />
+    <Content Include="Views\Shared\_Layout.Tablet.cshtml" />
+    <Content Include="Views\TienIch\MoiBatDau.cshtml" />
+    <Content Include="Views\TienIch\MoiBatDau.Mobile.cshtml" />
+    <Content Include="Views\Thuocs\InMaVach.cshtml" />
+    <Content Include="Views\BaoCao\DialogDetail.cshtml" />
+    <Content Include="Views\BaoCao\ChiTietTheoNgay.cshtml" />
+    <Content Include="Views\Shared\ProductionPartial.cshtml" />
+    <Content Include="Views\TienIch\TuvanOnline.cshtml" />
+    <Content Include="Views\TienIch\TuvanOnline.Mobile.cshtml" />
+    <Content Include="TuyenDung.ashx" />
+    <Content Include="Views\NhaThuoc\NhaThuocPicker.cshtml" />
+    <Content Include="Views\Account\Unauthorised.cshtml" />
+    <Content Include="Views\Thuocs\SearchDrugCatalog.cshtml" />
+    <Content Include="Views\Thuocs\MappingCatalog.cshtml" />
+    <Content Include="Views\Thuocs\DialogDetailV2.cshtml" />
+    <Content Include="Views\Thuocs\SearchDrugCatalog.Mobile.cshtml" />
+    <Content Include="Views\TienIch\CheckAuthorization.cshtml" />
+    <Content Include="Views\TienIch\PhatTrienKinhDoanh.cshtml" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\Constants.cs" />
+    <Compile Include="App_Start\PermissionConfig.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Areas\Common\CommonAreaRegistration.cs" />
+    <Compile Include="Areas\Production\Controllers\DownloadFileController.cs" />
+    <Compile Include="Areas\Production\Controllers\InOutCommingNoteController.cs" />
+    <Compile Include="Areas\Production\Controllers\NotificationController.cs" />
+    <Compile Include="Areas\Production\Controllers\InventoryController.cs" />
+    <Compile Include="Areas\Production\Controllers\ProductionController.cs" />
+    <Compile Include="Areas\Production\Controllers\DrugManagementController.cs" />
+    <Compile Include="Areas\Production\Controllers\DeliveryNoteController.cs" />
+    <Compile Include="Areas\Production\Controllers\AdminController.cs" />
+    <Compile Include="Areas\Production\Controllers\SystemController.cs" />
+    <Compile Include="Areas\Production\Controllers\RecruitmentController.cs" />
+    <Compile Include="Areas\Production\Controllers\SearchController.cs" />
+    <Compile Include="Areas\Production\Controllers\ReportController.cs" />
+    <Compile Include="Areas\Production\Controllers\UtilitiesController.cs" />
+    <Compile Include="Areas\Production\ProductionAreaRegistration.cs" />
+    <Compile Include="Areas\Share\Authorize\UserLoginAuthorization.cs" />
+    <Compile Include="Areas\Share\Tasks\JsonSerializerTask.cs" />
+    <Compile Include="Areas\Share\Tasks\RegisterWebApiRouteTask.cs" />
+    <Compile Include="Areas\Utilities\Controllers\UtilityController.cs" />
+    <Compile Include="Areas\Utilities\UtilitiesAreaRegistration.cs" />
+    <Compile Include="Bootstrap.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\BacSysController.cs" />
+    <Compile Include="Controllers\BaoCaoController.cs" />
+    <Compile Include="Controllers\DangBaoChesController.cs" />
+    <Compile Include="Controllers\DonViTinhsController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\KhachHangsController.cs" />
+    <Compile Include="Controllers\LoaiXuatNhapsController.cs" />
+    <Compile Include="Controllers\NhaCungCapsController.cs" />
+    <Compile Include="Controllers\NhaThuocController.cs" />
+    <Compile Include="Controllers\NhomKhachHangsController.cs" />
+    <Compile Include="Controllers\NhomNhaCungCapsController.cs" />
+    <Compile Include="Controllers\NhomThuocsController.cs" />
+    <Compile Include="Controllers\NuocsController.cs" />
+    <Compile Include="Controllers\PhieuKiemKesController.cs" />
+    <Compile Include="Controllers\PhieuNhapsController.cs" />
+    <Compile Include="Controllers\PhieuThuChisController.cs" />
+    <Compile Include="Controllers\PhieuXuatsController.cs" />
+    <Compile Include="Controllers\SettingController.cs" />
+    <Compile Include="Controllers\ThuocsController.cs" />
+    <Compile Include="Controllers\TienIchController.cs" />
+    <Compile Include="Controllers\UploadController.cs" />
+    <Compile Include="Controllers\ViewSwithcherController.cs" />
+    <Compile Include="CustomException\AppHandleError.cs" />
+    <Compile Include="DAL\BaseModel.cs" />
+    <Compile Include="DAL\DropCreateSecurityDb.cs" />
+    <Compile Include="Data\Session\SessionManager.cs" />
+    <Compile Include="Enums\EBillType.cs" />
+    <Compile Include="Extensions\ControllerExtensions.cs" />
+    <Compile Include="Extensions\DateTimeBinder.cs" />
+    <Compile Include="Extensions\RoleProviderExtensions.cs" />
+    <Compile Include="Extensions\UserExtensions.cs" />
+    <Compile Include="Extensions\ViewExtensions.cs" />
+    <Compile Include="Filter\AuditAttribute.cs" />
+    <Compile Include="Filter\InputBillAuthorizeAttribute.cs" />
+    <Compile Include="Filter\NhaThuocService.cs" />
+    <Compile Include="Helpers\NoteHelper.cs" />
+    <Compile Include="Helpers\BackgroundJobHelper.cs" />
+    <Compile Include="Helpers\AuditLogServiceHelper.cs" />
+    <Compile Include="Helpers\AnaylticsHelper.cs" />
+    <Compile Include="MainApp.cs" />
+    <Compile Include="Migrations\201503050813560_Initial.cs" />
+    <Compile Include="Migrations\201503050813560_Initial.Designer.cs">
+      <DependentUpon>201503050813560_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503151344197_1.cs" />
+    <Compile Include="Migrations\201503151344197_1.Designer.cs">
+      <DependentUpon>201503151344197_1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503160605190_2.cs" />
+    <Compile Include="Migrations\201503160605190_2.Designer.cs">
+      <DependentUpon>201503160605190_2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503161128521_3.cs" />
+    <Compile Include="Migrations\201503161128521_3.Designer.cs">
+      <DependentUpon>201503161128521_3.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503241152334_4.cs" />
+    <Compile Include="Migrations\201503241152334_4.Designer.cs">
+      <DependentUpon>201503241152334_4.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503281941448_5.cs" />
+    <Compile Include="Migrations\201503281941448_5.Designer.cs">
+      <DependentUpon>201503281941448_5.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503301439166_6.cs" />
+    <Compile Include="Migrations\201503301439166_6.Designer.cs">
+      <DependentUpon>201503301439166_6.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201504020050471_7.cs" />
+    <Compile Include="Migrations\201504020050471_7.Designer.cs">
+      <DependentUpon>201504020050471_7.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201504030903498_8.cs" />
+    <Compile Include="Migrations\201504030903498_8.Designer.cs">
+      <DependentUpon>201504030903498_8.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201504060119387_9.cs" />
+    <Compile Include="Migrations\201504060119387_9.Designer.cs">
+      <DependentUpon>201504060119387_9.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201505110637085_10.cs" />
+    <Compile Include="Migrations\201505110637085_10.Designer.cs">
+      <DependentUpon>201505110637085_10.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201505111714450_11.cs" />
+    <Compile Include="Migrations\201505111714450_11.Designer.cs">
+      <DependentUpon>201505111714450_11.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201505160410488_12.cs" />
+    <Compile Include="Migrations\201505160410488_12.Designer.cs">
+      <DependentUpon>201505160410488_12.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201505160419481_13.cs" />
+    <Compile Include="Migrations\201505160419481_13.Designer.cs">
+      <DependentUpon>201505160419481_13.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201505160435033_14.cs" />
+    <Compile Include="Migrations\201505160435033_14.Designer.cs">
+      <DependentUpon>201505160435033_14.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201505161334092_15.cs" />
+    <Compile Include="Migrations\201505161334092_15.Designer.cs">
+      <DependentUpon>201505161334092_15.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201505171018010_16.cs" />
+    <Compile Include="Migrations\201505171018010_16.Designer.cs">
+      <DependentUpon>201505171018010_16.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201505171111380_17.cs" />
+    <Compile Include="Migrations\201505171111380_17.Designer.cs">
+      <DependentUpon>201505171111380_17.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201505171416007_18.cs" />
+    <Compile Include="Migrations\201505171416007_18.Designer.cs">
+      <DependentUpon>201505171416007_18.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201505300619165_19.cs" />
+    <Compile Include="Migrations\201505300619165_19.Designer.cs">
+      <DependentUpon>201505300619165_19.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201505300950166_20.cs" />
+    <Compile Include="Migrations\201505300950166_20.Designer.cs">
+      <DependentUpon>201505300950166_20.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201505310604223_21.cs" />
+    <Compile Include="Migrations\201505310604223_21.Designer.cs">
+      <DependentUpon>201505310604223_21.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201505311422067_22.cs" />
+    <Compile Include="Migrations\201505311422067_22.Designer.cs">
+      <DependentUpon>201505311422067_22.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201506021650525_23.cs" />
+    <Compile Include="Migrations\201506021650525_23.Designer.cs">
+      <DependentUpon>201506021650525_23.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201506060753076_24.cs" />
+    <Compile Include="Migrations\201506060753076_24.Designer.cs">
+      <DependentUpon>201506060753076_24.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201506101004306_25.cs" />
+    <Compile Include="Migrations\201506101004306_25.Designer.cs">
+      <DependentUpon>201506101004306_25.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201506240940554_26.cs" />
+    <Compile Include="Migrations\201506240940554_26.Designer.cs">
+      <DependentUpon>201506240940554_26.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201507140243483_27.cs" />
+    <Compile Include="Migrations\201507140243483_27.Designer.cs">
+      <DependentUpon>201507140243483_27.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201507161521461_28.cs" />
+    <Compile Include="Migrations\201507161521461_28.Designer.cs">
+      <DependentUpon>201507161521461_28.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201507171600070_29.cs" />
+    <Compile Include="Migrations\201507171600070_29.Designer.cs">
+      <DependentUpon>201507171600070_29.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201507190543590_30.cs" />
+    <Compile Include="Migrations\201507190543590_30.Designer.cs">
+      <DependentUpon>201507190543590_30.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201507211002427_31.cs" />
+    <Compile Include="Migrations\201507211002427_31.Designer.cs">
+      <DependentUpon>201507211002427_31.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201507230929033_32.cs" />
+    <Compile Include="Migrations\201507230929033_32.Designer.cs">
+      <DependentUpon>201507230929033_32.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201508170709460_33.cs" />
+    <Compile Include="Migrations\201508170709460_33.Designer.cs">
+      <DependentUpon>201508170709460_33.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510110316305_34.cs" />
+    <Compile Include="Migrations\201510110316305_34.Designer.cs">
+      <DependentUpon>201510110316305_34.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510151106273_35.cs" />
+    <Compile Include="Migrations\201510151106273_35.Designer.cs">
+      <DependentUpon>201510151106273_35.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510151405461_36.cs" />
+    <Compile Include="Migrations\201510151405461_36.Designer.cs">
+      <DependentUpon>201510151405461_36.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510180403020_37.cs" />
+    <Compile Include="Migrations\201510180403020_37.Designer.cs">
+      <DependentUpon>201510180403020_37.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510180405205_38.cs" />
+    <Compile Include="Migrations\201510180405205_38.Designer.cs">
+      <DependentUpon>201510180405205_38.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201510191659133_40.cs" />
+    <Compile Include="Migrations\201510191659133_40.Designer.cs">
+      <DependentUpon>201510191659133_40.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511031020471_41.cs" />
+    <Compile Include="Migrations\201511031020471_41.Designer.cs">
+      <DependentUpon>201511031020471_41.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511091532415_42.cs" />
+    <Compile Include="Migrations\201511091532415_42.Designer.cs">
+      <DependentUpon>201511091532415_42.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511091619115_43.cs" />
+    <Compile Include="Migrations\201511091619115_43.Designer.cs">
+      <DependentUpon>201511091619115_43.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511091639063_44.cs" />
+    <Compile Include="Migrations\201511091639063_44.Designer.cs">
+      <DependentUpon>201511091639063_44.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511091657481_45.cs" />
+    <Compile Include="Migrations\201511091657481_45.Designer.cs">
+      <DependentUpon>201511091657481_45.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511251607392_46.cs" />
+    <Compile Include="Migrations\201511251607392_46.Designer.cs">
+      <DependentUpon>201511251607392_46.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201511261440259_47.cs" />
+    <Compile Include="Migrations\201511261440259_47.Designer.cs">
+      <DependentUpon>201511261440259_47.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201512291503285_48.cs" />
+    <Compile Include="Migrations\201512291503285_48.Designer.cs">
+      <DependentUpon>201512291503285_48.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201604090459498_49.cs" />
+    <Compile Include="Migrations\201604090459498_49.Designer.cs">
+      <DependentUpon>201604090459498_49.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Models\DrugMapping.cs" />
+    <Compile Include="Models\Reports\BarcodePrintInfo.cs" />
+    <Compile Include="Models\NhaThuocThamSo.cs" />
+    <Compile Include="Models\PhieuXuat.cs" />
+    <Compile Include="Models\Reports\RPhieuXuatModel.cs" />
+    <Compile Include="Models\Setting.cs" />
+    <Compile Include="Models\ThamSoNguoiDung.cs" />
+    <Compile Include="Models\ThamSoNhaThuoc.cs" />
+    <Compile Include="Models\LoaiThuChi.cs" />
+    <Compile Include="Models\ShortDrugInfo.cs" />
+    <Compile Include="Models\ThuocChiNhanh.cs" />
+    <Compile Include="Models\ChiNhanh.cs" />
+    <Compile Include="Models\Tienich.cs" />
+    <Compile Include="Models\TongKetKyChiTiet.cs" />
+    <Compile Include="Models\TongKetKy.cs" />
+    <Compile Include="Models\UserRole.cs" />
+    <Compile Include="Models\ViewModels\UploadInfo.cs" />
+    <Compile Include="Reports\DSPhieuXuat.cs">
+      <DependentUpon>DSPhieuXuat.xsd</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Reports\DSPhieuXuat.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DSPhieuXuat.xsd</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+    <Compile Include="Repositories\PhieuKiemKeChiTietRepository.cs" />
+    <Compile Include="Repositories\PhieuKiemKeRepository.cs" />
+    <Compile Include="Repositories\ThuocMappingRepository.cs" />
+    <Compile Include="Repositories\TongKetKyChiTietRepository.cs" />
+    <Compile Include="Repositories\TongKetKyRepository.cs" />
+    <Compile Include="Repositories\SettingRepository.cs" />
+    <Compile Include="Startup.cs" />
+    <Compile Include="TuyenDung.ashx.cs">
+      <DependentUpon>TuyenDung.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Utils\Helpers.cs" />
+    <Compile Include="Utils\VNCurrency.cs" />
+    <Compile Include="WebMvcInstaller.cs" />
+    <Content Include="Migrations\SQLs\countries.sql">
+      <SubType>Designer</SubType>
+    </Content>
+    <Compile Include="Models\NhanVienNhaThuoc.cs" />
+    <Compile Include="Models\Operation.cs" />
+    <Compile Include="Models\OperationsToRoles.cs" />
+    <Compile Include="Models\Function.cs" />
+    <Compile Include="Models\PhieuKiemKe.cs" />
+    <Compile Include="Models\PhieuKiemKeChiTiet.cs" />
+    <Compile Include="Models\PhieuThuChi.cs" />
+    <Compile Include="Models\UserPermission.cs" />
+    <Compile Include="Models\UserProfile.cs" />
+    <Compile Include="Filter\AuthorizeAttribute.cs" />
+    <Compile Include="Filter\FunctionsService.cs" />
+    <Compile Include="Filter\SecurityActionFilter.cs" />
+    <Compile Include="Filter\UserService.cs" />
+    <Compile Include="Filter\WebSecurity.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AccountModels.cs" />
+    <Compile Include="Models\BacSy.cs" />
+    <Compile Include="Models\DangBaoChe.cs" />
+    <Compile Include="Models\DonViTinh.cs" />
+    <Compile Include="Models\KhachHang.cs" />
+    <Compile Include="Models\LoaiXuatNhap.cs" />
+    <Compile Include="Models\NhaCungCap.cs" />
+    <Compile Include="Models\NhaThuoc.cs" />
+    <Compile Include="Models\NhomKhachHang.cs" />
+    <Compile Include="Models\NhomNhaCungCap.cs" />
+    <Compile Include="Models\NhomThuoc.cs" />
+    <Compile Include="Models\Nuoc.cs" />
+    <Compile Include="Models\PhieuNhap.cs" />
+    <Compile Include="Models\PhieuNhapChiTiet.cs" />
+    <Compile Include="Models\PhieuXuatChiTiet.cs" />
+    <Compile Include="Models\Thuoc.cs" />
+    <Compile Include="Models\ViewModels\Baocao.cs" />
+    <Compile Include="Models\ViewModels\NhaThuocViewModel.cs" />
+    <Compile Include="Models\ViewModels\Permission.cs" />
+    <Compile Include="Models\ViewModels\ThuocEditModel.cs" />
+    <Compile Include="Models\ViewModels\ThuocIndex.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\BacSyRespository.cs" />
+    <Compile Include="Repositories\DangBaoCheRepository.cs" />
+    <Compile Include="Repositories\DonViTinhRepository.cs" />
+    <Compile Include="Repositories\GenericRepository.cs" />
+    <Compile Include="Repositories\KhachHangRepository.cs" />
+    <Compile Include="Repositories\LoaiXuatNhapRepository.cs" />
+    <Compile Include="Repositories\MembershipRepository.cs" />
+    <Compile Include="Repositories\NhaCungCapRespository.cs" />
+    <Compile Include="Repositories\NhanVienNhaThuocRespository.cs" />
+    <Compile Include="Repositories\NhaThuocRepository.cs" />
+    <Compile Include="Repositories\NhomKhachHangRepository.cs" />
+    <Compile Include="Repositories\NhomNhaCungCapRepository.cs" />
+    <Compile Include="Repositories\NhomThuocRepository.cs" />
+    <Compile Include="Repositories\NuocRepository.cs" />
+    <Compile Include="Repositories\OperationsToRolesRepository.cs" />
+    <Compile Include="Repositories\FunctionRepository.cs" />
+    <Compile Include="DAL\SecurityContext.cs" />
+    <Compile Include="Repositories\PhieuNhapChiTietRespository.cs" />
+    <Compile Include="Repositories\PhieuNhapRepository.cs" />
+    <Compile Include="Repositories\PhieuThuChiRepository.cs" />
+    <Compile Include="Repositories\PhieuXuatChiTietRepository.cs" />
+    <Compile Include="Repositories\PhieuXuatRepository.cs" />
+    <Compile Include="Repositories\ThuocRepository.cs" />
+    <Compile Include="Repositories\UnitOfWork.cs" />
+    <Compile Include="Repositories\UserPermissionsRespository.cs" />
+    <Compile Include="Repositories\UserProfileRepository.cs" />
+    <Compile Include="Utils\CacheExtenstions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Areas\Common\Controllers\" />
+    <Folder Include="Areas\Common\Models\" />
+    <Folder Include="Areas\Production\Models\" />
+    <Folder Include="Areas\Production\Views\Delivery\Partial\" />
+    <Folder Include="Areas\Production\Views\DownloadFile\" />
+    <Folder Include="Areas\Production\Views\Receipt\Partial\" />
+    <Folder Include="Areas\Share\Tasks\Data\" />
+    <Folder Include="Areas\Utilities\Models\" />
+    <Folder Include="Data\Cache\" />
+    <Folder Include="Repositories\ModelConfiguration\" />
+    <Folder Include="Views\SecurityBase\" />
+    <Folder Include="Views\ViewSwithcher\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201503050813560_Initial.resx">
+      <DependentUpon>201503050813560_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503151344197_1.resx">
+      <DependentUpon>201503151344197_1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503160605190_2.resx">
+      <DependentUpon>201503160605190_2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503161128521_3.resx">
+      <DependentUpon>201503161128521_3.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503241152334_4.resx">
+      <DependentUpon>201503241152334_4.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503281941448_5.resx">
+      <DependentUpon>201503281941448_5.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503301439166_6.resx">
+      <DependentUpon>201503301439166_6.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504020050471_7.resx">
+      <DependentUpon>201504020050471_7.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504030903498_8.resx">
+      <DependentUpon>201504030903498_8.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504060119387_9.resx">
+      <DependentUpon>201504060119387_9.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201505110637085_10.resx">
+      <DependentUpon>201505110637085_10.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201505111714450_11.resx">
+      <DependentUpon>201505111714450_11.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201505160410488_12.resx">
+      <DependentUpon>201505160410488_12.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201505160419481_13.resx">
+      <DependentUpon>201505160419481_13.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201505160435033_14.resx">
+      <DependentUpon>201505160435033_14.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201505161334092_15.resx">
+      <DependentUpon>201505161334092_15.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201505171018010_16.resx">
+      <DependentUpon>201505171018010_16.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201505171111380_17.resx">
+      <DependentUpon>201505171111380_17.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201505171416007_18.resx">
+      <DependentUpon>201505171416007_18.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201505300619165_19.resx">
+      <DependentUpon>201505300619165_19.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201505300950166_20.resx">
+      <DependentUpon>201505300950166_20.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201505310604223_21.resx">
+      <DependentUpon>201505310604223_21.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201505311422067_22.resx">
+      <DependentUpon>201505311422067_22.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201506021650525_23.resx">
+      <DependentUpon>201506021650525_23.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201506060753076_24.resx">
+      <DependentUpon>201506060753076_24.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201506101004306_25.resx">
+      <DependentUpon>201506101004306_25.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201506240940554_26.resx">
+      <DependentUpon>201506240940554_26.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507140243483_27.resx">
+      <DependentUpon>201507140243483_27.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507161521461_28.resx">
+      <DependentUpon>201507161521461_28.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507171600070_29.resx">
+      <DependentUpon>201507171600070_29.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507190543590_30.resx">
+      <DependentUpon>201507190543590_30.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507211002427_31.resx">
+      <DependentUpon>201507211002427_31.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507230929033_32.resx">
+      <DependentUpon>201507230929033_32.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508170709460_33.resx">
+      <DependentUpon>201508170709460_33.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510110316305_34.resx">
+      <DependentUpon>201510110316305_34.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510151106273_35.resx">
+      <DependentUpon>201510151106273_35.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510151405461_36.resx">
+      <DependentUpon>201510151405461_36.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510180403020_37.resx">
+      <DependentUpon>201510180403020_37.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510180405205_38.resx">
+      <DependentUpon>201510180405205_38.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201510191659133_40.resx">
+      <DependentUpon>201510191659133_40.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511031020471_41.resx">
+      <DependentUpon>201511031020471_41.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511091532415_42.resx">
+      <DependentUpon>201511091532415_42.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511091619115_43.resx">
+      <DependentUpon>201511091619115_43.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511091639063_44.resx">
+      <DependentUpon>201511091639063_44.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511091657481_45.resx">
+      <DependentUpon>201511091657481_45.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511251607392_46.resx">
+      <DependentUpon>201511251607392_46.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511261440259_47.resx">
+      <DependentUpon>201511261440259_47.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201512291503285_48.resx">
+      <DependentUpon>201512291503285_48.cs</DependentUpon>
+    </EmbeddedResource>
+    <Content Include="Reports\RptInMaVach_TomyA5_bak - Copy.rdlc" />
+    <Content Include="Reports\RptInMaVach_TomyA5_bak.rdlc" />
+    <Content Include="Reports\RptInMaVach_TomyA5.rdlc" />
+    <Content Include="Reports\RptInMaVach.rdlc" />
+    <Content Include="Reports\RptPhieuDSHetHan.rdlc" />
+    <Content Include="Reports\RptPhieuDSHangDuTru.rdlc" />
+    <Content Include="Reports\RptPhieuDSHangHet.rdlc" />
+    <Content Include="Reports\RptPhieuKhachTraHang.rdlc" />
+    <Content Include="Reports\RptPhieuThuChiKhac.rdlc" />
+    <Content Include="Reports\RptPhieuchi.rdlc" />
+    <Content Include="Reports\RptPhieuKiemKe_ChuaCan.rdlc" />
+    <Content Include="Reports\RptPhieuKiemKe_DaCan.rdlc" />
+    <Content Include="Reports\RptPhieuNhap.rdlc" />
+    <Content Include="Reports\RptPhieuThu.rdlc" />
+    <Content Include="Reports\RptPhieuTraHangNhaCC.rdlc" />
+    <Content Include="Reports\RptPhieuXuat_BK.rdlc" />
+    <Content Include="Reports\RptPhieuXuatLe.rdlc" />
+    <Content Include="Reports\RptPhieuXuat.rdlc">
+      <SubType>Designer</SubType>
+    </Content>
+    <EmbeddedResource Include="Migrations\201604090459498_49.resx">
+      <DependentUpon>201604090459498_49.cs</DependentUpon>
+    </EmbeddedResource>
+    <Content Include="Reports\RptPhieuXuatKho.rdlc" />
+    <Content Include="Reports\RptPhieuXuatLeA5.rdlc" />
+    <Content Include="Reports\RptPhieuXuatLe58mm.rdlc" />
+    <Content Include="Reports\RptPhieuXuatLe80mm.rdlc" />
+    <Content Include="Reports\RptPhieuDSInventoryWarning.rdlc" />
+    <Content Include="Reports\RptInMaVach_XPrint350B.rdlc" />
+    <Content Include="Reports\RptPhieuXuatKhoA5.rdlc" />
+    <Content Include="Reports\RptPhieuXuatLeBacsyA5.rdlc" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+    <Service Include="{C0C07587-41A7-46C8-8FBD-3F9C8EBE2DDC}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Med.Common\Med.Common.csproj">
+      <Project>{025e1905-effa-41ca-ba12-718bd1262f37}</Project>
+      <Name>Med.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Med.DbContext\Med.DbContext.csproj">
+      <Project>{117f80a1-a85b-4431-8a88-39e40b774d76}</Project>
+      <Name>Med.DbContext</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Med.Entity\Med.Entity.csproj">
+      <Project>{d0a01338-b0f9-4fbe-a7ec-f6d22b0a9629}</Project>
+      <Name>Med.Entity</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Med.Repository.Impl\Med.Repository.Impl.csproj">
+      <Project>{e4d77e1b-02db-4c61-ade2-3734cf043d46}</Project>
+      <Name>Med.Repository.Impl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Med.Repository\Med.Repository.csproj">
+      <Project>{1613b9fd-4f25-4509-98ce-ef318c05ba68}</Project>
+      <Name>Med.Repository</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Med.Service.Impl\Med.Service.Impl.csproj">
+      <Project>{78334a83-dd1d-4987-b949-8dc1440e63eb}</Project>
+      <Name>Med.Service.Impl</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Med.ServiceModel\Med.ServiceModel.csproj">
+      <Project>{089591ef-1004-4800-8bc6-30c89d26bf08}</Project>
+      <Name>Med.ServiceModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Med.Service\Med.Service.csproj">
+      <Project>{3fc0ec17-c99e-4b23-8abd-019619b4be48}</Project>
+      <Name>Med.Service</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <SaveServerSettingsInUserFile>True</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <PropertyGroup>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DeployIisAppPath>MedMan</DeployIisAppPath>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

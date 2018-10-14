@@ -1,0 +1,38 @@
+﻿@model sThuoc.Models.BacSy
+@{
+    ViewBag.Title = "Thiết lập cho nhà thuốc";
+}
+<div>
+    <h4><b>@ViewBag.Title</b></h4>
+    <hr style="margin-top:0px" />
+
+    <div role="tabpanel">
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Cài đặt chung</a></li>
+            <li role="presentation"><a href="#unit" aria-controls="unit" role="tab" data-toggle="tab">Đơn vị tính</a></li>
+            <li role="presentation"><a href="#dangbaoche" aria-controls="dangbaoche" role="tab" data-toggle="tab">Dạng bào chế</a></li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content setting-tabs">
+            <div role="tabpanel" class="tab-pane active" id="settings">
+                @Html.Action("Index", "Setting")
+            </div>
+            <div role="tabpanel" class="tab-pane" id="unit">
+                @Html.Action("Index","Donvitinhs")
+            </div>
+            <div role="tabpanel" class="tab-pane" id="dangbaoche">
+                @Html.Action("Index", "Dangbaoches")
+            </div>
+        </div>
+
+    </div>
+
+
+</div>
+
+@section Scripts{
+    <script src="~/Scripts/settings.js" type="text/javascript"></script>
+}

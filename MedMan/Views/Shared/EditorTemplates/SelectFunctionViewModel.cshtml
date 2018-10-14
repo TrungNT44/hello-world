@@ -1,0 +1,14 @@
+﻿@model sThuoc.Models.SelectFunctionViewModel
+
+@Html.HiddenFor(model => model.FunctionId)
+
+<tr>
+    <td>@Html.ValueFor(model => model.FunctionName)</td>
+
+    @Html.EditorFor(model => model.Operations)
+    @for (var i = 0; i < 8 - Model.Operations.Count; i++)
+    {
+        <td>&nbsp;</td>
+    }
+</tr>
+

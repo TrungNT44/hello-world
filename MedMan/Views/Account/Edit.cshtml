@@ -1,0 +1,90 @@
+﻿@model sThuoc.Models.EditUserViewModel
+
+@{
+    ViewBag.Title = "Cập nhật thông tin người dùng";
+}
+
+<h4><b>Cập nhật thông tin người dùng</b></h4>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        @*<h4>Tài khoản đăng nhập: @Model.UserName</h4>*@
+        <hr style="margin-top:0px" />
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.UserId)
+        @Html.HiddenFor(model => model.UserName)
+        <div class="form-group">
+            @*<label class="control-label col-md-2">Tài khoản đăng nhập</label>*@
+            @Html.LabelFor(model => model.UserName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                <label class="control-label" style="font-weight: normal">@Model.UserName</label>
+            </div>
+        </div>
+        @if(Model.DsNhaThuoc!=null){
+            <div class="form-group">
+                <label class="control-label col-md-2">Nhà thuốc</label>
+                <div class="col-md-10">
+                    <label class="control-label" style="font-weight: normal">@Html.Raw((Model.DsNhaThuoc != null ? string.Join("<br/> ", Model.DsNhaThuoc) : ""))</label>
+                </div>
+            </div>
+        }
+        <div class="form-group">
+            @Html.LabelFor(model => model.TenDayDu, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.TenDayDu, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.TenDayDu, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.SoDienThoai, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.SoDienThoai, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.SoDienThoai, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Email, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.SoCMT, new { @class = "col-md-2 control-label" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(m => m.SoCMT, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.HoatDong, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-1">                
+                    @Html.EditorFor(model => model.HoatDong, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.HoatDong, "", new { @class = "text-danger" })                
+                @*<div class="checkbox">
+                    @Html.EditorFor(model => model.HoatDong)
+                    @Html.ValidationMessageFor(model => model.HoatDong, "", new { @class = "text-danger" })
+                </div>*@
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                @Html.ActionLink("Quay lại", "Index", null, new { @class = "btn btn-default" }) <span class="btn-separator"></span> 
+                <input type="submit" value="Cập nhật" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

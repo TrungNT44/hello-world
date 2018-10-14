@@ -1,0 +1,98 @@
+﻿@using Med.Web.Extensions
+@using sThuoc.Filter
+@using sThuoc.Models;
+@using PagedList.Mvc;
+@model PagedList.IPagedList<CanhBaoLoiNhuanAm>
+
+@{
+    ViewBag.Title = "Cảnh báo hàng có lợi nhuận âm";
+}
+<h4>
+    <b>@ViewBag.Title</b>
+    @*@Html.ActionLink("Xuất Excel", "ExportToExcel", "Tienich", null, new { @class = "btn btn-default", @style = "float:right" })
+    <input type="button" value="In" title="In" class="btn btn-default" style="float:right;margin-right:5px" />*@
+</h4>   
+<hr style="margin-top:0px" />
+@using (Html.BeginForm())
+{
+    var stt = 1;
+    <div class="row">
+        <div class="col-md-3">
+            <fieldset>
+                <b>Chọn khoảng thời gian</b>
+                <hr style="margin-top:0px" />                
+                <div class="control-group">
+                    <input type="text" id="txtFromDate" name="FromDate" value="@ViewBag.FromDate" class="form-control input-datetime" placeholder="Từ ngày..." />
+                    <br>
+                    <input type="text" id="txtToDate" name="toDate" value="@ViewBag.ToDate" class="form-control input-datetime" placeholder="Đến ngày..." />
+                </div>
+            </fieldset>
+            <hr />
+            <div>
+                <input type="submit" value="Xem" class="btn btn-default" />   
+            </div>
+        </div>
+        <div class="baocao-container thuoc col-md-9">           
+            @*<table class="table">
+                <tr>
+                    <td><label>Từ</label></td>
+                    <td>                      
+                        <input type="text" maxlength="20" id="txtFromDate" name="FromDate" value="@ViewBag.FromDate" class="form-control datepicker" />
+                    </td>
+                    <td><label>Đến</label></td>
+                    <td>                       
+                        <input type="text" maxlength="20" id="txtToDate" name="toDate" value="@ViewBag.ToDate" class="form-control datepicker" />
+                    </td>
+                    <td>
+                        <input type="submit" value="Xem" class="btn btn-default right  margin-left5" />                        
+                    </td>
+                </tr>
+            </table>*@
+            <table class="table table-responsive table-bordered">
+                <tr>
+                    <th style="background-color:darkgray">#</th>
+                    <th style="background-color:darkgray">Mã thuốc</th>
+                    <th style="background-color:darkgray">Tên thuốc</th>
+                    <th style="background-color:darkgray">Số tiền âm</th>
+                    <th style="background-color:darkgray">Phiếu xuất</th>
+                    <th style="background-color:darkgray">Phiếu nhập</th>                    
+                </tr>
+                @foreach (CanhBaoLoiNhuanAm item in Model)
+                {
+                    <tr>
+                        <td>@stt</td>
+                        <td>@Html.DisplayFor(modelItem => item.MaThuoc)</td>
+                        <td>@Html.DisplayFor(modelItem => item.TenThuoc)</td>
+                        <td style="text-align:right">
+                            @*@Html.DisplayFor(modelItem => item.LoiNhuan)*@
+                            @item.LoiNhuan.ToString("N0")
+                        </td>
+                        <td>@Html.ActionLink(item.SoPhieuXuat.ToString(), "Details", "PhieuXuats", new { id = item.MaPhieuXuat }, new { target = "_blank" })</td>
+                        <td>
+                            @for(var idx = 0; idx< item.ListSoPhieuNhap.Count; idx ++)
+                            {
+                                if (idx == 0)
+                                {
+                                    <span>@Html.ActionLink(item.ListSoPhieuNhap[idx].ToString(), "Details", "PhieuNhaps", new { id = item.ListMaPhieuNhap[idx] }, new { target = "_blank" })</span>
+                                }
+                                else
+                                {
+                                    <span>, @Html.ActionLink(item.ListSoPhieuNhap[idx].ToString(), "Details", "PhieuNhaps", new { id = item.ListMaPhieuNhap[idx] }, new { target = "_blank" })</span>
+                                }
+                            }
+                        </td>
+                        
+                    </tr>
+
+                    stt++;
+                }
+            </table>
+            Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) trong @Model.PageCount
+            @Html.PagedListPager(Model, page => Url.Action("CanhBaoLoiNhuanAm", new { page, ViewBag.FromDate, @ViewBag.ToDate }))
+        </div>
+    </div>
+}
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+}

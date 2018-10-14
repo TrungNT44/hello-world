@@ -72,18 +72,21 @@ namespace Med.Service.Impl.Drug
                 {
                     var ownerDrugStoreCodes = GetOwnerDrugStoreCodes(drugStoreCode);
                     var drugStoreRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, NhaThuoc>>();
-                    drugStoreRepo.UpdateMany(i => ownerDrugStoreCodes.Contains(i.MaNhaThuoc),
-                        i => new NhaThuoc()
-                        {
-                            HoatDong = true
-                        });
+                    if (ownerDrugStoreCodes.Any())
+                    {
+                        drugStoreRepo.UpdateMany(i => ownerDrugStoreCodes.Contains(i.MaNhaThuoc),
+                            i => new NhaThuoc()
+                            {
+                                HoatDong = true
+                            });
 
-                    var userRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, UserProfile>>();
-                    userRepo.UpdateMany(i => ownerDrugStoreCodes.Contains(i.MaNhaThuoc),
-                        i => new UserProfile()
-                        {
-                            Enable_NT = true
-                        });               
+                        var userRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, UserProfile>>();
+                        userRepo.UpdateMany(i => ownerDrugStoreCodes.Contains(i.MaNhaThuoc),
+                            i => new UserProfile()
+                            {
+                                Enable_NT = true
+                            });
+                    }
 
                     tran.Complete();
                 }

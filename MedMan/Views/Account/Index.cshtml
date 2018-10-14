@@ -1,0 +1,205 @@
+﻿@using MedMan.App_Start
+@using Med.Web.Extensions
+@using PagedList.Mvc;
+@using sThuoc.Filter
+@model PagedList.IPagedList<sThuoc.Models.EditUserViewModel>
+
+@{
+    ViewBag.Title = "Quản lý tài khoản người dùng";
+    var roleProvider = Roles.Provider;
+
+    var rolesInList = new List<SelectListItem>();
+
+    rolesInList.Add(new SelectListItem{Text="Nhóm Quyền", Value="", Selected = false});
+
+    //filter
+    var filterRole = Request.QueryString["FilterRole"] ?? "";
+    var filterNhaThuoc = Request.QueryString["FilterNhaThuoc"] ?? "";
+    var filterUserName = Request.QueryString["FilterUserName"] ?? "";
+    foreach (string role in ViewBag.Roles)
+    {
+        if (role.ToLower()=="superuser")
+        {
+            rolesInList.Add(new SelectListItem { Text = "Quyền hệ thống", Value= role });
+        }
+        if (role.ToLower() == "admin")
+        {
+            rolesInList.Add(new SelectListItem { Text = "Quản lý", Value = role });
+        }
+        if (role.ToLower() == "user")
+        {
+            rolesInList.Add(new SelectListItem { Text = "Nhân viên", Value = role});
+        }
+
+    }
+
+    var ddlDsNhaThuoc = new SelectList(ViewBag.DsNhaThuoc, "MaNhaThuoc", "TenNhaThuoc").ToList();
+    ddlDsNhaThuoc.Insert(0, new SelectListItem { Value = "", Text = "Nhà Thuốc", Selected = false });
+
+}
+
+<h4><b>@ViewBag.Title</b></h4>
+<div class="row">
+    <div class="col-xs-6">
+        <a href="@Url.Action("Register")"><button class="btn btn-primary">@*<i class="glyphicon glyphicon-plus"></i>*@ Thêm mới</button></a>
+    </div>
+    <div class="col-xs-6">
+        <form action="@Url.Action("Index","Account")" method="GET" id="accountFilter">
+            <div class="col-xs-3 text-right"><strong>Lọc theo: </strong></div>
+            <div class="col-xs-3">@Html.TextBox("FilterUserName", filterUserName, htmlAttributes: new { @class = "form-control", placeholder = "Tên tài khoản" })</div>
+            <div class="col-xs-3">@Html.DropDownList("FilterRole", new SelectList(rolesInList, "Value", "Text", filterRole), htmlAttributes: new { @class = "form-control" })</div>
+            <div class="col-xs-3">@Html.DropDownList("FilterNhaThuoc", new SelectList(ddlDsNhaThuoc, "Value", "Text", filterNhaThuoc), htmlAttributes: new { @class = "form-control" })</div>
+</form>
+    </div>
+</div>
+<p>
+    
+    
+</p>
+
+<table class="table">
+    <tr>
+        <th>
+            #
+        </th>
+        <th>
+            Tên đăng nhập
+        </th>
+        <th>
+            Họ và tên
+        </th>
+        <th>
+            Thư điện tử
+        </th>
+        <th>
+            Nhóm Quyền
+        </th>
+        <th>
+            @*@Html.DisplayNameFor(model => model.MaNhaThuoc)*@
+            Nhà thuốc
+        </th>
+        <th>
+            Hoạt động
+        </th>
+        <th></th>
+    </tr>
+    @{ var stt = (Model.PageNumber - 1) * 10;}
+    @foreach (var item in Model)
+    {
+        stt++;
+        var roleString = String.Join(", ", roleProvider.GetTextOfRolesForUser(item.UserName));
+        <tr>
+            @*<td>@item.UserId</td>*@
+            <td>
+                @stt
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TenDayDu)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @roleString
+            </td>
+            <td>
+                @*@Html.DisplayFor(modelItem => item.DsNhaThuoc)*@
+                @Html.Raw((item.DsNhaThuoc != null ? string.Join("<br/> ", item.DsNhaThuoc) : ""))
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HoatDong)
+            </td>
+            <td>
+                @Html.ActionLink("Sửa", "Edit", new {id = item.UserId}) |
+                <a href="@Url.Action("Delete", new {id = item.UserId})">Xóa</a>
+                @if (!roleString.Contains(Constants.Security.Roles.SuperUser.Text))
+                {
+                    <span>|</span>
+                    <a href="@Url.Action("ResetPasswordForce", new {id = item.UserId})">Reset</a>
+                }
+
+            </td>
+        </tr>
+    }
+
+</table>
+    Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) trong @Model.PageCount
+    @Html.PagedListPager(Model, page => Url.Action("Index",
+        new
+        {
+            page,
+            FilterRole = Request.QueryString["FilterRole"],
+            FilterNhaThuoc = Request.QueryString["FilterNhaThuoc"]
+        }))
+@section scripts
+
+{
+    <script type="text/javascript">
+        $(function() {
+            // trigger filer on list.
+            $("#accountFilter").find('select').on('change', function () {
+                $("#accountFilter").submit();
+            });
+            $("a.delete-link").click(function () {
+                var deleteLink = $(this);
+                deleteLink.hide();
+                var confirmButton = deleteLink.siblings(".delete-confirm");
+                confirmButton.show();
+
+                var cancelDelete = function () {
+                    removeEvents();
+                    showDeleteLink();
+                };
+
+                var deleteItem = function () {
+                    removeEvents();
+                    confirmButton.hide();
+                    $.post(
+                        '@Url.Action("Delete")',
+                        AddAntiForgeryToken({ id: confirmButton.attr('data-delete-id') }))
+                        .done(function () {
+                            var parentRow = deleteLink.parents("tr:first");
+                            parentRow.fadeOut('fast', function () {
+                                parentRow.remove();
+                            });
+                        }).fail(function (data) {
+                            alert("error");
+                        });
+                    return false;
+                };
+
+                var removeEvents = function () {
+                    confirmButton.off("click", deleteItem);
+                    $(document).on("click", cancelDelete);
+                    $(document).off("keypress", onKeyPress);
+                };
+
+                var showDeleteLink = function () {
+                    confirmButton.hide();
+                    deleteLink.show();
+                };
+
+                var onKeyPress = function (e) {
+                    //Cancel if escape key pressed
+                    if (e.which == 27) {
+                        cancelDelete();
+                    }
+                };
+
+                confirmButton.on("click", deleteItem);
+                $(document).on("click", cancelDelete);
+                $(document).on("keypress", onKeyPress);
+
+                return false;
+            });
+
+            AddAntiForgeryToken = function (data) {
+                data.__RequestVerificationToken = $('input[name=__RequestVerificationToken]').val();
+                return data;
+            };
+        });
+    </script>
+}

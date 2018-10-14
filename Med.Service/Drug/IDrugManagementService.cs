@@ -15,7 +15,7 @@ namespace Med.Service.Drug
         void UpdateOutDrugPrice(string drugCode, string drugStoreCode, double price, int unitCode);
         void UpdateExpiredDateDrug(int noteItemId, string batchNumber, DateTime? expiredDate, string drugStoreCode, DrugStoreSetting setting);
         DrugInfo GetDrugInfo(string drugCode, string drugStoreCode, int drugUnit);
-        bool DeleteDrugs(string drugStoreCode, params int[] drugIds);
+        bool MarkAsDeleteForeverDrugs(string drugStoreCode, params int[] drugIds);
         bool DeleteDrugGroups(string drugStoreCode, params int[] drugGroupIds);
         Dictionary<string, List<CacheDrug>> GetAllCacheDrugs();
         List<CacheDrug> GetCacheDrugs(string drugStoreCode, params int[] drugIds);

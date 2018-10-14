@@ -21,7 +21,7 @@ namespace Med.Service.Delivery
         List<int> GetAffectedDeliveryItemsByReturnedItemsFromCustomers(string drugStoreCode,
            List<MinModifiedDateItem> minModifiedDateItems);
 
-        int DeleteDeliveryNote(string drugStoreCode, int noteId);
+        int DeleteDeliveryNote(string drugStoreCode, int noteId, int? actorId);
 
         double GetDeliveryRevenueTotal(string drugStoreCode, FilterObject filter = null);
         long GetNewDeliveryNoteNumber(string drugStoreCode);

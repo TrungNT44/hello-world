@@ -32,7 +32,7 @@ namespace Med.Service.Impl.Common
         {
             repository = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuNhap>>(); 
             var validItems = repository.GetAll().Where(r =>
-                r.NhaThuoc_MaNhaThuoc == drugStoreCode && !r.Xoa && r.NgayNhap.HasValue);
+                r.NhaThuoc_MaNhaThuoc == drugStoreCode && r.RecordStatusID == (byte)RecordStatus.Activated && r.NgayNhap.HasValue);
             if (filter != null)
             {
                 if (filter.FromDate.HasValue)
@@ -63,7 +63,7 @@ namespace Med.Service.Impl.Common
         {           
             repository = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuXuat>>();
             var validItems = repository.GetAll().Where(r =>
-                r.NhaThuoc_MaNhaThuoc == drugStoreCode && !r.Xoa && r.NgayXuat.HasValue);
+                r.NhaThuoc_MaNhaThuoc == drugStoreCode && r.RecordStatusID == (byte)RecordStatus.Activated && r.NgayXuat.HasValue);
             if (filter != null)
             {
                 if (filter.FromDate.HasValue)
@@ -141,7 +141,8 @@ namespace Med.Service.Impl.Common
             var drugStores = GetValidDrugStores(out drugStoreRepo);
             var validItems = (from dr in repository.GetAll()
                               join ds in drugStores on dr.NhaThuoc_MaNhaThuoc equals ds.MaNhaThuocCha
-                              where ds.MaNhaThuoc == drugStoreCode && (!onlyActiveDrug || (onlyActiveDrug && dr.HoatDong))
+                              where ds.MaNhaThuoc == drugStoreCode 
+                                && (!onlyActiveDrug || (onlyActiveDrug && dr.RecordStatusID == (byte)RecordStatus.Activated))
                               select dr);
             if (string.IsNullOrEmpty(drugStoreCode))
             {
@@ -277,9 +278,10 @@ namespace Med.Service.Impl.Common
             var deliveryNoteItemRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuXuatChiTiet>>();
 
             var validItems = (from di in deliveryNoteItemRepo.GetAll()
-                join d in deliveryNotes on di.PhieuXuat_MaPhieuXuat equals d.MaPhieuXuat
-                join dr in drugs on di.Thuoc_ThuocId equals dr.ThuocId
-                select di);
+                              join d in deliveryNotes on di.PhieuXuat_MaPhieuXuat equals d.MaPhieuXuat
+                              join dr in drugs on di.Thuoc_ThuocId equals dr.ThuocId
+                              where di.RecordStatusID == (byte)RecordStatus.Activated
+                              select di);
 
             return validItems;
         }
@@ -308,6 +310,7 @@ namespace Med.Service.Impl.Common
                 from docD in docDGroup.DefaultIfEmpty()
                 join sup in supplyers on d.NhaCungCap_MaNhaCungCap equals sup.MaNhaCungCap into supDGroup
                 from supD in supDGroup.DefaultIfEmpty()
+                where di.RecordStatusID == (byte)RecordStatus.Activated
                 select new DeliveryNoteItemInfo()
                 {
                     NoteId = d.MaPhieuXuat,
@@ -390,7 +393,8 @@ namespace Med.Service.Impl.Common
 
             var validItems = (from ri in receiptNoteItemRepo.GetAll()
                 join r in receiptNotes on ri.PhieuNhap_MaPhieuNhap equals r.MaPhieuNhap
-                join dr in drugs on ri.Thuoc_ThuocId equals dr.ThuocId select ri);
+                join dr in drugs on ri.Thuoc_ThuocId equals dr.ThuocId
+                where ri.RecordStatusID == (byte)RecordStatus.Activated select ri);
 
             return validItems;
         }
@@ -413,6 +417,7 @@ namespace Med.Service.Impl.Common
                 from cd in cdGroup.DefaultIfEmpty()   
                 join s in staffs on d.CreatedBy_UserId equals s.UserId into sdGroup
                 from su in sdGroup.DefaultIfEmpty()
+                where di.RecordStatusID == (byte)RecordStatus.Activated
                 select new ReceiptNoteItemInfo()
                 {
                     NoteId = d.MaPhieuNhap,

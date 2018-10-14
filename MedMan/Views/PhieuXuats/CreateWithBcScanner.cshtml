@@ -1,0 +1,245 @@
+﻿@using System.Globalization
+@using sThuoc.Enums
+@using sThuoc.Models
+@model PhieuXuatEditModel
+
+@{
+    var ngayXuat = Convert.ToDateTime(ViewBag.NgayXuat) ?? DateTime.Now;
+    ViewBag.Title = "Tạo mới phiếu xuất hàng";
+}
+<link href="~/Content/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/phieuStyle.css" rel="stylesheet" />
+<link href="~/Content/selectize.bootstrap3.css" rel="stylesheet" />
+<link href="~/Content/BillWithBarcode.css" rel="stylesheet" />
+
+@using (Html.BeginForm("Create", "PhieuXuats", new { loaiPhieu = ViewBag.LoaiPhieu }, FormMethod.Post, new { id = "frmPhieuXuat", onkeydown = "return event.keyCode!=13" }))
+{
+    @Html.AntiForgeryToken()
+    var title = "PHIẾU XUẤT HÀNG";
+    <div class="form-horizontal">
+        <h2 style="font-size: 30px; text-align: center;color: coral">@title</h2>
+        @Html.HiddenFor(model => model.JsonDrugOderItems, new { @Value = "" })
+        @Html.HiddenFor(model => model.BillType, new { @Value = "1" })
+        @Html.HiddenFor(model => model.NgayXuat, new { @Value = ViewBag.NgayXuat })
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.MaPhieuXuat, new { @Value = "0" })
+        @Html.HiddenFor(model => model.MaLoaiXuatNhap, new { @Value = ViewBag.LoaiPhieu })
+        <div id=" divDrugItems" class="box box-drugitems">
+            <table class="table borderless table-condensed" id="barcode-table-id">
+                <thead>
+                    <tr>
+                        <th style="width:10%; border: none; text-align: left">
+                            <label >Mã vạch:</label>
+                        </th>
+                        <th style="width:35%; border: none">
+                            <input type="text" class="form-control mousetrap" id="barcode" style="width: 100%">
+                        </th>
+                        <th style="width:15%; border: none; text-align: left">
+                            <label>Mã/Tên thuốc:</label>
+                        </th>
+                        <th style="width:40%; border: none">
+                            <input type="text" class="form-control ui-autocomplete-input mousetrap"  placeholder="Nhập mã hoặc tên thuốc vào đây..." autocomplete="off" id="drugName" style="width: 100%">
+                            <input type="hidden" id="drugCode" />
+                        </th>
+                    </tr>
+                </thead>
+                <tbody style="border: none"></tbody>
+            </table>
+            <table class="table-condensed table-responsive display" id="drugItems">
+                <thead>
+                    <tr>
+                        <th style="width: 7%" class="header-bg"></th>
+                        <th style="width: 7%" class="header-bg">STT</th>
+                        <th style="width: 7%" class="header-bg">Mã</th>
+                        <th style="width: 30%" class="header-bg">Tên Hàng</th>
+                        <th style="width: 12%" class="header-bg">Đơn Vị</th>
+                        <th style="width: 10%" class="header-bg">SL</th>
+                        <th style="width: 15%" class="header-bg">Đơn Giá</th>
+                        <th style="width: 15%;text-align: right;" class="header-bg">Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div id="divSummary" class="box box-summary">
+            <table class="table borderless table-condensed" style="padding: 5px">
+                <tr>
+                    <th class="header-bg" style="width:30%" colspan="2">
+                        <b>Thông tin phiếu xuất</b>
+                    </th>
+                </tr>
+                <tr>
+                    <td style="text-align: left;width:100px"><label class="control-label" style="font-weight: normal">Mã số:</label></td>
+                    <td style="text-align: left;">
+                        <label class="control-label"><strong>@ViewBag.SoPhieu</strong></label>
+                        @Html.HiddenFor(model => model.MaPhieuXuat, new { @Value = "0" })
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;width:100px"><label class="control-label" style="font-weight: normal">Ngày bán:</label></td>
+                    <td style="text-align: left" id="dvNgayXuat">
+                        <div class="clickable-text daterange-picker daterange-picker"><input type="text" id="inputDatePicker" /> <span id="inputDate" style="width: 10%">@ngayXuat.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)</span></div>
+                        @Html.HiddenFor(model => model.NgayXuat, new { @Value = ngayXuat })
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;width:100px"><label class="control-label" style="font-weight: normal">Khách hàng:</label></td>
+                    <td style="text-align: left">
+                        @Html.DropDownList("MaKhachHang", null, htmlAttributes: new { @class = "form-control mousetrap" })
+                        @Html.ValidationMessageFor(model => model.MaKhachHang, "Chưa chọn khách hàng", new { @class = "text-danger" })
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;width:100px"><label class="control-label" style="font-weight: normal">Bác sỹ:</label></td>
+                    <td style="text-align: left">
+                        @Html.DropDownList("MaBacSy", null, "", htmlAttributes: new { @class = "form-control mousetrap" })
+                        @Html.ValidationMessageFor(model => model.MaBacSy, "", new { @class = "text-danger" })
+                    </td>
+                </tr>
+                @*<tr>
+                    <td style="text-align: left;width:100px"><label class="control-label" style="font-weight: normal">Người bán:</label></td>
+                    <td style="text-align: left">
+                        @Html.HiddenFor(model => model.MaPhieuXuat, new { @Value = "0" })
+                        <label>@ViewBag.CurrentUserName</label>
+                    </td>
+                </tr>*@
+                <tr>
+                    <td style="text-align: left;width:100px"><label class="control-label" style="font-weight: normal">Diễn giải:</label></td>
+                    <td style="text-align: left">
+                        @Html.EditorFor(model => model.DienGiai, new { htmlAttributes = new { @class = "form-control mousetrap" } })
+                        @Html.ValidationMessageFor(model => model.DienGiai, "", new { @class = "text-danger" })
+                    </td>
+                </tr>
+            </table>
+
+            <table class="table borderless table-condensed" style="padding: 5px">
+                <tr>
+                    <th class="header-bg" style="width:30%" colspan="2">
+                        <b>Thông tin thanh toán</b>
+                    </th>
+                </tr>
+                <tr>
+                    <td style="text-align: left;width:100px"><label class="control-label" style="font-weight: normal">Tổng tiền:</label></td>
+                    <td style="text-align: left;">
+                        <label class="control-label"><span id="spanSumAll"></span>@Html.HiddenFor(model => model.TongTien)</label>
+                    </td>
+                </tr>
+            </table>
+            <table class="table borderless table-condensed" style="padding: 5px">
+                <tr>
+                    <th class="header-bg" style="width:50%">
+                        <input type="button" value="Quay lại" class="btn btn-default" onclick="javascript:window.history.go(-1);" />
+                    </th>
+                    <th class="header-bg" style="width:50%">
+                        @*<input type="submit" value="Ghi Phiếu" onclick="return FnCheckDrugItems();" class="btn btn-default" id="save-note-btn-id"/>*@
+                        <input type="submit" value="Ghi Phiếu" class="btn btn-default" id="save-note-btn-id" onclick="$(this).attr('disabled', 'disabled');" />
+                    </th>
+                </tr>
+            </table>
+        </div>
+    </div>
+}
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/datepicker-vi.js"></script>
+    <script src="~/Scripts/Custom/Utility.js"></script>
+    <script src="~/Scripts/Custom/BillWithBarcode.js"></script>
+    <script src="~/Scripts/jquery.inputmask/inputmask.js"></script>
+    <script src="~/Scripts/jquery.inputmask/jquery.inputmask.js"></script>
+    <script src="~/Scripts/jquery.inputmask/inputmask.numeric.extensions.js"></script>
+    <script src="~/Scripts/jquery.selectize.js"></script>
+    <script src="~/Scripts/Custom/BCScanner.js"></script>
+    <script type="text/javascript">
+        //var drugs = JSON.parse('Html.Raw(ViewBag.Drugs)');
+        var fromBCScanner = false;
+    $.validator.methods["date"] = function(value, element) { return true; };
+    //$(document).BCScanner(
+    //{
+    //    timeBeforeScanTest: 200, // wait for the next character for upto 200ms
+    //    startChar: [], // Prefix character for the cabled scanner (YHD-3100 - No prefix chars for YHD )
+    //    endChar: [13,71], // be sure the scan is complete if key 13 (enter) and 71 (g) are detected
+    //    avgTimeByChar: 40, // it's not a barcode if a character takes longer than 40ms
+    //    onComplete: function(barcode, qty) // main callback function
+    //    {
+    //        fromBCScanner = true;
+    //        $("#barcode").val(barcode);
+    //        handleInputBarcode(barcode);
+    //        //
+    //    }
+    //    //,onKeyDetect: function(event){console.log(event.which); return false;}
+    //});
+    function FnCheckDrugItems() {
+        if ($("#drugItems tbody tr").length > 0) {
+            return true;
+        }
+        else {
+            app.notice.error("Hãy nhập một mã thuốc.");
+            return false;
+        }
+    }
+    $(document).ready(function () {
+        initAndBindEvents();
+        $('#frmPhieuXuat').submit(function (event) {
+              $("#JsonDrugOderItems").val(JSON.stringify(drugOrderItems));
+        });
+        $("#barcode").keyup(function(event){
+            if(event.keyCode == 13){
+                handleInputBarcode($("#barcode").val(),0);
+                //finish insert
+                $("#barcode").val("");
+                
+            }
+        });
+
+        // input masks
+        inputmask.extendDefaults({
+            'autoUnmask': true,
+            'removeMaskOnSubmit': true
+        });
+        $(":input,span").inputmask();
+
+
+        //change ngaytao
+        BindNgayTaoPosition();
+        BindAutocomplete($("#drugName"));
+        Mousetrap.bind(['f10'], function (e) {
+            $("#save-note-btn-id").click();
+        });
+        $("#barcode").focus();
+    });
+    function BindAutocomplete(elem) {
+        var url = $('input[name=baseUrl]').val() + "Thuocs/GetThuocsByMaOrTen";
+        elem.autocomplete({
+            minLength: 3,
+            source: function (request, response) {
+                $.getJSON(url, request, function (data, status, xhr) {
+                    response(data);
+                });
+            },
+            messages: {
+                noResults: "Không tìm thấy"//,
+                // results: ""
+            },
+            select: function (event, ui) {
+                handleInputBarcode(ui.item.maThuoc, 1);
+                $(this).val("");
+                //$(this).val(ui.item.label);
+                //$('#drugName').val(ui.item.tenThuoc);
+                //$('#drugCode').val(ui.item.maThuoc);
+                return false;
+            }
+        }).each(function () {
+            $(this).autocomplete('instance')._renderItem = function (ul, item) {
+                return $("<li>")
+                    .append("<a>" + item.desc + "</a>")
+                    .append('<input type="hidden" name="price" value="' + item.price + '"/>')
+                    .append('<input type="hidden" name="unit" value="' + item.unit + '"/>')
+                    .appendTo(ul);
+            };
+        });
+    }
+</script>
+}

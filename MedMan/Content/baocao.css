@@ -1,0 +1,95 @@
+﻿@media print{
+   #Header, #Footer { display: none !important; }   
+   footer,hr{display: none!important}
+   .baocao-filter{display: none!important}
+   .baocao-container{}
+   .print-header{display: block!important}
+   .baocao-container,body {
+       font-size: 8px!important;
+   }
+   .print-date {
+       display: block!important;
+   }
+   .btn-actiongroup {
+       display: none;
+   }
+   h2 {
+       margin: 0!important;
+       font-size: 18px !important;
+
+   }
+}
+.print-date {
+       display: none;
+   }
+/*Bao cao tong hop*/
+h2 {
+    color: green;
+}
+.table-bcth {
+    
+}
+.table-bcth td {
+    padding: 5px;
+    border-bottom: 1px dashed lightgray;
+}
+.table-bcth td.title {
+    color: #115cef;
+    font-weight: bold;
+}
+.table-bcth td.title.sub {
+    color: green;
+    font-weight: normal;
+    padding-left: 40px;
+}
+.table-bcth td.value.sub {
+    font-weight: normal;
+}
+.table-bcth td.value {
+    font-weight: bold;
+    color: red;
+    text-align: right;
+}
+.baocao-container {
+    border: 1px solid lightgray;
+    padding: 20px;
+    overflow-y: auto;
+}
+.table-bcth td.striked {
+    text-decoration: line-through;
+}
+.baocao-filter {
+    font-size: smaller;
+}
+.baocao-filter fieldset legend {
+    font-size: 17px;
+}
+.baocao-filter fieldset > div {
+    padding: 0 15px;
+}
+.baocao-filter fieldset input[type=text] {
+    width: 100%;
+}
+.baocao-filter fieldset input[type=radio] {
+    margin-left: 0;
+    margin-top: 1px;
+}
+.baocao-container .summary {
+    margin-top: 30px;
+    margin-bottom: 10px;
+
+}
+.baocao-container .summary table td {
+    padding-left: 50px;
+    padding-top: 15px;
+}
+.baocao-container table tr.red {
+    background-color: red;
+}
+.print-header {
+    padding: 20px 0 30px 0;
+    display: none;
+}
+.print-header table td {
+    padding-right: 40px;
+}

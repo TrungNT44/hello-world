@@ -1,0 +1,54 @@
+﻿
+@{
+    ViewBag.Title = "Tin tuyển dụng";
+}
+
+<h2>Tin tuyển dụng</h2>
+<div ng-controller="ListRecruitActiveController">
+    <form role="form" class="form-horizontal">
+        <hr style="margin-top:0px" />
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="col-md-1 control-label">Tiêu đề</label>
+                    <div class="col-md-4">
+                        <input type="text" ng-model="InputData.TieuDe" class="form-control" />
+                    </div>
+                    <label class="col-md-1 control-label">Địa điểm</label>
+                    <div class="col-md-3">
+                        <select class="form-control" ng-model="InputData.IdTinhThanh">
+                            <option value="">--Chọn tỉnh thành--</option>
+                            <option ng-repeat="tinhthanh in ArrTinhThanhs" value="{{tinhthanh.IdTinhThanh}}">{{tinhthanh.TenTinhThanh}}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="button" ng-click="Search()" value="Tìm" class="btn btn-primary">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="padding-bottom: 5px" ng-repeat="item in items">
+            <div class="col-md-12" style="border: 1px solid #808080">
+                <div class="col-md-3">
+
+                </div>
+                <div class="col-md-9" style="border-left: 1px solid #808080">
+                    <div class="col-md-12" style="padding-left: 5px">
+                        <div class="row">
+                            <span><b>Nhà thuốc {{item.TenNhaThuoc}} tuyển dụng: {{item.TieuDe}}</b></span>
+                        </div>
+                        <div class="row">
+                            <span>Địa chỉ: {{item.DiaChiNhaTuyenDung}}</span>
+                        </div>
+                        <div class="row">
+                            <span>Ngày hết hạn: {{item.NgayHetHan_View}}</span>
+                        </div>
+                        <div class="row">
+                            <a href="/Recruitment/ViewRecruit/{{item.IdTinTuyenDung}}">Chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

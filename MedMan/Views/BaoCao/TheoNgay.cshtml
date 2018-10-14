@@ -1,0 +1,152 @@
+﻿@using Med.Web.Extensions
+@model sThuoc.Models.ViewModels.TheoNgayViewModel
+@{
+    ViewBag.Title = "BÁO CÁO HÀNG NGÀY";
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/Content/baocao.css" rel="stylesheet" />
+<div style="font-size: 30px; text-align: center;color: green;padding: 0px"><b>@ViewBag.Title</b></div>
+<div style="font-size: 20px; text-align: center; color: green; padding: 0px">
+    <span id="dvNgayNhap" style="width: 10%">
+        <b>NGÀY @Model.Date.Day/@Model.Date.Month/@Model.Date.Year</b>
+    </span>
+</div>
+@using (Html.BeginForm("TheoNgay", "BaoCao", new { Date = Model.Date }, FormMethod.Get, new { id = "formBaoCaoHangNgay" }))
+{
+    @Html.HiddenFor(model => model.Date, new { @Value = DateTime.Now.ToString("dd/MM/yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture) })
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <div class="baocao-container">
+                    <div class="print-header">
+                        <table>
+                            <tr>
+                                <td>Nhà cung cấp: <span id="user-filter"></span></td>
+                                <td>Kỳ báo cáo: <span id="report-period"></span></td>
+                            </tr>
+                        </table>
+                    </div>
+                    @if (Model.Items.Any())
+                    {
+                        <table class="col-md-12" style="margin-bottom: 20px">
+                            <tr>
+                                <td>Số lượng khách: <strong style="color: red">@Model.SoLuongKhach.ToString("#,##0")</strong> </td>
+                                <td align="center">Tổng tiền: <strong style="color: red">@Model.TongTien.ToString("#,##0")</strong> </td>
+                                @if (this.HasPermisson("baocao", "ViewProfit"))
+                                {
+                                    <td align="right">Tổng lợi nhuận: <strong style="color: red"> @Model.Items.Sum(c => c.LoiNhuan).ToString("#,##0")</strong> </td>
+                                }
+                            </tr>
+                        </table>
+                        <table class="table table-responsive table-bordered">
+                            <thead>
+                                <tr>
+                                    <th style="background-color: darkgray">STT</th>
+                                    <th style="background-color: darkgray">Tên khách</th>
+                                    <th style="background-color: darkgray">Số phiếu</th>
+                                    <th style="text-align: right; background-color: darkgray">Tổng tiền</th>
+                                    <th style="text-align: right; background-color: darkgray">Tiền trả</th>
+                                    <th style="text-align: right; background-color: darkgray">Tiền nợ</th>
+                                    <th style="text-align: right; background-color: darkgray">Lợi nhuận</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ var stt = 0; }
+                                @foreach (var item in Model.Items)
+                                {
+                                    ++stt;
+                                    <tr>
+                                        <td>
+                                            @*<a href="javascript:void(0)" action="@Url.Action("DialogDetail", "Thuocs", null, Request.Url.Scheme)" class="a_view">@stt</a>*@
+                                            @stt
+                                        </td>
+
+
+                                        @if (item.MaLoai == 2)
+                                        {
+                                            <td>@item.TenKhachHang</td>
+                                            <td>@Html.ActionLink(item.SoPhieu.ToString(), "Details", "PhieuXuats", new { id = item.MaPhieu }, null)</td>
+                                        }
+                                        else
+                                        {
+                                            <td>@item.TenKhachHang trả hàng</td>
+                                            <td>@Html.ActionLink(item.SoPhieu.ToString(), "Details", "PhieuNhaps", new { id = item.MaPhieu }, null)</td>
+                                        }
+
+
+                                        @*<td style="text-align: center">@item.SoPhieu</td>*@
+
+                                        <td style="text-align: right">@item.TongTien.ToString("#,##0")</td>
+                                        <td style="text-align: right">@item.TienTra.ToString("#,##0")</td>
+                                        <td style="text-align: right">@item.TienNo.ToString("#,##0")</td>
+                                        <td style="text-align: right">
+                                            @if (this.HasPermisson("baocao", "ViewProfit"))
+                                            {
+                                                <span>@item.LoiNhuan.ToString("#,##0")</span>
+                                            }
+                                            else
+                                            {
+                                                <span>***</span>
+                                            }
+
+                                        </td>
+
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <table class="col-md-12">
+                            <tr>
+                                <td>Số lượng khách: <strong style="color: red">@Model.SoLuongKhach.ToString("#,##0")</strong> </td>
+                                <td align="center">Tổng tiền: <strong style="color: red">@Model.TongTien.ToString("#,##0")</strong> </td>
+                                @if (this.HasPermisson("baocao", "ViewProfit"))
+                                {
+                                    <td align="right">Tổng lợi nhuận: <strong style="color: red"> @Model.TongLoiNhuan.ToString("#,##0")</strong> </td>
+                                }
+                            </tr>
+                        </table>
+                                    }
+                                    else
+                                    {
+                                        <p>Không có dữ liệu</p>
+                                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+                                    }
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/datepicker-vi.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $("#Date").datepicker({
+                dateFormat: "dd/mm/yy",
+                changeMonth: true,
+                changeYear: true,
+                onSelect: function (dateText, inst) {
+                    var fDate = dateText.split("/");
+                    $("#dvNgayNhap").html("Ngày " + fDate[0] + "/" + fDate[1] + "/" + fDate[2]);
+                    $("#Date").val(dateText);
+                    $("#formBaoCaoHangNgay").submit();
+                },
+                beforeShow: function (event, ui) {
+                    var $button = $("#dvNgayNhap"),
+                        left = $button.offset().left,
+                        top = $button.offset().top + $button.height();
+                    setTimeout(function () {
+                        ui.dpDiv.css({ left: left + "px", top: top + "px" });
+                    }, 10);
+                }
+            });
+
+            $("#dvNgayNhap").on("click", function () {
+                $("#Date").datepicker("show");
+            });
+        });
+    </script>
+}

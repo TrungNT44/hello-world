@@ -1,0 +1,230 @@
+﻿@using Med.Web.Extensions;
+
+@{
+    ViewBag.Title = "Phiếu xuất hàng với barcode";
+}
+<script>
+    var viewModel = @Html.Raw(ViewBag.ViewModel);
+    var fromBCScanner = false;
+</script>
+
+<div ng-controller="DeliveryNoteWithBarcodeController" ng-cloak>
+    <div class="form-horizontal">
+        <h2 style="font-size: 30px; text-align: center;color: coral">PHIẾU XUẤT HÀNG</h2>   
+        <div id=" divDrugItems" class="box box-drugitems">
+            <table class="table borderless table-condensed" id="barcode-table-id">
+                <thead>
+                    <tr>
+                        <th style="width:10%; border: none; text-align: left">
+                            <label>Mã vạch:</label>
+                        </th>
+                        <th style="width:27%; border: none">
+                            <input type="text" class="form-control mousetrap" id="barcode" style="width: 100%">
+                        </th>
+                        <th style="width:8%; border: none; text-align: left">
+                            <label>Mã/Tên:</label>
+                        </th>
+                        <th style="width:27%; border: none">                           
+                            <div drug-search-filter select-changed-callback="onDrugSelectChanged" clear-after-selected="true"></div>
+                        </th>
+                        <th style="width:9%; border: none; text-align: left">
+                            <label>Số liều:</label>
+                        </th>
+                        <th style="width:9%; border: none">
+                            <input type="text" class="number-input form-control" id="doseNumber" style="width: 100%" 
+                                   ng-model="doseNumber" min="1" max="30" step="0.5" 
+                                   @*ng-model-options="{debounce: 2000}"*@
+                                   />
+                        </th>
+                    </tr>
+                </thead>
+                <tbody style="border: none"></tbody>
+            </table>
+            <table tr-ng-grid="" items="model.items"
+                   display-total-items-count="false"
+                   id="table-id-delivery-note-with-barcode"
+                   locale="en"
+                   class="table table-striped table-responsive table-bordered table-hover"
+                   selection-mode="None"
+                   current-page="setCurrentPage"
+                   enable-filtering="false"
+                   enable-sorting="false"
+                   page-items="model.pageSize" total-items="model.totalItems"
+                   on-data-required="onServerSideItemsRequested(currentPage, pageItems, filterBy, filterByFields, orderBy, orderByReverse)">
+                <thead>
+                    <tr>
+                        <th style="width: 9%" class="header-bg"></th>
+                        <th style="width: 6%" class="header-bg" display-name="STT">STT</th>
+                        <th style="width: 7%" class="header-bg" display-name="Mã"></th>
+                        <th style="width: 25%" class="header-bg" display-name="Tên Hàng"></th>
+                        <th style="width: 13%" class="header-bg" display-name="Đơn Vị"></th>
+                        <th style="width: 8%" class="header-bg" display-name="SL"></th>
+                        <th style="width: 14%" class="header-bg" display-name="Đơn Giá"></th>
+                        <th style="width: 6%" class="header-bg" display-name="Tồn"></th>
+                        <th style="width: 14%;text-align: right;" class="header-bg" display-name="Thành tiền"></th>
+                    </tr>
+                </thead>
+                <tbody id="table-body-id-delivery-note-with-barcode">
+                    <tr class="tr-barcode {{getItemBackground(gridItem)}}">
+                        <!--Actions-->
+                        <td>
+                            <div>
+                                <a class="edit-drug glyphicon glyphicon-pencil" style="cursor: pointer" title="Sửa" ng-click="onEdit(gridItem)" ng-show="!gridItem.EditMode"></a>
+                                <a class="save-drug text-success glyphicon glyphicon-ok" style="cursor: pointer" title="Lưu" ng-click="onSave(gridItem)" ng-show="gridItem.EditMode"></a>&nbsp
+                                <a class="delete-drug text-danger glyphicon glyphicon-trash" style="cursor: pointer" title="Xóa" ng-click="onDelete(gridItem)" ng-show="gridItem.EditMode"></a>&nbsp
+                            </div>
+                        </td>
+                        <!--STT-->
+                        <td><div data-app-module-row-number></div></td>
+                        <!--Mã-->
+                        <td>
+                            <div>
+                                {{gridItem.DrugCode}}
+                            </div>
+                        </td>
+                        <!--Tên Hàng-->
+                        <td>
+                            <div>
+                                {{gridItem.DrugName}}
+                            </div>
+                        </td>
+                        <!--Đơn Vị-->
+                        <td>
+                            <div>
+                                <div ng-if="!gridItem.EditMode">
+                                    {{ getUnitName(gridItem) }}
+                                </div>
+                                <div ng-if="gridItem.EditMode">
+                                    <select id="ddlUnits" class="form-control"
+                                            ng-model="gridItem.SelectedUnitId"
+                                            ng-options="item.UnitId as item.UnitName for item in gridItem.DrugUnits"
+                                            ng-change="onUnitChanged(gridItem)" style="width:100%"></select>
+                                </div>
+                            </div>
+                        </td>
+                        <!--Số Lượng-->
+                        <td class="td-barcode">
+                            <div ng-if="!gridItem.EditMode">
+                                {{gridItem.Quantity}}
+                            </div>
+                            <div ng-if="gridItem.EditMode">
+                                <input type="text" class="form-control row-item-quantiy" style="width: 100%" ng-model="gridItem.Quantity" awnum="app-decimal-number">
+                            </div>
+                        </td>
+
+                        <!--Đơn Giá-->
+                        <td>
+                            <div ng-if="!gridItem.EditMode" class="number-value">
+                                {{gridItem.Price | number:0}}
+                            </div>
+                            <div ng-if="gridItem.EditMode">
+                                <input type="text" class="form-control" style="width: 100%" ng-model="gridItem.Price" awnum="app-decimal-number">
+                            </div>
+                        </td>
+                        <!--Tồn kho-->
+                        <td>
+                            <div class="number-value">
+                                {{gridItem.RemainQuantity | number:0}}
+                            </div>
+                        </td>
+                        <!--Thành Tiền-->
+                        <td>
+                            <div class="number-value">
+                                <strong>{{gridItem.TotalAmount | number:0}}</strong>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>               
+            </table>
+        </div>
+        <div id="divSummary" class="box box-summary">
+            <table class="table borderless table-condensed" style="padding: 5px">
+                <tr>
+                    <th class="header-bg" style="width:30%" colspan="2">
+                        <b>Thông tin phiếu xuất</b>
+                    </th>
+                </tr>
+                <tr>
+                    <td style="text-align: left;width:100px"><label class="control-label" style="font-weight: normal">Mã Số:</label></td>
+                    <td style="text-align: left;">
+                        <label class="control-label"><strong>{{model.NoteNumber}}</strong></label>                      
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;width:100px"><label class="control-label" style="font-weight: normal">Ngày Bán:</label></td>
+                    <td style="text-align: left" id="dvNgayXuat">
+                        <div class="clickable-text daterange-picker"><input type="text" id="note-date-id" ng-change="onReportDateChanged()" ng-model="reportDate"><span>{{reportDate}}</span></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;width:100px"><label class="control-label" style="font-weight: normal">Khách Hàng:</label></td>
+                    <td style="text-align: left">
+                        <div report-group-type-filter single-mode="true"
+                             group-filter-type="2"
+                             show-group-filter-type="false"
+                             filter-item-type="3" selected-item-id="selectedCustomerItemId" filter-by-name-for-drug="false"></div>                       
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;width:100px"><label class="control-label" style="font-weight: normal">Bác Sỹ:</label></td>
+                    <td style="text-align: left">
+                        <div report-group-type-filter single-mode="true"
+                             group-filter-type="2"
+                             show-group-filter-type="false"
+                             ignore-auto-select-first-item="true"
+                             filter-item-type="9" selected-item-id="selectedDoctorItemId" filter-by-name-for-drug="false"></div>  
+                    </td>
+                </tr>           
+                <tr>
+                    <td style="text-align: left;width:100px"><label class="control-label" style="font-weight: normal">Diễn Giải:</label></td>
+                    <td style="text-align: left">
+                        <textarea ng-model="model.Description" style="width: 100%"></textarea>                     
+                    </td>
+                </tr>
+            </table>
+
+            <table class="table borderless table-condensed" style="padding: 5px">
+                <tr>
+                    <th class="header-bg" style="width:30%" colspan="2">
+                        <b>Thông tin thanh toán</b>
+                    </th>
+                </tr>
+                <tr>
+                    <td style="text-align: left;width:100px"><label class="control-label" style="font-weight: normal">Tổng tiền:</label></td>
+                    <td style="text-align: left;">
+                        <label class="control-label" ng-show="!allowToChangeTotalAmount">{{model.TotalAmount | number:0}}</label>
+                        <input type="text" class="form-control" refresh-delay="500" style="width: 100%" ng-model="model.TotalAmount" awnum="app-decimal-number" 
+                               ng-show="allowToChangeTotalAmount"
+                               ng-keypress="onTotalAmountChanged($event)">
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;width:100px"><label class="control-label" style="font-weight: normal">Trả:</label>
+                        <input type="button" value="F" style="float:right; margin-top:5px" title="Ấn vào đây để trả đủ số tiền" ng-click="onPayFull()" />  
+                    </td>
+                    <td style="text-align: left;">
+                        <input type="text" id="tbxPaymentAmount" class="form-control mousetrap" style="width: 100%" ng-model="model.PaymentAmount" awnum="app-decimal-number">                                                                     
+                    </td>    
+                </tr>
+                <tr>
+                    <td style="text-align: left;width:100px"><label class="control-label" style="font-weight: normal">{{debtLabel}}:</label></td>
+                    <td style="text-align: left;">
+                        <label class="control-label">{{ getDebtAmount() | number:0 }}</label>
+                    </td>
+                </tr>
+            </table>
+            <table class="table borderless table-condensed" style="padding: 5px">
+                <tr>
+                    <th class="header-bg" style="width:50%">
+                        <input type="button" value="Quay lại" class="btn btn-default" onclick="javascript:window.history.go(-1);" />
+                    </th>
+                    <th class="header-bg" style="width:50%">
+                        <input type="submit" value="Ghi Phiếu - F9" ng-click="saveDeliveryNote()" class="btn btn-default" id="save-note-btn-id" ng-disabled="canSaveDeliveryNote()" />
+                    </th>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<br />
+<br />

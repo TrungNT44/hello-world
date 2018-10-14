@@ -1,0 +1,194 @@
+﻿@using Med.Web.Extensions;
+
+@{
+    ViewBag.Title = "BÁO CÁO CHI TIẾT HÀNG NGÀY";
+}
+<div ng-controller="RevenueDetailsByDayController" ng-cloak>
+    <div class="report-title">
+        <label>@ViewBag.Title</label>
+        <form class="form-inline">
+            <div class="form-group inner" style="font-size: 20px; font-weight: bold">
+                @*<input id="datepicker" type="text" class="input-datetime" style="display:none" /><label id="alternate" style="font-size: 20px">NGÀY {{reportDate}}</label>*@
+                NGÀY <div class="clickable-text daterange-picker" id="reportDateId"><input type="text" name="reportDate" ng-change="onReportDateChanged()" ng-model="reportDate"><span>{{reportDate}}</span></div>
+
+                @*<input type="text" class="form-control m-b input-datetime" ng-change="onReportDateChanged()" ng-model="reportDate" />*@
+            </div>
+        </form> 
+    </div>
+    <div class="report-box">
+        @*<button type="button" ng-click="deleteAllSelectedItems()" class="btn btn-primary btn-sm pull-right">Delete All</button>*@
+        <table class="col-md-12" style="margin-bottom:20px" >
+            <tr>
+                <td align="right" ng-if="model.HasDebtValue">Tổng bán: <span class="revenue-value">{{model.DeliveryTotal | number:0}}</span> </td>
+                <td align="right" ng-if="model.HasDebtValue">Tổng nợ: <span class="revenue-value">{{model.DebtTotal | number:0}}</span> </td>
+                <td align="right">Tổng tiền: <span class="revenue-value">{{model.Total | number:0}}</span> </td>
+                @if (this.HasPermisson("baocao", "ViewProfit"))
+                {
+                    <td align="right">Tổng lợi nhuận: <span class="revenue-value"> {{model.Revenue | number:0}}</span> </td>
+                }
+            </tr>
+        </table>
+
+        <table tr-ng-grid="" items="model.items"
+               display-total-items-count="false"
+               id="table-id-revenue-details-by-day"
+               locale="en"
+               class="table table-striped table-responsive table-bordered table-hover"
+               selection-mode="None"
+               current-page="setCurrentPage"
+               enable-filtering="false"
+               enable-sorting="false"
+               page-items="model.pageSize" total-items="model.totalItems"
+               on-data-required="onServerSideItemsRequested(currentPage, pageItems, filterBy, filterByFields, orderBy, orderByReverse)">
+            <thead>
+                <tr>
+                    @*<th cell-width="20px">
+                        <label>
+                            <span app-module-select-all></span>
+                        </label>
+                    </th>*@
+                    <th display-name="STT"></th>
+                    <th display-name="Tên khách"></th>
+                    <th display-name="Số phiếu"></th>
+                    <th display-name="Tiền nợ"></th>
+                    <th display-name="VAT"></th>
+                    <th display-name="Mã thuốc"></th>
+                    <th display-name="Tên thuốc"></th>
+                    <th display-name="Đơn vị"></th>
+                    <th display-name="Số lượng"></th>
+                    <th display-name="Đơn giá"></th>
+                    <th display-name="CK"></th>
+                    <th display-name="Thành tiền"></th>
+                    @if (this.HasPermisson("baocao", "ViewProfit"))
+                    {
+                        <th display-name="Lợi nhuận"></th>
+                    }
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="{{getItemBackground(gridItem)}}">
+                    <!--Checkbox-->
+                    @*<td>
+                        <label>
+                            <span app-module-select-row></span>
+                        </label>
+                    </td>*@
+                    <td>
+                        <!--STT-->
+                        <div>
+                            {{gridItem.Order}}
+                        </div>
+                    </td>
+                    <td>
+                        <!--Tên khách-->
+                        <div>
+                            {{gridItem.CustomerName}}
+                        </div>
+                    </td>
+                    <td>
+                        <!--Số phiếu-->
+                        <div>
+                            <a href="/{{gridItem.IsReturnFromCustomer?'PhieuNhaps':'PhieuXuats'}}/Details/{{gridItem.DeliveryNoteId}}" target="_blank">
+                                {{gridItem.NoteNumber}}
+                            </a>
+                        </div>
+                    </td>
+                    <td>
+                        <!--Tiền nợ-->
+                        <div ng-if="gridItem.Order != ''" class="number-value">
+                            {{gridItem.DebtAmount | number:0}}
+                        </div>
+                    </td>
+                    <td>
+                        <!--VAT-->
+                        <div ng-if="gridItem.VAT != null" class="number-value">
+                            {{gridItem.VAT | number:0}}
+                        </div>
+                    </td>
+                    <td>
+                        <!--Mã thuốc-->
+                        <div>
+                            {{gridItem.DrugCode}}
+                        </div>
+                    </td>
+                    <td>
+                        <!--Tên thuốc-->
+                        <div>
+                            {{gridItem.DrugName}}
+                        </div>
+                    </td>
+                    <td>
+                        <!--Đơn vị-->
+                        <div>
+                            {{gridItem.UnitName}}
+                        </div>
+                    </td>
+                    <td>
+                        <!--Số lượng-->
+                        <div class="number-value">
+                            {{gridItem.Quantity|number}}
+                            @*{{gridItem.TonKho|number}}*@
+                        </div>
+                    </td>
+                    <td>
+                        <!--Đơn giá-->
+                        <div class="number-value">
+                            {{gridItem.Price | number:0}}
+                        </div>
+                    </td>
+                    <td>
+                        <!--CK-->
+                        <div class="number-value">
+                            {{gridItem.Discount | number:0}}
+                        </div>
+                    </td>
+                    <td>
+                        <!--Thành tiền-->
+                        <div class="number-value">
+                            {{gridItem.Amount | number:0}}
+                        </div>
+                    </td>
+                    @if (this.HasPermisson("baocao", "ViewProfit"))
+                    {
+                        <td>
+                            <!--Lợi nhuận-->
+                            <div class="number-value">
+                                {{gridItem.Revenue | number:0}}
+
+                            </div>
+                        </td>
+                    }
+
+                </tr>
+            </tbody>
+            @*<tfoot>
+                <tr>
+                    <td align="center">
+                        <span class="form-group pull-left page-size">
+                            <select id="ddlPageSize" class="form-control"
+                                    ng-model="model.pageSize"
+                                    ng-options="item for item in pageSizeList"></select>
+                            <span class="page-size-label">&#160;&#160;items per page</span>
+                        </span>
+                        <span tr-ng-grid-pager="" style="height:40px;"></span>
+                    </td>
+                </tr>
+            </tfoot>*@
+        </table>
+
+        <table class="col-md-12">
+            <tr>
+                <td align="right" ng-if="model.DebtTotal > 0" >Tổng bán: <span class="revenue-value">{{model.DeliveryTotal | number:0}}</span> </td>
+                <td align="right" ng-if="model.DebtTotal > 0">Tổng nợ: <span class="revenue-value">{{model.DebtTotal | number:0}}</span> </td>
+                <td align="right">Tổng tiền: <span class="revenue-value">{{model.Total | number:0}}</span> </td>
+                @if (this.HasPermisson("baocao", "ViewProfit"))
+                {
+                    <td align="right">Tổng lợi nhuận: <span class="revenue-value"> {{model.Revenue | number:0}}</span> </td>
+                }
+            </tr>
+        </table>
+    </div>
+    <br/>
+    <br/>
+</div>

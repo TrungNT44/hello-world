@@ -1,0 +1,84 @@
+﻿<div class="modal fade inmodal" id="update-drug-out-price-dialog" ng-controller="DrugUpdateOutPriceDialogController" tabindex='-1' ng-cloak>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Đóng"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title"> Cập nhật giá xuất cho thuốc <b>{{drug.drugName}}</b></h4>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table-bordered table-userpicker">
+                            <tbody>
+                                <tr>
+                                    <td><b>Mã thuốc:</b></td>
+                                    <td>{{drug.drugCode}}</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Tên thuốc:</b></td>
+                                    <td>{{drug.drugName}}</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Đơn vị:</b></td>
+                                    <td>{{drug.unitName}}</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Giá xuất cũ:</b></td>
+                                    <td>{{drug.oldPrice | numeraljs}}</td>
+                                </tr>
+                                <tr>
+                                    <td><b>Giá xuất mới:</b></td>
+                                    <td>{{drug.drugPrice | numeraljs}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+            @*<div class="modal-body form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-sm-3">Mã thuốc:</label>
+                    <div class="control-label col-sm-4">
+                        {{drug.drugCode}}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-3">Tên thuốc:</label>
+                    <div class="control-label col-sm-4">
+                        {{drug.drugName}}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-3">Đơn vị:</label>
+                    <div class="control-label col-sm-4">
+                        {{drug.unitName}}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-3">Giá nhập cũ:</label>
+                    <div class="control-label col-sm-4">
+                        {{drug.oldPrice}}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-3">Giá nhập mới:</label>
+                    <div class="control-label col-sm-4">
+                        {{drug.drugPrice}}
+                    </div>
+                   
+                </div>
+            </div>*@
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" ng-click="updateDrugPrice()">Cập nhật</button>&nbsp;&nbsp;&nbsp;
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

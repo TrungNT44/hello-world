@@ -24,6 +24,8 @@ using App.Common.DI;
 using Med.Entity.Report;
 using System.Data.Entity;
 using Med.Service.System;
+using Med.Service.Caching;
+using App.Constants.Enums;
 
 namespace Med.Service.Impl.Drug
 {
@@ -77,23 +79,25 @@ namespace Med.Service.Impl.Drug
             return retVal;
         }
 
-        public bool DeleteDrugs(string drugStoreCode, params int[] drugIds)
+        public bool MarkAsDeleteForeverDrugs(string drugStoreCode, params int[] drugIds)
         {
-            if (!drugIds.Any()) return false;
+            if (drugIds == null || !drugIds.Any()) return false;
 
             var retVal = true;
             try
             {
-                using (var tran = TransactionScopeHelper.CreateLockAllForWrite())               
+                using (var tran = TransactionScopeHelper.CreateReadCommittedForWrite())               
                 {
-                    if (CheckDrugsHasDeals(drugStoreCode, drugIds))
-                    {
-                        tran.Complete();
-                        return false;
-                    }
+                    //if (CheckDrugsHasDeals(drugStoreCode, drugIds))
+                    //{
+                    //    tran.Complete();
+                    //    return false;
+                    //}
                     var drugRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, Thuoc>>();
-                    var sqlCommands = GetDeleteDrugsCommands(drugStoreCode, drugIds);
-                    drugRepo.ExecuteSqlCommand(sqlCommands);
+                    drugRepo.UpdateMany(i => i.NhaThuoc_MaNhaThuoc == drugStoreCode && drugIds.Contains(i.ThuocId),
+                        i => new Thuoc() { RecordStatusID = (byte)RecordStatus.DeletedForever });
+                    //var sqlCommands = GetDeleteDrugsCommands(drugStoreCode, drugIds);
+                    //drugRepo.ExecuteSqlCommand(sqlCommands);
 
                     tran.Complete();
                 }
@@ -278,7 +282,7 @@ namespace Med.Service.Impl.Drug
                 DrugBarcode = ii.DrugName,
                 RetailUnitId = ii.RetailUnitId,
                 UnitId = ii.UnitId,
-                Factors = ii.Factors
+                Factors = ii.Factors == 0? 1 : ii.Factors
             }).ToList());
 
             var unitIds = drugs.Where(i => i.UnitId > 0).Select(i => i.UnitId).ToList();
@@ -315,11 +319,19 @@ namespace Med.Service.Impl.Drug
                 DrugBarcode = i.BarCode,
                 RetailUnitId = i.DonViXuatLe_MaDonViTinh,
                 UnitId = i.DonViThuNguyen_MaDonViTinh,
-                Factors = i.HeSo,
+                Factors = (i.HeSo < MedConstants.Esp || i.DonViThuNguyen_MaDonViTinh <= 0) ? 1 : i.HeSo,
                 RetailInPrice = (double)i.GiaNhap,
                 RetailOutPrice = (double)i.GiaBanLe,
                 CreatedDateTime = i.Created,
-                ExpiredDateTime = i.HanDung
+                ExpiredDateTime = i.HanDung,
+                PreFactors = ((double)i.PreFactors < MedConstants.Esp || i.DonViThuNguyen_MaDonViTinh <= 0) ? 1 : i.PreFactors,
+                PreRetailUnitID = i.PreRetailUnitID,
+                PreUnitID = i.PreUnitID,
+                PreInitQuantity = i.PreInitQuantity,
+                PreInitPrice  = i.PreInitPrice,
+                InitPrice = i.GiaDauKy,
+                InitQuantity = i.SoDuDauKy,
+                PreExpiredDate = i.PreExpiredDate
             });
             if (drugIds != null && drugIds.Length > 0)
             {
@@ -342,17 +354,40 @@ namespace Med.Service.Impl.Drug
             {
                 i.Units = units.Where(u => u.UnitId == i.UnitId || u.UnitId == i.RetailUnitId).ToList();
             });
+            FillInitialNoteItemIDs(drugStoreCode, results);
+
             var invService = IoC.Container.Resolve<IInventoryService>();
             invService.UpdateLastQuantity4CacheDrugs(drugStoreCode, results);
 
             return results;
+        }
+        private void FillInitialNoteItemIDs(string drugStoreID, List<CacheDrug> drugs)
+        {
+            var initReceiptNoteId = MedCacheManager.Instance.GetInitialInventoryReceiptNoteID(drugStoreID);
+            if (initReceiptNoteId <= 0) return;
+
+            var drugIds = drugs.Where(i => i.InitReceiptNoteItemId <= 0).Select(i => i.DrugId).ToList();
+            if (!drugIds.Any()) return;
+          
+            var receiptItemRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuNhapChiTiet>>();
+            var itemIds = receiptItemRepo.GetAll().Where(i => i.NhaThuoc_MaNhaThuoc == drugStoreID &&
+                i.PhieuNhap_MaPhieuNhap == initReceiptNoteId && drugIds.Contains(i.Thuoc_ThuocId.Value))
+                .Select(i => new { DrugID = i.Thuoc_ThuocId.Value, NoteItemID = i.MaPhieuNhapCt })
+                .ToList().GroupBy(i => i.DrugID).ToDictionary(i => i.Key, i => i.FirstOrDefault().NoteItemID);
+            drugs.ForEach(i =>
+            {
+                if (itemIds.ContainsKey(i.DrugId))
+                {
+                    i.InitReceiptNoteItemId = itemIds[i.DrugId];
+                }
+            });
         }
         public List<CreateReserveItem> GetListDrugForCreateReserve(string drugStoreCode, int type, int provider, int group_drug, string name_drug, bool get_drug_empty)
         {
             List<CreateReserveItem> lstItem = new List<CreateReserveItem>();
             CreateReserveItem item;
             GenerateReportData(drugStoreCode);
-            var temp = _dataFilterService.GetValidDrugs(drugStoreCode).Where(x => x.HoatDong == true && x.GioiHan.HasValue);
+            var temp = _dataFilterService.GetValidDrugs(drugStoreCode).Where(x => x.GioiHan.HasValue);
 
             switch (type)
             {

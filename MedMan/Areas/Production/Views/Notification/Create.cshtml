@@ -1,0 +1,72 @@
+﻿@{
+    ViewBag.Title = "Thông báo";
+}
+<div id="NotificationController" ng-controller="NotificationController" ng-cloak>
+    <h4><b ng-bind="Title"></b></h4>
+    <form role="form" name="NotificationForm" class="form-horizontal">
+        <hr style="margin-top:0px" />
+        <div class="row">
+            <input type="hidden" value="{{Notification.ID}}" ng-model="Notification.ID" />
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="col-md-2 control-label">Nhà thuốc</label>
+                    <div class="col-md-4">
+                        <ui-select ng-disabled="{{action == 'view'}}" ng-model="StoreDrugFilter.selected" theme="select2" style="width: 100%">
+                            <ui-select-match placeholder="Chọn 1 dòng">{{$select.selected.MaNhaThuoc}} - {{$select.selected.TenNhaThuoc}}</ui-select-match>
+                            <ui-select-choices repeat="d in StoreDrug | propsFilter: {MaNhaThuoc: $select.search, TenNhaThuoc: $select.search}">
+                                <span ng-bind-html="d.MaNhaThuoc | highlight: $select.search"></span> - <span ng-bind-html="d.TenNhaThuoc | highlight: $select.search"></span>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                    <label class="col-md-2 control-label">Loại thông báo</label>
+                    <div class="col-md-4">
+                        <select ng-disabled="{{action == 'view'}}" class="form-control" ng-model="Notification.NotificationTypeID">
+                            <option ng-repeat="option in ArrNotificationType" value="{{option.ID}}">{{option.Name}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="col-md-2 control-label">Tiêu đề<span style="color:red">* </span></label>
+                    <div class="col-md-10">
+                        <input ng-disabled="{{action == 'view'}}" required name="Title" maxlength="50" type="text" ng-model="Notification.Title" class="form-control" />
+                        <span style="color:red" ng-show="submited|| (NotificationForm.Title.$touched && NotificationForm.Title.$invalid)">
+                            <span ng-show="NotificationForm.Title.$error.required">Nhập nội dung tiêu đề</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="col-md-2 control-label">Link tham chiếu<span style="color:red">* </span></label>
+                    <div class="col-md-10">
+                        <input ng-disabled="{{action == 'view'}}" required name="Link" maxlength="100" type="text" ng-model="Notification.Link" class="form-control" />
+                        <span style="color:red" ng-show="submited|| (NotificationForm.Link.$touched && NotificationForm.Link.$invalid)">
+                            <span ng-show="NotificationForm.Link.$error.required">Nhập link liên kết</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input ng-show="{{action == 'create'}}" type="button" ng-click="Save(NotificationForm.$valid)" value="Tạo" class="btn btn-primary">
+                        <input ng-show="{{action == 'update'}}" type="button" ng-click="Save(NotificationForm.$valid)" value="Cập nhật" class="btn btn-primary">
+                        <a href="/Notification/List" class="btn btn-default">Quay lại</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    var notificationId = @Html.Raw(Json.Encode(@ViewBag.noticationId));
+    var action = '@ViewBag.action';
+</script>

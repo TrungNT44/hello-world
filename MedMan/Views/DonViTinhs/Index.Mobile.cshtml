@@ -1,0 +1,55 @@
+﻿@using Med.Web.Extensions
+@using sThuoc.Models
+@using sThuoc.Filter
+@model IEnumerable<DonViTinh>
+
+@{
+    ViewBag.Title = "Danh Mục Đơn Vị Tính";
+    Layout = null;
+}
+
+
+@{
+    var canCreate = FunctionsService.Authorize("Donvitinhs", "Create", this.GetNhaThuoc());
+    var canModify = FunctionsService.Authorize("Donvitinhs", "Edit", this.GetNhaThuoc());
+}
+    @if (canCreate)
+    {
+        <p>
+            @Html.ActionLink("Thêm Mới", "Create",null, new { @class = "btn btn-default btn-dvt-new" })            
+        </p>
+    }
+<div id="dvt-form-holder">
+    
+</div>
+<div class="dvt-list">
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TenDonViTinh)
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr class="@string.Format("dvt-{0}",item.MaDonViTinh)">
+                <td>
+                    @Html.DisplayFor(modelItem => item.TenDonViTinh)
+                </td>
+                <td style="text-align:right">
+                    @if (canModify)
+                    {
+                        
+                        @*@: @Html.ActionLink("Sửa", "Edit", new { id = item.MaDonViTinh }, new { @class = "dvt-edit", @data_id = item.MaDonViTinh })
+                        @:| @Html.ActionLink("Xóa", "Delete", new { id = item.MaDonViTinh }, new { @class = "dvt-delete", @data_id = item.MaDonViTinh })*@
+                        @: <a class="dvt-edit" data-id="item.MaDonViTinh" href="@Url.Action("Edit", "DonViTinhs", new { id = item.MaDonViTinh })"><i class=" fa fa-pencil fa-fw" ></i></a> 
+                        @:|<a class="dvt-delete" data-id="item.MaDonViTinh" href="@Url.Action("Delete", "DonViTinhs", new { id = item.MaDonViTinh })"><i class="fa fa-trash-o fa-fw"></i></a> 
+                }
+                </td>
+            </tr>
+        }
+
+    </table>
+
+</div>

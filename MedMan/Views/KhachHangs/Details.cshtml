@@ -1,0 +1,90 @@
+﻿@model sThuoc.Models.KhachHang
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>KhachHang</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.NhaThuoc.TenNhaThuoc)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NhaThuoc.TenNhaThuoc)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NhomKhachHang.TenNhomKhachHang)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NhomKhachHang.TenNhomKhachHang)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TenKhachHang)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TenKhachHang)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DiaChi)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DiaChi)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SoDienThoai)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SoDienThoai)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NoDauKy)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NoDauKy)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DonViCongTac)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DonViCongTac)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.GhiChu)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.GhiChu)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.MaKhachHang }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

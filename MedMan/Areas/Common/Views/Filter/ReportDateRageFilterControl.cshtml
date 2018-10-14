@@ -1,0 +1,43 @@
+﻿<script type="text/ng-template" id="/tplReportDateRageFilterControl.html">
+    <div>
+        <fieldset ng-show="!hideDateRangeFilter">
+            <legend><b>Ngày</b></legend>
+            <div>
+                <div class="radio">
+                    <div><input type="radio" id="rdFilterAll" ng-model="filterType" value="0" checked="checked" ng-change="onFilterTypeChange()" /> <label for="rdFilterAll">Tổng kết hết</label></div>
+                    <div>
+                        <input type="radio" id="rdFilterByRange" ng-model="filterType" value="1" ng-change="onFilterTypeChange()" /> <label for="rdFilterByRange">Tổng kết theo ngày ...</label>
+                    </div>
+                    <div class="input-daterange input-group" id="datepicker" ng-if="filterType==1">
+                        <div class="input-group input-group-sm">
+                            <input type="text" class="input-sm form-control" name="from" id="reportFromDate" placeholder="Từ ngày.."
+                                   ng-model="reportFromDate">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="onFromDateClick()"><i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                        </div>
+                        <br />
+                        <div class="input-group input-group-sm">
+                            <input type="text" class="input-sm form-control" name="to" id="reportToDate" placeholder="Đến ngày.."
+                                   ng-model="reportToDate">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="onToDateClick()"><i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <br />
+        <div>
+            <input type="button" value="Xem" id="btnDisplayDataByDateRange" name="btnDisplayDataByDateRange" class="btn btn-default" ng-click="onDisplayData(true)" />
+            <a ng-if="!supressExport" class="btn btn-default btn-excel" download={{getExcelFileName()}} id="exportToExcelDownloadLink" href="#" ng-click="onExport($event)">
+                Xuất Excel
+            </a>
+            @*<input ng-if="!supressExport" type="button" value="Xuất Excel" class="btn btn-default btn-excel" ng-click="onExport()" />*@
+            <input ng-if="!supressPrint" type="button" value="In" class="btn btn-default btn-print" ng-click="onPrint()" />
+        </div>
+
+        <div elem-ready="isReady()"></div>
+    </div>
+</script>

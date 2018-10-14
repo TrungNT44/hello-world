@@ -1,0 +1,69 @@
+﻿@using sThuoc.Filter
+@model sThuoc.Models.RegisterModel
+@{
+    ViewBag.Title = "Thêm mới tài khoản";
+}
+
+<h4><b>@ViewBag.Title</b></h4>
+
+@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <hr />
+    @Html.ValidationSummary()
+    <div class="form-group">
+        @Html.LabelFor(m => m.UserName, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Password, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+        </div>
+    </div>
+
+    //Add the LastName, FirstName, and Email Properties:
+    <div class="form-group">
+        @Html.LabelFor(m => m.TenDayDu, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.TenDayDu, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Email, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.SoDienThoai, new {@class = "col-md-2 control-label"})
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.SoDienThoai, new {@class = "form-control"})
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.SoCMT, new { @class = "col-md-2 control-label" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.SoCMT, new { @class = "form-control" })
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            @Html.ActionLink("Quay lại", "Index", null, new { @class = "btn btn-default" }) <span class="btn-separator">|</span>
+            <input type="submit" class="btn btn-primary" value="Thêm mới" />
+        </div>
+    </div>
+}
+

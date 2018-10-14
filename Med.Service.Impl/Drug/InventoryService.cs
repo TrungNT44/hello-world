@@ -49,7 +49,9 @@ namespace Med.Service.Impl.Drug
                     DrugUnitId = i.DrugUnitId,
                     DrugUnitFactors = i.DrugUnitFactors,
                     NoteDate = i.NoteDate,
-                    Price = i.Price
+                    Price = i.Price,
+                    PreRetailPrice = i.RetailPrice,
+                    PreRetailQuantity = i.RetailQuantity,
                 })
                 .ToList();
             receiptItemQuantities.AsParallel().ForAll(item =>
@@ -73,7 +75,9 @@ namespace Med.Service.Impl.Drug
                     DrugUnitId = i.DrugUnitId,
                     DrugUnitFactors = i.DrugUnitFactors,
                     NoteDate = i.NoteDate,
-                    Price = i.Price
+                    Price = i.Price,
+                    PreRetailPrice = i.RetailPrice,
+                    PreRetailQuantity = i.RetailQuantity,
                 })
                 .ToList();
             deliveryItemQuantities.AsParallel().ForAll(item =>
@@ -122,10 +126,10 @@ namespace Med.Service.Impl.Drug
 
             result = drugItems.ToDictionary(i => i.Key, i => new DrugInventoryInfo()
             {
-                DrugId = i.Key,
+                DrugID = i.Key,
                 FirstInventoryQuantity = 0.0,
                 LastInventoryQuantity = 0.0,
-                DrugUnitId = i.Value.RetailUnitID,
+                DrugUnitID = i.Value.RetailUnitID,
                 InPrice = i.Value.InPrice,
                 OutPrice = i.Value.OutPrice
             });
@@ -172,7 +176,22 @@ namespace Med.Service.Impl.Drug
 
             return result;
         }
-        public List<Inventory> GenerateInventory4Drugs(string drugStoreCode, bool reGen4AllDrugs, bool updatePrices, params int[] drugIds)
+        public bool TryToGenerateInventory4Drugs(string drugStoreCode, bool reGen4AllDrugs, bool updatePrices, bool updateCacheDrugs, params int[] drugIds)
+        {
+            var retVal = true;
+            try
+            {
+                GenerateInventory4Drugs(drugStoreCode, reGen4AllDrugs, updatePrices, updateCacheDrugs, drugIds);
+            }
+            catch (Exception ex)
+            {
+                FaultHandler.Instance.Handle(ex, this, "TryToGenerateInventory4Drugs");
+                retVal = false;
+            }
+
+            return retVal;
+        }
+        public List<Inventory> GenerateInventory4Drugs(string drugStoreCode, bool reGen4AllDrugs, bool updatePrices, bool updateCacheDrugs, params int[] drugIds)
         {
             LogHelper.Debug("Generate inventory of drugs for drug store: {0}", drugStoreCode);
             var results = new List<Inventory>();
@@ -193,7 +212,10 @@ namespace Med.Service.Impl.Drug
             }
 
             if (drugIds == null || !drugIds.Any()) return results;
-
+            var drugRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, Thuoc>>();
+            var drugPrices = drugRepo.GetAll().Where(i => drugIds.Contains(i.ThuocId))
+               .Select(i => new { DrugID = i.ThuocId, RetailPrice = i.GiaNhap, RetailOutPrice = i.GiaBanLe })
+               .ToDictionary(i => i.DrugID, i => i);
             var inventories = GetDrugInventoryValues(drugStoreCode, drugIds);
             var updateInvs = invRepo.Table.Where(i => i.DrugStoreID == drugStoreCode
                 && drugIds.Contains(i.DrugID) && i.RecordStatusID == (byte)RecordStatus.Activated).ToList();
@@ -205,19 +227,57 @@ namespace Med.Service.Impl.Drug
                     DrugStoreID = drugStoreCode,
                     DrugID = i.Key,
                     LastValue = i.Value.LastInventoryQuantity,
-                    DrugUnitID = i.Value.DrugUnitId,
+                    DrugUnitID = i.Value.DrugUnitID,
                     LastInPrice = i.Value.InPrice,
                     LastOutPrice = i.Value.OutPrice,
                     RecordStatusID = (byte)RecordStatus.Activated
                 }).ToList();
+            newInvs.ForEach(i =>
+            {
+                if (drugPrices.ContainsKey(i.DrugID))
+                {
+                    if (drugPrices.ContainsKey(i.DrugID))
+                    {
+                        var prices = drugPrices[i.DrugID];
+                        i.LastInPrice = (double)prices.RetailPrice;
+                        i.RetailOutPrice = (double)prices.RetailOutPrice;
+                    }
+                }
+            });
+
             updateInvs.ForEach(i => 
             {
                 if (inventories.ContainsKey(i.DrugID))
                 {
-                    i.LastValue = inventories[i.DrugID].LastInventoryQuantity;
+                    i.NeedUpdate = Math.Abs(i.LastValue - inventories[i.DrugID].LastInventoryQuantity) > MedConstants.EspQuantity;
+                    if (i.NeedUpdate)
+                    {
+                        i.LastValue = inventories[i.DrugID].LastInventoryQuantity;
+                    }
+                }
+                if (drugPrices.ContainsKey(i.DrugID))
+                {
+                    if (drugPrices.ContainsKey(i.DrugID))
+                    {
+                        var prices = drugPrices[i.DrugID]; 
+                        if (!i.NeedUpdate)
+                        {
+                            i.NeedUpdate = Math.Abs(i.LastInPrice - (double)prices.RetailPrice) > MedConstants.EspQuantity
+                                || Math.Abs(i.RetailOutPrice - (double)prices.RetailOutPrice) > MedConstants.EspQuantity;                            
+                        }
+                        if (i.NeedUpdate)
+                        {
+                            if (i.NeedUpdate)
+                            {
+                                i.LastInPrice = (double)prices.RetailPrice;
+                                i.RetailOutPrice = (double)prices.RetailOutPrice;
+                            }
+                        }
+                    }
                 }
             });
-            invRepo.UpdateMany(updateInvs);
+            var needUpdateInvs = updateInvs.Where(i => i.NeedUpdate).ToList();
+            invRepo.UpdateMany(needUpdateInvs);
             invRepo.InsertMany(newInvs);
             invRepo.Commit();
             results = updateInvs;
@@ -230,11 +290,10 @@ namespace Med.Service.Impl.Drug
                     results = UpdateLastestInventoryPrices(drugStoreCode, drugIds);
                 }
             }
-
-            var cacheDrugs = MedCacheManager.Instance.GetAllCacheDrugs(drugStoreCode);
-            if (cacheDrugs != null)
+            if (updateCacheDrugs)
             {
                 var invDict = results.GroupBy(i => i.DrugID).ToDictionary(i => i.Key, i => i.First());
+                var cacheDrugs = MedCacheManager.Instance.GetCacheDrugs(drugStoreCode, invDict.Keys.ToArray());
                 cacheDrugs.ForEach(i =>
                 {
                     if (invDict.ContainsKey(i.DrugId))
@@ -248,7 +307,7 @@ namespace Med.Service.Impl.Drug
                     }
                 });
                 MedCacheManager.Instance.UpdateCacheDrugs(drugStoreCode, cacheDrugs);
-            }           
+            }
 
             return results;
         }
@@ -300,138 +359,87 @@ namespace Med.Service.Impl.Drug
                 }
             });
         }
-        public List<ItemInfoCandidate> GetLastestDeliveryItemsByDrugs(string drugStoreCode, params int[] drugIds)
+        public List<DrugInventoryInfo> GetLastestDeliveryItemsByDrugs(string drugStoreCode, params int[] drugIds)
         {
             // Get lastest delivery items by drugs
             var filterByDrugs = drugIds != null && drugIds.Any();
             IBaseRepository<PhieuXuat> noteRepo = null;
+            var validStatusIds = new int?[] { (int?)NoteInOutType.Delivery };
+            var drugs = _dataFilterService.GetValidDrugs(drugStoreCode);
             var notes = _dataFilterService.GetValidDeliveryNotes(drugStoreCode, out noteRepo);
             var noteItemRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuXuatChiTiet>>();
-            var drugs = _dataFilterService.GetValidDrugs(drugStoreCode);
+            var noteItems = noteItemRepo.GetAll();
+            if (filterByDrugs)
+            {
+                drugs = drugs.Where(i => drugIds.Contains(i.ThuocId) && (!i.HangTuVan.HasValue || !i.HangTuVan.Value));
+            }
             var deliveryNoteItems = (from n in notes
-                                     join ni in noteItemRepo.GetAll() on n.MaPhieuXuat equals ni.PhieuXuat_MaPhieuXuat
+                                     join ni in noteItems on n.MaPhieuXuat equals ni.PhieuXuat_MaPhieuXuat
                                      join dr in drugs on ni.Thuoc_ThuocId equals dr.ThuocId
-                                     where ni.SoLuong > 0 && ni.NhaThuoc_MaNhaThuoc == drugStoreCode
-                                        && (!filterByDrugs || drugIds.Contains(dr.ThuocId))
-                                     select new ItemInfoCandidate
+                                     where ni.NhaThuoc_MaNhaThuoc == drugStoreCode                                        
+                                        && validStatusIds.Contains(n.MaLoaiXuatNhap)
+                                        && ni.RecordStatusID == (byte)RecordStatus.Activated
+                                     select new DrugInventoryInfo
                                      {
-                                         NoteId = n.MaPhieuXuat,
-                                         NoteItemId = ni.MaPhieuXuatCt,
-                                         Quantity = (double)ni.SoLuong,
-                                         DrugId = dr.ThuocId,
-                                         ItemUnitId = ni.DonViTinh_MaDonViTinh,
-                                         RetailUnitId = dr.DonViXuatLe_MaDonViTinh,
-                                         UnitId = dr.DonViThuNguyen_MaDonViTinh,
-                                         Factors = dr.HeSo,
-                                         NoteType = n.MaLoaiXuatNhap,
-                                         NoteDate = n.NgayXuat,
-                                         Price = (double)ni.GiaXuat,
-                                         VAT = (double)n.VAT,
-                                         Discount = (double)ni.ChietKhau,
-                                         ReduceQuantity = ni.ReduceQuantity ?? 0,
+                                         DrugID = ni.Thuoc_ThuocId.Value,
+                                         NoteDate = n.NgayXuat.Value,
+                                         RetailPrice = ni.RetailPrice
                                      });
             var lastestDeliveryItems = (from i in deliveryNoteItems
-                                        group i by i.DrugId into g
-                                        select g.OrderByDescending(gi => gi.NoteDate).FirstOrDefault()).ToList();
-            foreach (var item in lastestDeliveryItems)
-            {
-                var factors = 1.0;
-                if (item.UnitId.HasValue && item.ItemUnitId == item.UnitId.Value && item.Factors > MedConstants.EspQuantity)
-                {
-                    factors = item.Factors;
-                }
-                item.RetailQuantity = item.Quantity * factors;
-                item.RetailPrice = item.Price / factors;
-            }            
+                                        group i by i.DrugID into g
+                                        select g.OrderByDescending(gi => gi.NoteDate).FirstOrDefault()).ToList();                  
 
             return lastestDeliveryItems;
-        }
-        public List<ItemInfoCandidate> GetLastestReceiptItemsByDrugs(string drugStoreCode, params int[] drugIds)
+        }        
+        public List<DrugInventoryInfo> GetLastestReceiptItemsByDrugs(string drugStoreCode, params int[] drugIds)
         {
             // Get lastest receipt items by drugs
             var filterByDrugs = drugIds != null && drugIds.Any();           
             var drugs = _dataFilterService.GetValidDrugs(drugStoreCode);
             IBaseRepository<PhieuNhap> receiptNoteRepo = null;
+            var validStatusIds = new int?[] { (int?)NoteInOutType.Receipt };
             var receiptNotes = _dataFilterService.GetValidReceiptNotes(drugStoreCode, out receiptNoteRepo);
             var receiptNoteItemRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuNhapChiTiet>>();
+            
+            if (filterByDrugs)
+            {
+                drugs = drugs.Where(i => drugIds.Contains(i.ThuocId) && (!i.HangTuVan.HasValue || !i.HangTuVan.Value));
+            }
             var receiptNoteItems = (from n in receiptNotes
                                     join ni in receiptNoteItemRepo.GetAll() on n.MaPhieuNhap equals ni.PhieuNhap_MaPhieuNhap
                                     join dr in drugs on ni.Thuoc_ThuocId equals dr.ThuocId
-                                    where ni.SoLuong > 0 && ni.NhaThuoc_MaNhaThuoc == drugStoreCode
-                                       && (!filterByDrugs || drugIds.Contains(dr.ThuocId))
-                                    select new ItemInfoCandidate
+                                    where ni.NhaThuoc_MaNhaThuoc == drugStoreCode                                      
+                                       && validStatusIds.Contains(n.LoaiXuatNhap_MaLoaiXuatNhap)
+                                       && ni.RecordStatusID == (byte)RecordStatus.Activated                                       
+                                    select new DrugInventoryInfo
                                     {
-                                        NoteId = n.MaPhieuNhap,
-                                        NoteItemId = ni.MaPhieuNhapCt,
-                                        Quantity = (double)ni.SoLuong,
-                                        DrugId = dr.ThuocId,
-                                        ItemUnitId = ni.DonViTinh_MaDonViTinh,
-                                        RetailUnitId = dr.DonViXuatLe_MaDonViTinh,
-                                        UnitId = dr.DonViThuNguyen_MaDonViTinh,
-                                        Factors = dr.HeSo,
-                                        NoteType = n.LoaiXuatNhap_MaLoaiXuatNhap ?? 0,
-                                        NoteDate = n.NgayNhap,
-                                        Price = (double)ni.GiaNhap,
-                                        VAT = (double)n.VAT,
-                                        Discount = (double)ni.ChietKhau,
-                                        ReduceQuantity = ni.ReduceQuantity ?? 0,
-                                        OutPrice = (double)ni.GiaBanLe,
-                                        RetailBatchOutPrice = (double)dr.GiaBanBuon,
-                                        PrevRetailOutPrice = (double)dr.GiaBanLe,                                       
+                                        DrugID = dr.ThuocId,
+                                        NoteDate = n.NgayNhap.Value,
+                                        RetailOutPrice = ni.RetailOutPrice > 0 ? ni.RetailOutPrice : (double)dr.GiaBanLe,
+                                        RetailPrice = ni.RetailPrice > 0 ? ni.RetailPrice : (double)dr.GiaBanLe,                                                            
                                     });
             var lastestReceiptItems = (from i in receiptNoteItems
-                                       group i by i.DrugId into g
-                                       select g.OrderByDescending(gi => gi.NoteDate).FirstOrDefault()).ToList();
-            foreach (var item in lastestReceiptItems)
-            {
-                var factors = 1.0;
-                if (item.UnitId.HasValue && item.ItemUnitId == item.UnitId.Value && item.Factors > MedConstants.EspQuantity)
-                {
-                    factors = item.Factors;
-                }
-                item.RetailQuantity = item.Quantity * factors;
-                item.RetailPrice = item.Price / factors;
-                item.RetailOutPrice = item.OutPrice / factors;
-                if (item.RetailPrice <= MedConstants.EspPrice)
-                {
-                    item.RetailPrice = item.PrevRetailOutPrice;
-                }
-                if (item.RetailOutPrice <= MedConstants.EspPrice)
-                {
-                    item.RetailOutPrice = item.PrevRetailOutPrice;
-                }
-            }
+                                       group i by i.DrugID into g
+                                       select g.OrderByDescending(gi => gi.NoteDate).FirstOrDefault()).ToList();            
 
             return lastestReceiptItems;
         }
-        public List<Inventory> UpdateLastestInventoryPrices(string drugStoreCode, params int[] drugIds)
+        public List<Inventory> UpdateLastestInventoryPrices(string drugStoreCode,  params int[] drugIds)
         {
             // Get lastest delivery items by drugs
             var lastestDeliveryItems = GetLastestDeliveryItemsByDrugs(drugStoreCode, drugIds);
             // Get lastest receipt items by drugs
             var lastestReceiptItems = GetLastestReceiptItemsByDrugs(drugStoreCode, drugIds);
-            // Update last delivery/receipt price of drugs            
+            // Update last delivery/receipt price of drugs
             var updateDrugs = new List<Thuoc>();
             var drugRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, Thuoc>>();
-            var lastReceiptPrices = lastestReceiptItems.ToDictionary(i => i.DrugId, i => i);
-            var lastDeliveryPrices = lastestDeliveryItems.ToDictionary(i => i.DrugId, i => i);
+            var lastReceiptPrices = lastestReceiptItems.ToDictionary(i => i.DrugID, i => i);
+            var lastDeliveryPrices = lastestDeliveryItems.ToDictionary(i => i.DrugID, i => i);
             var invRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, Inventory>>();
             var updateInvs = invRepo.TableAsNoTracking.Where(i => i.DrugStoreID == drugStoreCode
-                && drugIds.Contains(i.DrugID) && i.RecordStatusID == (byte)RecordStatus.Activated).ToList();
+                && drugIds.Contains(i.DrugID) && i.RecordStatusID == (byte)RecordStatus.Activated).ToList();          
             updateInvs.ForEach(i =>
             {
-                if (lastReceiptPrices.ContainsKey(i.DrugID))
-                {
-                    var prices = lastReceiptPrices[i.DrugID];
-                    i.LastInPrice = prices.RetailPrice;
-                    updateDrugs.Add(new Thuoc()
-                    {
-                        ThuocId = i.DrugID,
-                        GiaBanLe = (decimal)prices.RetailOutPrice,
-                        GiaBanBuon = (decimal)prices.RetailBatchOutPrice,
-                        GiaNhap = (decimal)prices.RetailPrice
-                    });
-                }
                 if (lastDeliveryPrices.ContainsKey(i.DrugID))
                 {
                     var prices = lastDeliveryPrices[i.DrugID];
@@ -439,12 +447,7 @@ namespace Med.Service.Impl.Drug
                 }
             });
             invRepo.UpdateMany(updateInvs);
-            invRepo.Commit();
-            var dsSettings = IoC.Container.Resolve<IUtilitiesService>().GetDrugStoreSetting(drugStoreCode);
-            if (dsSettings != null && dsSettings.AutoUpdateInOutPriceOnNote)
-            {
-                drugRepo.UpdateMany(updateDrugs, i => i.ThuocId, i => i.GiaNhap, i => i.GiaBanLe, i => i.GiaBanBuon);
-            }
+            invRepo.Commit();           
 
             // Update drug mapping
             var drugMapRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, DrugMapping>>();
@@ -476,7 +479,7 @@ namespace Med.Service.Impl.Drug
                             updateDrugMaps.Add(i);
                         }
                     } 
-                    else if (prices.NoteDate.Value.Date == i.InLastUpdateDate.Value.Date)
+                    else if (prices.NoteDate.Date == i.InLastUpdateDate.Value.Date)
                     {
                         var drugMapUpdate = false;
                         if (prices.RetailPrice > MedConstants.EspPrice
@@ -504,6 +507,14 @@ namespace Med.Service.Impl.Drug
             drugMapRepo.Commit();
 
             return updateInvs;
+        }
+
+        public void UpdateInventoryDrugPrices(string drugStoreID, int drugID, double retailOutPrice)
+        {
+            var invRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, Inventory>>();
+            invRepo.UpdateMany(i => i.DrugStoreID == drugStoreID && i.DrugID == drugID,
+                i => new Inventory() { RetailOutPrice = retailOutPrice });
+
         }
         #endregion
 

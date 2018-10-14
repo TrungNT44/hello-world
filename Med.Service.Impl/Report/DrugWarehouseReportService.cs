@@ -61,6 +61,8 @@ namespace Med.Service.Impl.Report
                 var drugIds = drugs.Keys.ToArray();
                 filter.DrugIds = drugIds;
                 var drugWarehouses = rpService.GetDrugWarehouseSyntheises(drugStoreCode, filter);
+                trans.Complete();
+
                 var order = filter.PageIndex * filter.PageSize;
                 drugWarehouses.ForEach(item =>
                 {

@@ -1,0 +1,35 @@
+﻿@model sThuoc.Models.DangBaoChe
+
+@{
+    ViewBag.Title = "Delete";
+    Layout = null;
+}
+
+<div id="form-dbc-delete">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <span>Bạn có muốn xóa dạng bào chế <b>"@Model.TenDangBaoChe"</b>?</span>
+        <input type="submit" value="Xóa" class="btn btn-default btn-danger" />
+        <label id="unitMsg" class="txt-error"></label>
+    }
+</div>
+<script>
+    $('#form-dbc-delete form').submit(function (e) {
+        $(this).find('input[type=submit]').attr('disabled', 'disabled');
+        $.post(window.baseUrl + $(this).attr('action'), $(this).serialize()).done(function (data) {
+            if (data.success) {
+                $(this).find('input[type=text]').val('');
+                $('#unit .txt-error').text('');
+                $('.dbc-list tr.dbc-' + data.id).remove();
+                $('#dbc-form-holder').html('');
+            } else {
+                $('#unitMsg').text(data.message);
+            }
+            $(this).find('input[type=submit]').attr('disabled', '');
+        });
+        e.preventDefault();
+    });
+</script>
+

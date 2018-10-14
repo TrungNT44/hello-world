@@ -1,0 +1,54 @@
+﻿@using Med.Web.Extensions
+@using sThuoc.Models
+@using sThuoc.Filter
+@model IEnumerable<DangBaoChe>
+
+@{
+    ViewBag.Title = "Danh Mục Đơn Vị Tính";
+    Layout = null;
+}
+
+
+@{
+    var canCreate = FunctionsService.Authorize("Dangbaoches", "Create", this.GetNhaThuoc());
+    var canModify = FunctionsService.Authorize("Dangbaoches", "Edit", this.GetNhaThuoc());
+}
+@if (canCreate)
+{
+    <p>
+        @Html.ActionLink("Thêm Mới", "Create", null, new { @class = "btn btn-default btn-dbc-new", oncick = "javascript:void(0)" })
+    </p>
+}
+<div id="dbc-form-holder">
+
+</div>
+<div class="dbc-list">
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TenDangBaoChe)
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr class="@string.Format("dbc-{0}",item.MaDangBaoChe)">
+                <td>
+                    @Html.DisplayFor(modelItem => item.TenDangBaoChe)
+                </td>
+                <td style="text-align:right;font-size:large">
+                    @if (canModify)
+                    {
+                        @*@: @Html.ActionLink("Sửa", "Edit", new { id = item.MaDangBaoChe }, new { @class = "dbc-edit", @data_id = item.MaDangBaoChe })
+                        @:| @Html.ActionLink("Xóa", "Delete", new { id = item.MaDangBaoChe }, new { @class = "dbc-delete", @data_id = item.MaDangBaoChe })*@
+                        @: <a class="dbc-edit" data-id="item.MaDangBaoChe" href="@Url.Action("Edit", "DangBaoChes", new { id = item.MaDangBaoChe })"><i class=" fa fa-pencil fa-fw"></i></a> 
+                        @:|<a class="dbc-delete" data-id="item.MaDangBaoChe" href="@Url.Action("Delete", "DangBaoChes", new { id = item.MaDangBaoChe })"><i class="fa fa-trash-o fa-fw"></i></a> 
+                }
+                </td>
+            </tr>
+        }
+
+    </table>
+
+</div>

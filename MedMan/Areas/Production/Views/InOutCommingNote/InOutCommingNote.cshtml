@@ -1,0 +1,121 @@
+﻿@using Med.Web.Extensions;
+<script>
+    var viewModel = @Html.Raw(ViewBag.ViewModel);
+</script>
+<div ng-controller="InOutCommingNoteController" ng-cloak>
+    <h2 style="font-size: 30px; text-align: center; color: coral; padding:0px;margin-top:-16px;margin-bottom:10px; text-transform: uppercase;">{{title}}</h2>
+    <div class="form-horizontal">
+        <div style="text-align: center;font-size: 15px;padding: 0px;">
+            <div style=" position:absolute;right:10%">
+                Mã số: <strong>{{model.NoteNumber}}</strong>
+            </div>
+            Ngày <div class="clickable-text daterange-picker"><input type="text" name="noteDate" id="note-date-id" ng-change="onNoteDateChanged()" ng-model="noteDate"><span>{{noteDate}}</span></div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2">{{getReceiverTitle()}}</label>
+            <div class="col-md-10">
+                <div report-group-type-filter group-filter-title=""
+                     group-filter-type="2"
+                     show-group-filter-type="false"
+                     single-mode="true"
+                     filter-item-type="filterItemTypeId" 
+                     selected-item-id="selectedItemId"
+                     selected-item="selectedItem"
+                     item-changed-callback ="onReceiverItemChanged"
+                     filter-by-name-for-drug="false"
+                     raise-event-on-first-selected-by-default ="true"
+                     disabled-mode="editMode || deleteMode || viewMode"></div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2">{{getReceiverNoteTitle()}}</label>
+            <div class="col-md-10">
+                <ui-select ng-model="selectedNote" theme="selectize" on-select="onNoteItemChanged($item)"
+                           ng-disabled="editMode || deleteMode || viewMode">
+                    <ui-select-match placeholder="Chọn hoặc gõ vào để tìm...">{{$select.selected.NoteInfo}}</ui-select-match>
+                    <ui-select-choices repeat="item in model.DebtNotes | filter: $select.search">
+                        <small ng-bind-html="item.NoteInfo | highlight: $select.search"></small>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+        </div>
+        <div class="form-group"  ng-show="createMode">
+            <span class="control-label col-md-2"><b>Tiền nợ</b></span>
+            <div class="col-md-10" ng-disabled="editMode || deleteMode || viewMode">
+                <input type="text" class="form-control" disabled="disabled" ng-model="model.DebtAmount" awnum="app-decimal-number">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Số tiền</label>
+            <div class="col-md-10">
+                <table style="width:100%">
+                    <tr>
+                        <td style="width: calc(100% - 100px); text-align:left">
+                            <input type="text" class="form-control" ng-model="model.PaymentAmount" 
+                                   ng-disabled="!paymentAmountEditable || deleteMode || viewMode" awnum="app-decimal-number">
+                        </td>
+                        <td style="padding-left:0px;" >
+                            <button style="margin-left: 30px;" class="btn btn-default" ng-click="onPayFull()" 
+                                    ng-show="!editMode && !deleteMode && !viewMode">Trả hết</button>
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">Diễn giải</label>
+            <div class="col-md-10">
+                <textarea ng-model="model.Description" style="width:100%;" 
+                          ng-disabled="deleteMode || viewMode"></textarea>
+            </div>
+        </div>
+        <div class="form-group" ng-show="editMode || deleteMode || viewMode">
+            <label class="control-label col-md-2">Người lập</label>
+            <div class="col-md-10">
+                <input type="text" class="form-control" disabled="disabled" ng-model="model.CreatedByName">
+            </div>
+        </div>
+
+        <div class="form-group" ng-show="!deleteMode && !viewMode">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="form-inline">
+                    <input type="button" value="Quay lại" class="btn btn-default" onclick="location.href='@Url.Action("Index", "PhieuThuChis")'"/>
+                    <span class="btn-separator"></span>
+                    <input type="submit" value="Ghi phiếu" class="btn btn-default" 
+                           ng-disabled="model.PaymentAmount < 0.1" ng-click="onSave()" />
+                    <span ng-show="!createMode" class="btn-separator"></span>
+                    <a ng-show="!createMode" href="@Url.Action("InOutcommingNoteScreen", "InOutCommingNote", new {noteId = ViewBag.NoteId, noteTypeId = ViewBag.NoteTypeId, taskMode = 3})" class="btn btn-default">Xóa</a>
+                </div>
+            </div>
+        </div>
+        <div class="form-group" ng-show="deleteMode">
+            <div class="col-md-offset-2 col-md-10">
+                <hr />
+                <h4 class="text-danger">Bạn có chắc là muốn xóa phiếu này?</h4>
+                <br />
+                <div class="form-inline">
+                    <input type="button" value="Quay lại" class="btn btn-default" onclick=" javascript:window.history.go(-1); " />
+                    <span class="btn-separator"></span>
+                    <input type="submit" value="Xác nhận" class="btn btn-default btn-danger" ng-click="onDelete()"/>
+                </div>
+            </div>
+        </div>
+        <div class="form-group" ng-show="viewMode">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="form-inline">
+                    <a href="@Url.Action("InOutcommingNoteScreen", "InOutCommingNote", new {noteTypeId = ViewBag.NoteTypeId})" class="btn btn-default">Tiếp tục</a>
+                    <span class="btn-separator"></span>
+                    <input type="button" class="btn btn-default" value="In" onclick="window.open('@Url.Action("In", "PhieuThuChis", new { id = ViewBag.NoteId, loaiPhieu = ViewBag.NoteTypeId })',target = '_blank', width = '500px', height = '500px')" />
+                    <span class="btn-separator"></span>
+                    <a href="@Url.Action("InOutcommingNoteScreen", "InOutCommingNote", new {noteId = ViewBag.NoteId, noteTypeId = ViewBag.NoteTypeId, taskMode = 3})" class="btn btn-default">Xóa</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<br />
+@Html.Partial("~/Areas/Common/Views/Filter/ReportGroupTypeFilterControl.cshtml")

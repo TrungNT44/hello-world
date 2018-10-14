@@ -1,0 +1,133 @@
+﻿@using Med.Web.Extensions;
+
+@{
+    ViewBag.Title = "Danh sách hàng có lợi nhuận âm";
+}
+<h4>
+    <b>@ViewBag.Title</b>
+</h4>
+<hr style="margin-top:0px" />
+<div ng-controller="NegativeRevenueWarningController" ng-cloak>
+    @*<div class="report-title">
+        <div class="print-date">@DateTime.Now.ToString("dd/MM/yyyy")</div>
+        <div style="font-size: 30px; text-align: center;color: green;padding: 0px"><b>@ViewBag.Title</b></div>
+    </div>*@
+   
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 baocao-filter">
+                @*<fieldset>
+                        <div report-group-type-filter group-filter-title="Mặt hàng" group-filter-type="secondGroupFilterType"
+                             show-group-filter-type="true"
+                             filter-item-type="secondFilterItemType" selected-item-id="secondSelectedItemId"
+                             filter-by-name-for-drug="true" drug-ids="drugIds"></div>
+                    </fieldset>
+                    <br/>*@
+                <fieldset>
+                    <div report-date-rage-filter display-data-callback="onDisplayReportData"
+                         display-data-table-id="table-id-negative-revenue-warning"
+                         excel-file-name="NegativeRevenueWarning.xls"
+                         supress-export="false" supress-print="true" call-callback-after-init="true"></div>
+                </fieldset>
+            </div>
+
+            <div class="col-md-9" style="font-size:smaller">
+                <div class="form-group">
+                    <div class="baocao-container">
+                        <table tr-ng-grid="" items="model.items"
+                               display-total-items-count="false"
+                               id="table-id-negative-revenue-warning"
+                               locale="en"
+                               class="table table-striped table-responsive table-bordered table-hover"
+                               selection-mode="None"
+                               current-page="setCurrentPage"
+                               enable-filtering="false"
+                               enable-sorting="false"
+                               page-items="model.pageSize" total-items="model.totalItems"
+                               on-data-required="onServerSideItemsRequested(currentPage, pageItems, filterBy, filterByFields, orderBy, orderByReverse)">
+                            <thead>
+                                <tr>
+                                    <th display-name="STT"></th>
+                                    <th display-name="Mã Thuốc"></th>
+                                    <th display-name="Tên Thuốc"></th>
+                                    <th display-name="Số Tiền Âm"></th>
+                                    <th display-name="Phiếu Xuất (Phiếu Nhập)"></th>
+                                    @*<th display-name="Phiếu Nhập"></th>*@
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="{{getItemBackground(gridItem)}}">
+                                    <!--STT-->
+                                    @*<td>
+                                            <div style="text-align:right">
+                                                {{gridItem.Order}}
+                                            </div>
+                                        </td>*@
+                                    <td><div data-app-module-row-number></div></td>
+                                    <!--Mã Thuốc-->
+                                    <td>
+                                        <div>
+                                            {{gridItem.ItemCode}}
+                                        </div>
+                                    </td>
+                                    <!--Tên Thuốc-->
+                                    <td>
+                                        <div>
+                                            {{gridItem.ItemName}}
+                                        </div>
+                                    </td>
+                                    <!--Số Tiền Âm-->
+                                    <td>
+                                        <div class="number-value">
+                                            {{gridItem.Amount | number:0}}
+                                        </div>
+                                    </td>
+                                    <!--Phiếu Xuất-->
+                                    <td>
+                                        <div ng-repeat="item in gridItem.DeliveryNoteNumbers">
+                                            <a href="/{{'PhieuXuats'}}/Details/{{item.DeliveryNumber.NoteId}}" target="_blank">
+                                                {{item.DeliveryNumber.NoteNumber}}
+                                            </a>
+                                            (
+                                            <a ng-repeat="subItem in item.RefReceiptNumbers" href="" ng-click="onReceiptItemLink(gridItem, subItem)">
+                                                {{subItem.NoteNumber}}
+                                            </a>
+                                            )
+                                        </div>
+                                    </td>
+                                    <!--Phiếu Nhập-->
+                                    @*<td>
+                                            <div>
+                                                <a ng-repeat="item in gridItem.ReceiptNoteNumbers" href="" ng-click="onReceiptItemLink(gridItem, item)">
+                                                    {{item.NoteNumber}}
+                                                </a>
+                                            </div>
+                                        </td>*@
+                                </tr>
+                            </tbody>
+                            @*<tfoot>
+                                    <tr>
+                                        <td align="center">
+                                            <span class="form-group pull-left page-size">
+                                                <select id="ddlPageSize" class="form-control"
+                                                        ng-model="model.pageSize"
+                                                        ng-options="item.pageSizeKey as item.pageSizeValue for item in pageSizeList"
+                                                        ng-change="changePageSize()"></select>
+                                                <span class="page-size-label">&#160;&#160;Dòng / Trang</span>
+                                            </span>
+                                            <span tr-ng-grid-pager="" style="height:40px;"></span>
+                                        </td>
+                                    </tr>
+                                </tfoot>*@
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <br />
+    <br />
+</div>
+@Html.Partial("~/Areas/Common/Views/Filter/ReportDateRageFilterControl.cshtml")
+@Html.Partial("~/Areas/Common/Views/Filter/ReportGroupTypeFilterControl.cshtml")

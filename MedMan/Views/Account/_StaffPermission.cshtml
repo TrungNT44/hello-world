@@ -1,0 +1,62 @@
+﻿@using sThuoc.Models.ViewModels
+@model sThuoc.Models.ViewModels.Permission
+
+
+@Html.Hidden(string.Format("[{0}].Controller",ViewData["Index"]),Model.Controller)
+<style>
+    .table-permissionItems td {
+        padding-left: 30px;
+        font-size: smaller;
+        width: 120px;
+    }
+    .table-permissionItems label {
+        font-weight: normal;
+    }
+</style>
+<tr>
+    <td style="font-weight: bold">@Model.Title</td>
+    <td style="text-align: right">
+        <table class="pull-right table-permissionItems">
+            <tr>
+                @{
+                    var groupPerms = Model.Permissions.GroupBy(e => new {e.controller, e.Permission}).ToList();
+                }
+                @foreach (var perm in groupPerms)
+                {
+                    @Html.Partial("_StaffPermissionItem", perm.First(), new ViewDataDictionary(ViewData) { { "SubIndex", groupPerms.IndexOf(perm) } })
+                }
+            </tr>
+        </table>
+    </td>
+    @*@if (Model.Permissions.Any(e=> e.Permission==QuyenEnum.View))*@
+   @* {*@
+        @*<td style="text-align: center">@Html.Partial("_StaffPermissionItem", Model.Permissions.First(e => e.Permission == QuyenEnum.View), new ViewDataDictionary(ViewData) { { "SubIndex", Model.Permissions.IndexOf(Model.Permissions.First(e => e.Permission == QuyenEnum.View)) } }) </td>*@
+    @*}
+    else { 
+        <td></td>
+    }*@
+    @*@if (Model.Permissions.Any(e => e.Permission == QuyenEnum.Add))
+    {
+        <td style="text-align: center">@Html.Partial("_StaffPermissionItem", Model.Permissions.First(e => e.Permission == QuyenEnum.Add), new ViewDataDictionary(ViewData) { { "SubIndex", Model.Permissions.IndexOf(Model.Permissions.First(e => e.Permission == QuyenEnum.Add)) } }) </td>
+    }
+    else
+    {
+        <td></td>
+    }
+    @if (Model.Permissions.Any(e => e.Permission == QuyenEnum.Modify))
+    {
+        <td style="text-align: center">@Html.Partial("_StaffPermissionItem", Model.Permissions.First(e => e.Permission == QuyenEnum.Modify), new ViewDataDictionary(ViewData) { { "SubIndex", Model.Permissions.IndexOf(Model.Permissions.First(e => e.Permission == QuyenEnum.Modify)) } }) </td>
+    }
+    else
+    {
+        <td></td>
+    }
+    @if (Model.Permissions.Any(e => e.Permission == QuyenEnum.Delete))
+    {
+        <td style="text-align: center">@Html.Partial("_StaffPermissionItem", Model.Permissions.First(e => e.Permission == QuyenEnum.Delete), new ViewDataDictionary(ViewData) { { "SubIndex", Model.Permissions.IndexOf(Model.Permissions.First(e => e.Permission == QuyenEnum.Delete)) } }) </td>
+    }*@
+    @*else
+    {
+        <td></td>
+    }*@
+</tr>

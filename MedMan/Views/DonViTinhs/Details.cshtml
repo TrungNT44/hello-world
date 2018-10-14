@@ -1,0 +1,26 @@
+﻿@model sThuoc.Models.DonViTinh
+
+@{
+    ViewBag.Title = "Chi tieets";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>DonViTinh</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.TenDonViTinh)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TenDonViTinh)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.MaDonViTinh }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

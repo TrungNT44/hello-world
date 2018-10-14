@@ -1,0 +1,93 @@
+﻿@model sThuoc.Models.Setting
+
+@{
+    ViewBag.Title = "Edit";
+    Layout = null;
+}
+
+<div id="form-setting-edit">
+    @using (Html.BeginForm("Edit", "Setting", new { id = @Model.Id }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="row">
+            <div class="col-xs-12">
+                @Html.HiddenFor(model => model.Id)
+                @Html.HiddenFor(model => model.MaNhaThuoc)
+                @if (string.IsNullOrEmpty(Model.TuNgay))
+                {
+                    <div class="col-xs-6" style="min-width: 320px;">
+                        <div class="input-group">
+                            @Html.EditorFor(model => model.Key, new { htmlAttributes = new { @class = "form-control", placeholder = "Từ khóa", @style = "min-width:75px", @readonly = true } })
+                            <span class="input-group-btn">
+                                @Html.EditorFor(model => model.Value, new { htmlAttributes = new { @class = "form-control", placeholder = "Giá trị", @style = "min-width:60px" } })
+                                <span class="text-danger txt-error"></span>
+                                <input type="submit" value="Cập nhật" class="btn btn-default" />
+                            </span>
+                        </div><!-- /input-group -->
+                    </div>
+                }
+                else
+                {
+                    <div class="col-xs-11" style="min-width: 320px">
+                        <div class="form-group">
+                            @Html.HiddenFor(model => model.Key)
+                            @Html.HiddenFor(model => model.Value)
+                            <label class="control-label col-md-3" style="text-align:left; padding-top: 8px">@Model.Key</label>
+                            <div class="col-md-3">
+                                @Html.EditorFor(model => model.TuNgay, new { htmlAttributes = new { @class = "datefield form-control text-box single-line hasDatepicker", placeholder = "Từ ngày", @style = "min-width:60px", @readonly=true } })
+                                @*<input class="form-control text-box single-line" id="NguoiDaiDien" name="NguoiDaiDien" readonly="readonly" type="text" value="Kiều Vân">*@
+                            </div>
+                            <div class="col-md-1"><span style="display:block;text-align:center;padding-top: 8px">đến</span></div>
+                            <div class="col-md-3">
+                                @Html.EditorFor(model => model.DenNgay, new { htmlAttributes = new { @class = "datefield form-control text-box single-line hasDatepicker", placeholder = "Đến ngày", @style = "min-width:60px", @readonly = true } })
+                            </div>
+                            <div class="col-md-2">
+                                <input type="submit" value="Cập nhật" class="btn btn-default" />
+                            </div>
+                        </div>
+                    </div>
+                }
+                @*<div class="col-xs-6" style="min-width: 220px">
+
+                        @Html.HiddenFor(model => model.Id)
+                        @Html.HiddenFor(model => model.MaNhaThuoc)
+                        @Html.EditorFor(model => model.Key, new { htmlAttributes = new { @class = "form-control", placeholder = "Từ khóa", @style = "min-width:75px", @readonly = true } })
+                    </div>
+                    <div class="col-xs-2">
+                        @Html.EditorFor(model => model.Value, new { htmlAttributes = new { @class = "form-control", placeholder = "Giá trị", @style = "min-width:75px" } })
+                    </div>
+                    <div class="col-xs-2"><input type="submit" value="Cập nhật" class="btn btn-default" /></div>*@
+            </div>
+        </div>
+    }
+
+</div>
+<script src="~/Scripts/datepicker-vi.js"></script>
+<script>
+    $('#form-setting-edit form').submit(function (e) {        
+        $.post(window.baseUrl + $(this).attr('action'), $(this).serialize()).done(function (data) {
+            if (data.success) {
+                $(this).find('input[type=text]').val('');
+                $('#settings .txt-error').text('');
+                if (data.value.indexOf("|")) {
+                    data.value = data.value.replace("|", " - ");
+                }
+                $('.setting-list tr.setting-' + data.id).find('td:eq(1)').text(data.value);
+                $('#setting-form-holder').html('');
+            } else {
+                $('#settings .txt-error').text(data.message);
+            }
+          
+        });
+        e.preventDefault();
+    });
+    $(function () {
+        var datefield = $(".datefield");
+        datefield.removeClass('hasDatepicker');
+        datefield.datepicker({
+            dateFormat: "dd/mm/yy",
+            changeMonth: true,
+            changeYear: true
+        });
+    });
+</script>

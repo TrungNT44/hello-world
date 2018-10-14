@@ -1,0 +1,55 @@
+﻿@model IEnumerable<sThuoc.Models.NhaThuoc>
+@{ Layout = null;}
+<!-- Modal -->
+<div class="modal fade" id="NhaThuocPickerModal" tabindex="-1" role="dialog" aria-labelledby="NhaThuocPickerModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel"><b>Chọn nhà thuốc</b></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="findnhathuoc" name="findnhathuoc" placeholder="Tìm nhà thuốc...">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-findnhathuoc" id="btnFindNhaThuoc"type="button">Tìm</button>
+                            </span>
+                        </div><!-- /input-group -->
+                    </div>
+                    <div class="col-md-12">
+                        <table class="table table-responsive table-nhathuocpicker" style="max-height: 400px;min-width:300px">
+                            <thead>
+                            <th>#</th>
+                            <th>Mã nhà thuốc - Tên nhà thuốc</th>
+                            <th>Dược sỹ</th>
+                            </thead>
+                            <tbody>
+                                @{ var stt = 0;}
+                                @foreach (var item in Model)
+                                {
+                                    stt++;
+                                    <tr >
+                                        @*<td>@item.nhathuocId</td>*@
+                                        <td>@stt <input type="hidden" id="hdfMaNhaThuoc" value="@item.MaNhaThuoc" /> </td>
+                                        <td>@item.MaNhaThuoc - @item.TenNhaThuoc</td>
+                                        <td>@item.DuocSy</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                @*<div class="pull-left">
+                    <input type="checkbox" class="form-control" style="width: 18px;display: inline;height: 18px;vertical-align: bottom;margin-top: 0px;" name="unassignednhathuoc" id="unassignednhathuoc" />
+                    <label for="unassignednhathuoc" style="margin-bottom: 0px;font-weight: normal">Chỉ hiển thị nhà thuốc chưa thuộc nhà thuốc nào</label>
+                </div>*@
+                <button type="button" class="btn btn-default" data-dismiss="modal">Đóng lại</button>
+                <button type="button" class="btn btn-primary" id="nhathuocpick" data-dismiss>Chọn</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,234 @@
+﻿@model sThuoc.Models.ViewModels.ThuocIndex
+@using MvcJqGrid
+@using MvcJqGrid.Enums
+@using MedMan.App_Start
+@using Med.Web.Extensions
+@using sThuoc.Filter
+@using sThuoc.Models
+
+@{
+    ViewBag.Title = "Danh mục thuốc";
+}
+<!-- The jQuery UI theme that will be used by the grid -->
+<link rel="stylesheet" type="text/css" media="screen" href="http://ajax.aspnetcdn.com/ajax/jquery.ui/1.10.0/themes/redmond/jquery-ui.css" />
+<!-- The Css UI theme extension of jqGrid -->
+<link rel="stylesheet" type="text/css" href="~/Content/jquery.jqGrid/ui.jqgrid.css" />
+<script type="text/javascript" src="~/Scripts/jquery-2.1.3.min.js"></script>
+<style>
+    .ui-jqgrid .ui-jqgrid-bdiv {
+        overflow: hidden;
+    }
+    /*.ui-jqgrid .ui-jqgrid-titlebar
+    {
+        border-color:lightgray;
+        border-top-color:lightgrey;
+        border-bottom-color:lightgrey;
+        color-rendering:initial;
+        background-color:yellowgreen;
+    }
+    .ui-state-highlight,
+    .ui-widget-content .ui-state-highlight,
+    .ui-widget-header .ui-state-highlight
+    {
+        color:blue/*{fcHighlight};
+        background-color:gray;
+    }*/
+    #t_testGrid {
+        height: 30px;
+        padding: 3px;
+        background-color: gray;
+    }
+
+        #t_testGrid input:disabled {
+            color: gray;
+        }
+</style>
+@{
+    var canCreate = FunctionsService.Authorize("Thuocs", "Create", this.GetNhaThuoc());
+    var canModify = FunctionsService.Authorize("Thuocs", "Edit", this.GetNhaThuoc());
+}
+@*@if (canCreate)
+    {
+        <p>
+            @Html.ActionLink("Thêm Mới", "Create")
+        </p>
+    }*@
+<script>
+    jQuery.noConflict();
+</script>
+@(Html.Grid("testGrid")
+      .SetCaption("Danh mục thuốc")
+      .AddColumn(new Column("ThuocId")
+                  .SetLabel("#").SetHidden(false).SetWidth(15).SetSearch(false)
+      )
+      .AddColumn(
+          new Column("MaThuoc")
+              .SetLabel("Mã Thuốc")
+              .SetClearSearch(false).SetWidth(30)
+      )
+      .AddColumn(new Column("TenDayDu")
+          .SetLabel("Tên Đầy Đủ")
+          .SetClearSearch(false)
+      )
+      .AddColumn(new Column("TenNhomThuoc").SetWidth(40).SetLabel("Tên nhóm thuốc")
+          .SetSearchType(Searchtype.Select)
+          .SetSearchTerms((Dictionary<string, string>)ViewData["NhomThuocs"])
+          .SetClearSearch(false)
+      )
+      .AddColumn(new Column("DonViThuNguyen").SetLabel("Đơn vị")
+          .SetSearchType(Searchtype.Select)
+          .SetSearchTerms((Dictionary<string, string>)ViewData["DonViTinhs"])
+          .SetClearSearch(false).SetWidth(35)
+      )
+      .AddColumn(new Column("GiaBanLe").SetWidth(30).SetLabel("Giá bán lẻ").SetSearch(false).SetAlign(Align.Right).SetFormatter(Formatters.Currency, "decimalSeparator:'.', thousandsSeparator: ',', decimalPlaces: 0, suffix: ' đ'"))
+      .AddColumn(new Column("GiaNhap").SetWidth(30).SetLabel("Giá nhập").SetSearch(false).SetAlign(Align.Right).SetFormatter(Formatters.Currency, "decimalSeparator:'.', thousandsSeparator: ',', decimalPlaces: 0, suffix: ' đ'"))
+      .AddColumn(new Column("GioiHan").SetWidth(20).SetLabel("Giới hạn").SetSearch(false).SetAlign(Align.Right))
+      .SetUrl(Url.Action("GridDataBasic"))
+      .SetAutoWidth(true)
+      .SetRowNum(20)
+      .SetRowList(new[] { 10, 15, 20, 50 })
+      .SetPager("pager")
+      .SetSearchToolbar(true)
+      .SetSearchOnEnter(false)
+      .SetSearchClearButton(true)
+      .SetShrinkToFit(true)
+      .SetToolbar(true).SetToolbarPosition(ToolbarPosition.Bottom).OnResizeStop("_OnLoadComplete")
+
+      .OnSelectRow("onRowSelected(rowid, status)"))
+
+
+
+@if (User.IsInRoles(string.Format("{0},{1}", Constants.Security.Roles.SuperUser.Value, Constants.Security.Roles.Admin.Value)))
+{
+    <br />
+    <fieldset>
+        <legend><b>Nhập/Xuất dữ liệu từ Excel</b></legend>
+        <div>
+            @using (Html.BeginForm("Upload", "Thuocs", FormMethod.Post, new { enctype = "multipart/form-data", @class = "upload-form" }))
+            {
+                <div style="display: none"> <input name="uploadFile" type="file" /><br /></div>
+                <input type="button" value="Tải file" title="Tải file" onclick="return OpenFileDialog();" class="btn btn-default" />@:&nbsp;
+                @Html.ActionLink("Xuất Excel", "ExportToExcel", "Thuocs", null, new { @class = "btn btn-default" })
+            }
+        </div>
+
+    </fieldset>
+}
+
+@section Scripts{
+    <!-- language pack - MUST be included before the jqGrid javascript -->
+    <script type="text/javascript" src="~/Scripts/i18n/grid.locale-vi.js"></script>
+    <!-- the jqGrid javascript runtime -->
+    <script type="text/javascript" src="~/Scripts/jquery.jqGrid.min.js"></script>
+    <script>
+        $(function () {
+            var $window = $(window);
+            var width = $window.width();
+            var height = $window.height();
+            setInterval(function () {
+                if ((width != $window.width()) || (height != $window.height())) {
+                    width = $window.width();
+                    height = $window.height();
+
+                    var newWidth = $("#gbox_testGrid").closest(".ui-jqgrid").parent().width();
+                    $("#testGrid").jqGrid("setGridWidth", newWidth, true);
+                }
+            }, 300);
+        });
+
+        function onRowSelected(rowid, status) {
+            //window.location = "Edit/" + rowid;
+            if (rowid > 0) {
+                $('#t_edit, #t_delete, #t_detail').removeAttr('disabled');
+            }
+        }
+
+        //Upload the excel file
+        $('.upload-form').on('submit', function (event) {
+            var check = CheckFileName($(this));
+            if (!check) {
+                event.preventDefault();
+            }
+        });
+
+        function OpenFileDialog() {
+            $('input[name=uploadFile]').trigger('click');
+        }
+
+        $('input[name=uploadFile]').on('change', function () {
+            $('.upload-form').trigger('submit');
+        });
+
+        function CheckFileName(el) {
+            var fileName = el.find("input[name=uploadFile]").val();
+            //debugger;
+            var fileExtension = fileName.split(".");
+            fileExtension = fileExtension[fileExtension.length - 1];
+            if (fileName == "") {
+                alert("Chưa chọn tệp tin Excel tải lên");
+                return false;
+
+            } else if (fileExtension.toUpperCase() == "XLS" || fileExtension.toUpperCase() == "XLSX")
+                return true;
+            else {
+                alert("Tên file " + fileName.split(".")[1] + " không đúng. Cần tải file có đuôi xls/xlsx");
+                return false;
+            }
+            return true;
+        }
+
+        function _OnLoadComplete() {
+            console.log("OnLoadComplete");
+        }
+
+        $(document).ready(function () {
+            $('#t_testGrid').append("<input type='button' id='t_new' value='Thêm mới' id='t_add'/>");
+            $('#t_testGrid').append("<input type='button' value='Sửa' id='t_edit' disabled='disabled'/> ");
+            $('#t_testGrid').append("<input type='button' action='@Url.Action("Delete", "Thuocs", null, Request.Url.Scheme)' value='Xóa' id='t_delete' disabled='disabled'/>");
+            $('#t_testGrid').append("<input type='button' value='Chi tiết' action='@Url.Action("DialogDetail", "Thuocs", null, Request.Url.Scheme)' id='t_detail' disabled='disabled'/> ");
+            $('#t_edit').on('click', function () {
+                var rowid = $('#testGrid tr[aria-selected=true]').attr('id');
+                if (rowid > 0)
+                    window.location = "Edit/" + rowid;
+            });
+            $(document).on('dblclick', '#testGrid tr', function () {
+                $(this).prop('aria-selected', 'true').addClass('ui-state-highlight');
+                $('#t_edit').trigger('click');
+
+            });
+            $('#t_delete').on('click', function () {
+                var rowid = $('#testGrid tr[aria-selected=true]').attr('id');
+                //if (rowid > 0 && confirm("Xác nhận việc xóa mã thuốc: " + $('#testGrid tr[aria-selected=true] td:eq(1)').text() + ' ?')) {
+                if (rowid > 0) {
+                    window.location = $(this).attr('action') + '/' + rowid;
+                    //$.post($(this).attr('action'), { id: rowid }).done(function(data) {
+                    //    if (data.success) {
+                    //        $('#testGrid tr[id=' + rowid + ']').remove();
+                    //    } else if (data.error) {
+                    //        alert(error);
+                    //    }
+                    //});
+                }
+            });
+            $('#t_new').on('click', function () {
+                window.location = "Create";
+            });
+            var dialogThuocDetails = {};
+            $('#t_detail').on('click', function () {
+                var rowid = $('#testGrid tr[aria-selected=true]').attr('id');
+                if (rowid > 0) {
+                    $.get($(this).attr('action'), { id: rowid }).done(function (data) {
+                        if (data) {
+                            dialogThuocDetails[rowid] = $(data).hide().appendTo(document.body).on('hide.bs.modal', function () { $('.modal-backdrop').remove(); }
+                            )
+                                .modal();
+                        }
+                    });
+                }
+            }
+            );
+
+        }
+        );
+    </script>
+}

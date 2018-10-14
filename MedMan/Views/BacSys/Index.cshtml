@@ -1,0 +1,168 @@
+﻿@using Med.Web.Extensions
+@using sThuoc.Models
+@using sThuoc.Filter
+@using PagedList.Mvc;
+@model PagedList.IPagedList<BacSy>
+
+    @{
+        ViewBag.Title = "Danh sách bác sỹ";
+    }
+
+    <h4><b>@ViewBag.Title</b></h4>
+    @{
+        var canCreate = FunctionsService.Authorize("BacSys", "Create", this.GetNhaThuoc());
+        var canModify = FunctionsService.Authorize("BacSys", "Edit", this.GetNhaThuoc());
+    }
+    @using (Html.BeginForm("Index", "BacSys", FormMethod.Get))
+    {
+        <div class="form-group">
+            <table class="table">
+                <tr>
+                    <td>
+                        @*Tên bác sỹ: @Html.TextBox("searchString", ViewBag.CurrentFilter as string)&nbsp;<input type="submit" value="Tìm" class="btn btn-default" />
+                    @if (canCreate)
+                    {
+                        @:&nbsp; &nbsp;<input type="button" class="btn btn-default" value="Thêm mới" onclick="location.href='@Url.Action("Create", "BacSys")'" />
+                    }*@
+                        <div class="input-group">
+                            @Html.TextBox("searchString", ViewBag.SearchString as string, new { @class = "form-control", placeholder = "Tìm bác sỹ theo tên..." })
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-finduser" type="submit">Tìm</button>
+                                <span class="btn-separator"></span>
+                                @if (canCreate)
+                                {
+                                    @Html.ActionLink("Thêm Mới", "Create", null, new { @class = "btn btn-primary" })
+                                }
+                            </span>
+                        </div><!-- /input-group -->
+                    </td>
+                </tr>
+
+            </table>
+        </div>
+        
+    }
+    <div class="form-group">
+        <table class="table table-striped">
+            <tr>
+                <th>
+                    #
+                </th>
+
+                <th>
+                    @Html.ActionLink("Bác sỹ", "Index", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model[0].DienThoai)
+                </th>
+
+                <th>
+                    @Html.DisplayNameFor(model => model[0].DiaChi)
+                </th>
+
+                @if (canModify)
+                {
+                    <th style="width: 90px"></th>
+                }
+            </tr>
+            @{ var stt = 0;}
+            @foreach (var item in Model)
+            {
+                stt++;
+                <tr>
+                    <td>
+                        @stt
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TenBacSy)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DienThoai)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DiaChi)
+                    </td>
+
+                    @if (canModify)
+                    {
+                        <td>
+                            @Html.ActionLink("Sửa", "Edit", new { id = item.MaBacSy })
+                            | @Html.ActionLink("Xóa", "Delete", new { id = item.MaBacSy })
+                            @*@Html.ActionLink(" ", "Edit", new { id = item.MaBacSy }, new { @class = "glyphicon glyphicon-pencil", style = "text-align:left" })
+                            | @Html.ActionLink(" ", "Delete", new { id = item.MaBacSy }, new { @class = "glyphicon glyphicon-remove", style = "color:red;text-align:left" })*@
+                        </td>
+                    }
+                </tr>
+            }
+
+        </table>
+        <br />
+        Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) trong @Model.PageCount
+        @Html.PagedListPager(Model, page => Url.Action("Index",
+        new
+        {
+            page,
+            sortOrder = ViewBag.CurrentSort,
+            currentFilter = ViewBag.CurrentFilter
+        }))
+        @if (this.HasPermisson("BacSys", "Upload"))
+        {
+            <div>
+                @using (Html.BeginForm("Upload", "BacSys", FormMethod.Post, new { enctype = "multipart/form-data", @class = "upload-form" }))
+                {
+                    
+                    <legend><b>Nhập/Xuất dữ liệu từ Excel</b></legend>
+                    <div style="display: none"> <input name="uploadFile" type="file" /><br /></div>
+                    <input type="button" value="Tải file" title="Tải file" onclick="return OpenFileDialog();" class="btn btn-default" />
+                    @:&nbsp;@Html.ActionLink("Xuất Excel", "ExportToExcel", "Bacsys", null, new { @class = "btn btn-default" })
+                }
+            </div>
+        }
+    </div>
+
+    
+@section Scripts{
+<!-- language pack - MUST be included before the jqGrid javascript -->
+<script type="text/javascript" src="../../Scripts/i18n/grid.locale-vi.js"></script>
+<!-- the jqGrid javascript runtime -->
+<script type="text/javascript" src="../../Scripts/jquery.jqGrid.min.js"></script>
+<script>
+    $(function () {
+        $('#btnExport').click(function () {
+            window.location = '/BacSys/ExportToExcel';
+        });
+    });
+    //Upload the excel file
+    $('.upload-form').on('submit', function (event) {
+        var check = CheckFileName($(this));
+        if (!check) {
+            event.preventDefault();
+        }
+    });
+
+    function OpenFileDialog() {
+        $('input[name=uploadFile]').trigger('click');
+    }
+
+    $('input[name=uploadFile]').on('change', function () {
+        $('.upload-form').trigger('submit');
+    });
+    function CheckFileName(el) {
+        var fileName = el.find("input[name=uploadFile]").val();
+        //debugger;
+        var fileExtension = fileName.split(".");
+        fileExtension = fileExtension[fileExtension.length - 1];
+        if (fileName == "") {
+            alert("Chưa chọn tệp tin Excel tải lên");
+            return false;
+
+        } else if (fileExtension.toUpperCase() == "XLS" || fileExtension.toUpperCase() == "XLSX")
+            return true;
+        else {
+            alert("Tên file " + fileName.split(".")[1] + " không đúng. Cần tải file có đuôi xls/xlsx");
+            return false;
+        }
+        return true;
+    }
+</script>
+}

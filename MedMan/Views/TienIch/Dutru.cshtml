@@ -1,0 +1,298 @@
+﻿@using System.Globalization
+@model  List<sThuoc.Models.CanhBaoDuTru>
+
+@{
+    ViewBag.Title = "Danh sách hàng cần dự trù";
+}
+<link href="~/Content/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/phieuStyle.css" rel="stylesheet" />
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <h4>
+        <b>Danh sách hàng cần dự trù</b>
+    </h4>
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <hr style="margin-top:0px" />
+    <div class="row">
+        <div class="col-md-3">
+            
+            @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+            {
+                <div class="text-danger text-center errorMessage">
+                    <span>@ViewBag.ErrorMessage</span>
+                </div>
+                <br />
+            }
+            <fieldset>
+                <legend style="font-size:medium"><b>Thêm hàng hóa vào danh sách</b></legend>
+                <div class="control-group">
+                    <input id="hdfId" type="hidden" />
+                    <input id="txtByMa" type="hidden" />
+                    @*<input type="text" maxlength="20" id="txtByMa" class="form-control" placeholder="Tìm kiếm theo mã/tên thuốc" />*@
+                    <input type="text" id="txtByTen" class="form-control" placeholder="Tìm kiếm theo mã hoặc tên thuốc" />
+                    <br />
+                </div>
+            </fieldset>
+            
+            <input type="button" value="Thêm" onclick="AddThuocs()" class="btn btn-default" /> 
+            @Html.ActionLink("Xuất Excel", "ExportDuTruToExcel", "Tienich", null, new { @class = "btn btn-default" })  
+            @Html.ActionLink("In", "DuTruIn", "Tienich", null, new { @class = "btn btn-default", target = "_blank" })                               
+            
+                                 
+                                   
+            
+        </div>
+        <div class="col-md-9">
+            <div class="baocao-container">                        
+                <table class="table table-responsive table-bordered" id="tbl">
+                    <thead>
+                        <tr>
+                            <th style="background-color: darkgray">#</th>
+                            <th style="background-color: darkgray">Mã Thuốc</th>
+                            <th style="background-color: darkgray">Tên Thuốc</th>
+                            <th style="background-color: darkgray">SL cảnh báo</th>
+                            <th style="background-color: darkgray">Tồn kho</th>
+                            <th style="background-color: darkgray">Dự trù</th>
+                            <th style="background-color: darkgray">Đơn giá</th>
+                            <th style="background-color: darkgray">Thành tiền</th>
+                            <th style="background-color: darkgray"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ var counter = 0;}
+                        @foreach (var item in Model as List<sThuoc.Models.CanhBaoDuTru>)
+                        {
+                            <tr>
+                                <td>
+                                    @(counter + 1)
+                                    <input type="hidden" value="@item.ThuocId">
+                                </td>
+                                <td>
+                                    <input type="hidden" name="Items[@counter].MaThuoc" value="@item.MaThuoc"><span>@item.MaThuoc</span>
+                                </td>
+                                <td>
+                                    @item.TenThuoc
+                                </td>
+                                <td style="text-align:right">
+                                    @item.SoLuongCanhBao
+                                </td>
+                                <td style="text-align:right">
+                                    @item.TonKho
+                                </td>
+                                <td style="text-align:right">
+                                    <input type="text" name="Items[@counter].DuTru" value=@item.DuTru.ToString("#,##0") class="form-control txt-dutru" data-inputmask="'alias': 'numeric','groupSeparator': ',','autoGroup': true">
+                                </td>
+                                <td style="text-align:right">
+                                    @item.DonGia.ToString("#,##0")/@item.DonViTinh
+                                </td>
+                                <td style="text-align:right">
+                                    @item.ThanhTien.ToString("#,##0")
+                                </td>
+                                <td>
+                                    <a class="delete-line text-warning" style="cursor: pointer; display: inline;" title="Xóa"><i class="glyphicon glyphicon-remove"></i></a>
+                                </td>
+                            </tr>
+
+                            counter++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery.inputmask/inputmask.js"></script>
+    <script src="~/Scripts/jquery.inputmask/jquery.inputmask.js"></script>
+    <script src="~/Scripts/jquery.inputmask/inputmask.numeric.extensions.js"></script>
+    <script type="text/javascript">
+        var cache = {};
+        $(document).ready(function () {
+            // binding autocomplete
+            BindAutocomplete($("#txtByMa"), "maThuoc");
+            BindAutocomplete($("#txtByTen"), "tenThuoc");
+
+            $('#tbl').on('click', '.delete-line', function () {
+
+                // remove item from session
+                var tr = $(this).closest("tr");
+                var id = tr.find("td:first-child").find("input").val();
+                var url = $('input[name=baseUrl]').val() + "TienIch/DeleteDuTru";
+                $.post(url, { id: id }).done(function (data) {
+                    console.log("ok");
+                });
+
+                $(this).parents('tr').remove();
+
+                $("#tbl tbody tr").each(function (index) {
+                    $(this).find("td:first").text(index + 1);
+                })
+            });
+
+            inputmask.extendDefaults({
+                'autoUnmask': true,
+                'removeMaskOnSubmit': true
+            });
+
+            $(":input,span").inputmask();
+        });
+
+        function AddThuocs() {
+            var maThuoc = $('#txtByMa').val();
+            if (maThuoc) {
+                var url = $('input[name=baseUrl]').val() + "TienIch/GetThuocsWithDuTru";
+                var exsitingItems = [];
+
+                // chi them ma thuoc neu chua ton tai trong bang
+                if ($('#tbl tbody td:nth-child(2)').find("input[value='" + maThuoc + "']").size() > 0) {
+                    exsitingItems.push(maThuoc);
+                } else {
+                    $.get(url, { maThuoc: maThuoc }).done(function (data) {
+                        InsertRow(data);
+                    });
+
+                    //Insert item for session
+
+                    var addUrl = $('input[name=baseUrl]').val() + "TienIch/AddDuTru";
+                    $.post(addUrl, { maThuoc: maThuoc }).done(function (data) {
+                        console.log("ok");
+                    });
+                }
+
+
+                if (exsitingItems.length > 0) {
+                    alert("Mã thuốc đã tồn tại trong danh sách: " + exsitingItems.join(', '));
+                }
+                $('select#MaNhomThuoc').find('option:first').prop('selected', 'selected');
+                $('#txtByMa').val('');
+                $('#txtByTen').val('');
+            }
+
+        }
+
+        function InsertRow(row) {
+            var index = $("#tbl tbody").children("tr").length + 1;
+            var row = "<tr><td>" + index + "<input type='hidden' value='" + row.ThuocId + "'></td><td><input type='hidden' value='" + row.MaThuoc + "' name='Items[" + index + "].MaThuoc'>" + row.MaThuoc + "</td><td>" + row.TenThuoc + "</td><td style='text-align:right'>" + row.SoLuongCanhBao + "</td><td style='text-align:right'>" + row.TonKho + "</td><td><input type='text' class='form-control txt-dutru' value='" + row.DuTru + "' name='Items[" + index + "].DuTru'></td><td style='text-align:right'>" +  row.DonGia + "/" + row.DonViTinh + "</td><td style='text-align:right'>" + row.ThanhTien + "</td><td><a title='Xóa' style='cursor: pointer; display: inline;' class='delete-line text-warning'><i class='glyphicon glyphicon-remove'></i></a></td></tr>";
+            if (jQuery('#tbl').find('tbody input[value=' + row.MaThuoc + ']').size() <= 0) {
+                $('#tbl tbody').append(row);
+            }
+            $('.errorMessage').remove();
+
+        }
+
+        //function BindAutocomplete(elem, sName) {
+        //    var url = $('input[name=baseUrl]').val() + "Thuocs/GetThuocs";
+        //    if (sName == "maThuoc") {
+        //        url = $('input[name=baseUrl]').val() + "Thuocs/GetThuocsByMa";
+        //    }
+        //    elem.autocomplete({
+        //        minLength: 2,
+        //        source: function (request, response) {
+        //            var term = request.term;
+        //            currentTerm = sName + term;
+        //            if (term in cache) {
+        //                response(cache[sName + term]);
+        //                return;
+        //            }
+        //            $.getJSON(url, request, function (data, status, xhr) {
+        //                cache[sName + term] = data;
+        //                response(data);
+        //            });
+        //        },
+        //        messages: {
+        //            noResults: "Không tìm thấy"//,
+        //            // results: ""
+        //        },
+        //        focus: function (event, ui) {
+        //            $("#Thuocs").val(ui.item.label);
+        //            return false;
+        //        },
+        //        select: function (event, ui) {
+        //            $(this).val(ui.item.label);
+        //            $('#txtByMa').val(ui.item.maThuoc);
+        //            $('#hdfId').val(ui.item.id);
+        //            $('#txtByTen').val(ui.item.tenThuoc);
+        //            return false;
+        //        }
+        //    }).each(function () {
+        //        $(this).autocomplete('instance')._renderItem = function (ul, item) {
+        //            return $("<li>")
+        //                .append("<a>" + item.desc + "</a>")
+        //                .append('<input type="hidden" name="price" value="' + item.price + '"/>')
+        //                .append('<input type="hidden" name="unit" value="' + item.unit + '"/>')
+        //                .appendTo(ul);
+        //        };
+        //    });
+        //}
+        function BindAutocomplete(selectorElem, selectorOutput) {
+            var url = $('input[name=baseUrl]').val() + "Thuocs/GetThuocsByMaOrTen";
+            //if (selectorOutput == "maThuoc") {
+            //    url = $('input[name=baseUrl]').val() + "Thuocs/GetThuocsByMaOrTen";
+            //}
+            $(selectorElem).autocomplete({
+                minLength: 3,
+                source: function (request, response) {
+                    var term = request.term;
+                    currentTerm = selectorElem + term;
+                    if (term in cache) {
+                        response(cache[selectorElem + term]);
+                        return;
+                    }
+                    $.getJSON(url, request, function (data, status, xhr) {
+                        cache[selectorElem + term] = data;
+                        response(data);
+                    });
+                },
+                messages: {
+                    noResults: "Không tìm thấy"//,
+                    // results: ""
+                },
+                focus: function (event, ui) {
+                    $(this).val(ui.item.tenThuoc);
+                    return false;
+                },
+                select: function (event, ui) {
+                    $(this).val(ui.item.label);
+                    $('#txtByMa').val(ui.item.maThuoc);
+                    $('#hdfId').val(ui.item.id);
+                    $('#txtByTen').val(ui.item.tenThuoc);
+                    return false;
+                }
+            }).each(function () {
+                $(this).autocomplete('instance')._renderItem = function (ul, item) {
+                    return $("<li>")
+                        .append("<a>" + item.desc + "</a>")
+                        .append('<input type="hidden" name="price" value="' + item.price + '"/>')
+                        .append('<input type="hidden" name="unit" value="' + item.unit + '"/>')
+                        .appendTo(ul);
+                };
+            });
+        }
+        $('#tbl').on("keydown", ".txt-dutru", function (e) {
+            if (e.keyCode == 13) {
+                var tr = $(this).closest("tr");
+                var id = tr.find("td:first-child").find("input").val();
+                var price = tr.find("td:eq(6)").text().trim();
+                //console.log(price);
+                var dutru = $(this).val();
+                var total = parseInt(dutru) * parseFloat(price);
+                tr.find("td:eq(7)").text(numberWithCommas(total));
+                var addUrl = $('input[name=baseUrl]').val() + "TienIch/UpdateDuTru";
+                $.post(addUrl, { id: id, dutru: dutru }).done(function (data) {
+                    console.log("ok");
+                });
+
+                return false;
+            }
+        })
+
+        function numberWithCommas(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",").replace('.00', '');
+        }
+    </script>
+}

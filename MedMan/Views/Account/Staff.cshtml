@@ -1,0 +1,189 @@
+﻿@using MedMan.App_Start
+@using Med.Web.Extensions
+@model IEnumerable<sThuoc.Models.NhanVienViewModel>
+
+@{
+    ViewBag.Title = "Danh sách nhân viên";   
+
+}
+
+<h4><b>@ViewBag.Title</b></h4>
+@*<hr/>
+    <div class="row">
+        <div class="col-xs-6">
+            <a href="@Url.Action("CreateStaff")"><button class="btn btn-primary">@*<i class="glyphicon glyphicon-plus"></i> Thêm mới</button></a>
+        </div>
+
+    </div>
+    <br />*@
+@using (Html.BeginForm("Staff", "Account", FormMethod.Get))
+{
+    <table class="table">
+        <tr>
+            <td>               
+                <div class="input-group">
+                    @Html.TextBox("searchString", ViewBag.SearchString as string, new { @class = "form-control", placeholder = "Tìm nhân viên theo tên..." })
+                    <span class="input-group-btn">
+                        <button class="btn btn-default btn-finduser" type="submit">Tìm</button>
+                        <span class="btn-separator"></span>
+                        @Html.ActionLink("Thêm Mới", "CreateStaff", null, new { @class = "btn btn-primary" })                        
+                    </span>
+                </div><!-- /input-group -->
+            </td>
+        </tr>
+    </table>
+}
+
+<table class="table">
+    <tr>
+        <th>
+            #
+        </th>
+        <th>
+            @*@Html.DisplayNameFor(model => model.TenDayDu)*@
+            @Html.ActionLink("Họ và Tên", "Staff", new { sortOrder = ViewBag.NameSortParm, currentFilter = ViewBag.CurrentFilter })
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.UserName)            
+        </th>
+        <th>
+            @*@Html.DisplayNameFor(model => model.Email)*@
+            @Html.DisplayNameFor(model => model.SoDienThoai)
+        </th>
+        <th>
+            Nhóm Quyền
+        </th>
+       
+        <th>
+            Hoạt động
+        </th>
+        <th ></th>
+    </tr>
+    @{ var stt = 0;}
+    @foreach (var item in Model)
+    {
+        stt++;
+        var roleString = Constants.Security.Roles.RoleTexts[item.Role];
+        <tr>
+            <td>
+                @stt
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TenDayDu)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserName)                
+            </td>
+            <td>
+                @*@Html.DisplayFor(modelItem => item.Email)*@
+                @Html.DisplayFor(modelItem => item.SoDienThoai)
+            </td>
+            <td>
+                @Constants.Security.Roles.RoleTexts[item.Role]
+            </td>
+            <td style="text-align:center">
+                @Html.DisplayFor(modelItem => item.HoatDong)
+            </td>
+            <td style="text-align: right">
+                @Html.ActionLink("Sửa", "EditStaff", new { id = item.UserId })
+                
+                @if (item.Role == Constants.Security.Roles.User.Value)
+                {
+                    <span> | </span>
+                    @Html.ActionLink("Phân quyền", "StaffPermission", new { id = item.UserId })
+                    
+                }
+                @if (item.UserId != WebSecurity.CurrentUserId)
+                {
+                    <span> | </span>
+                    <a href="@Url.Action("DeleteStaff", new {id = item.UserId})">Xóa</a>
+                }
+                @if (!roleString.Contains(Constants.Security.Roles.Admin.Text) && !roleString.Contains(Constants.Security.Roles.SuperUser.Text))
+                {
+                    <span>|</span>
+                    <a href="@Url.Action("ResetPasswordForce", new {id = item.UserId,@type =1})">Mật khẩu</a>
+                }
+            </td>
+        </tr>
+    }
+
+</table>
+@*<br />
+    Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) trong @Model.PageCount
+    @Html.PagedListPager(Model, page => Url.Action("Staff",
+        new
+        {
+            page,
+            sortOrder = ViewBag.CurrentSort,
+            currentFilter = ViewBag.CurrentFilter
+        }))*@
+
+@section scripts
+
+{
+    <script type="text/javascript">
+        $(function () {
+            // trigger filer on list.
+            $("#accountFilter").find('select').on('change', function () {
+                $("#accountFilter").submit();
+            });
+            $("a.delete-link").click(function () {
+                var deleteLink = $(this);
+                deleteLink.hide();
+                var confirmButton = deleteLink.siblings(".delete-confirm");
+                confirmButton.show();
+
+                var cancelDelete = function () {
+                    removeEvents();
+                    showDeleteLink();
+                };
+
+                var deleteItem = function () {
+                    removeEvents();
+                    confirmButton.hide();
+                    $.post(
+                        '@Url.Action("Delete")',
+                        AddAntiForgeryToken({ id: confirmButton.attr('data-delete-id') }))
+                        .done(function () {
+                            var parentRow = deleteLink.parents("tr:first");
+                            parentRow.fadeOut('fast', function () {
+                                parentRow.remove();
+                            });
+                        }).fail(function (data) {
+                            alert("error");
+                        });
+                    return false;
+                };
+
+                var removeEvents = function () {
+                    confirmButton.off("click", deleteItem);
+                    $(document).on("click", cancelDelete);
+                    $(document).off("keypress", onKeyPress);
+                };
+
+                var showDeleteLink = function () {
+                    confirmButton.hide();
+                    deleteLink.show();
+                };
+
+                var onKeyPress = function (e) {
+                    //Cancel if escape key pressed
+                    if (e.which == 27) {
+                        cancelDelete();
+                    }
+                };
+
+                confirmButton.on("click", deleteItem);
+                $(document).on("click", cancelDelete);
+                $(document).on("keypress", onKeyPress);
+
+                return false;
+            });
+
+            AddAntiForgeryToken = function (data) {
+                data.__RequestVerificationToken = $('input[name=__RequestVerificationToken]').val();
+                return data;
+            };
+        });
+    </script>
+}

@@ -1,0 +1,35 @@
+﻿@model IEnumerable<sThuoc.Models.LoaiXuatNhap>
+
+@{
+    ViewBag.Title = "Danh Mục Loại Xuất Nhập";
+}
+
+<h2>Danh Mục Loại Xuất Nhập</h2>
+
+<p>
+    @Html.ActionLink("Thêm Mới", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th style="width: 100px"></th>        
+        <th>
+            @Html.DisplayNameFor(model => model.TenLoaiXuatNhap)
+        </th>
+        
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.TenLoaiXuatNhap)
+            </td>
+            <td>
+                @Html.ActionLink("Sửa", "Edit", new { id = item.MaLoaiXuatNhap }) |
+                @Html.ActionLink("Chi Tiết", "Details", new { id = item.MaLoaiXuatNhap }) |
+                @Html.ActionLink("Xóa", "Delete", new { id = item.MaLoaiXuatNhap })
+            </td>
+        </tr>
+    }
+
+</table>

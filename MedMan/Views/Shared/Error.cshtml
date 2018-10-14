@@ -1,0 +1,35 @@
+﻿<div>
+    <hgroup>
+        <h1 class="text-danger">Lỗi:</h1>
+        <h2 class="text-danger">Đã có lỗi xảy ra trong quá trình xử lý</h2>
+        <h3 class="text-danger">@Html.Raw(ViewBag.Message)</h3>
+    </hgroup>
+    @if (ViewBag.FullMessage != null)
+    {
+        <div class="col-md-10">
+            <p class="msg_head">Xem thêm <span style="cursor: pointer">[+]</span></p>
+        </div>
+        <div>
+            <div class="form-group">
+            </div>
+            <div id="trSlide">@ViewBag.FullMessage</div>
+        </div>
+    }
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(function () {
+            $(".msg_head").click(function () {
+                $('#trSlide').slideToggle(100);
+
+                if ($(this).hasClass('msg_head_expanded'))
+                    $(this).children("span").text("[+]");
+                else {
+                    $(this).children("span").text("[-]");
+                }
+                $(this).toggleClass('msg_head_expanded');
+            })
+        });
+    </script>
+}

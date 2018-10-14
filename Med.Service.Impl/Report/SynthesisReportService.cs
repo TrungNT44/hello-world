@@ -81,6 +81,7 @@ namespace Med.Service.Impl.Report
                 // II.3. Lãi gộp == II.3.1 + II.1.2
                 // II.3.1. Lợi nhuận bán thuốc
                 result.DeliveryRevenueTotal = deliveryService.GetDeliveryRevenueTotal(drugStoreCode, filter);
+                trans.Complete();
             }            
 
             return result;

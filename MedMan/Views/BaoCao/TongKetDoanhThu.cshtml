@@ -1,0 +1,306 @@
+﻿@{
+    ViewBag.Title = "TongKetDoanhThu";
+}
+<link href="~/Content/jquery.dataTables.min.css" rel="stylesheet" />
+
+<h2>TongKetDoanhThu</h2>
+<div id="tabs" style="width: 100%;height: 100%">
+    <ul>
+        <li><a href="#tabs-khachHang">Theo Khách Hàng</a></li>
+        <li><a href="#tabs-thuoc">Theo Thuốc</a></li>
+        <li><a href="#tabs-nhaCungCap">Theo Nhà Cung Cấp</a></li>
+    </ul>
+    <div id="tabs-khachHang">
+        <table class="table">
+            <tr>
+                <td>Điều Kiện Tổng Kết</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>@Html.RadioButton("searchByName", "searchByNameAll", true, new { id = "rdoNameAll1" })Tổng kết hết</td>
+                <td>
+                    @Html.RadioButton("searchByName", "searchByNameSingle", new { id = "rdoNameSingle1" }) Tổng kết theo tên
+                </td>
+            </tr>
+            <tr id="trName" style="display: none">
+                <td colspan="2">
+                    @Html.DropDownList("searchTen", null, string.Empty, htmlAttributes: new { @class = "form-control", id = "searchTen1" })
+                </td>
+            </tr>
+            <tr>
+                <td>Ngày Cần Tổng Kết:</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>@Html.RadioButton("searchByDate", "searchByDateAll", true, new { id = "rdoDateAll1" })Tổng kết hết</td>
+                <td>
+                    @Html.RadioButton("searchByDate", "searchByDateSingle", new { id = "rdoDateSingle1" })Tổng kết theo ngày
+                </td>
+            </tr>
+            <tr id="trDate" style="display: none">
+                <td>Từ Ngày @Html.TextBox("searchNgayFrom", null, new { @class = "datefield", id = "searchNgayFrom1" })</td>
+                <td>Đến Ngày @Html.TextBox("searchNgayTo", null, new { @class = "datefield", id = "searchNgayTo1" })</td>
+            </tr>
+            <tr><td colspan="2"><input type="button" value="Tổng Kết" onclick="FetchData(1)" /></td></tr>
+        </table>
+        <table class="table-condensed table-responsive display" id="tblCt1">
+            <thead>
+                <tr>
+                    <th style="width: 10px">STT</th>
+                    <th style="width: 70px">Khách Hàng</th>
+                    <th style="width: 55px">Ngày</th>
+                    <th style="width: 20px">Mã Phiếu</th>
+                    <th style="width: 50px">C.k</th>
+                    <th style="width: 70px">Tổng Tiền</th>
+                    <th style="width: 50px">Tiền Trả</th>
+                    <th style="width: 50px">Tiền Nợ</th>
+                    <th style="width: 50px">Lợi Nhuận</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <div id="tabs-thuoc">
+        <table class="table">
+            <tr>
+                <td>Điều Kiện Tổng Kết</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>@Html.RadioButton("searchByName", "searchByNameAll", true, new { id = "rdoNameAll2" })Tổng kết hết</td>
+                <td>
+                    @Html.RadioButton("searchByName", "searchByNameSingle", new { id = "rdoNameSingle2" }) Tổng kết theo tên
+                </td>
+            </tr>
+            <tr id="trName" style="display: none">
+                <td colspan="2">
+                    @Html.DropDownList("searchTen", null, string.Empty, htmlAttributes: new { @class = "form-control", id = "searchTen2" })
+                </td>
+            </tr>
+            <tr>
+                <td>Ngày Cần Tổng Kết:</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>@Html.RadioButton("searchByDate", "searchByDateAll", true, new { id = "rdoDateAll2" })Tổng kết hết</td>
+                <td>
+                    @Html.RadioButton("searchByDate", "searchByDateSingle", new { id = "rdoDateSingle2" })Tổng kết theo ngày
+                </td>
+            </tr>
+            <tr id="trDate" style="display: none">
+                <td>Từ Ngày @Html.TextBox("searchNgayFrom", null, new { @class = "datefield", id = "searchNgayFrom2" })</td>
+                <td>Đến Ngày @Html.TextBox("searchNgayTo", null, new { @class = "datefield", id = "searchNgayTo2" })</td>
+            </tr>
+            <tr><td colspan="2"><input type="button" value="Tổng Kết" onclick="FetchData(2)" /></td></tr>
+        </table>
+        <table class="table-condensed table-responsive display" id="tblCt2">
+            <thead>
+                <tr>
+                    <th style="width: 10px">STT</th>
+                    <th style="width: 70px">Mã Hàng</th>
+                    <th style="width: 55px">Tên Hàng</th>
+                    <th style="width: 20px">Giá Nhập TB</th>
+                    <th style="width: 50px">Giá Xuất</th>
+                    <th style="width: 70px">Số Lượng</th>
+                    <th style="width: 50px">Tổng Tiền</th>
+                    <th style="width: 50px">Lợi Nhuận</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <div id="tabs-nhaCungCap">
+        <table class="table">
+            <tr>
+                <td>Điều Kiện Tổng Kết</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr>
+                <td>@Html.RadioButton("searchByName", "searchByNameAll", true, new { id = "rdoNameAll3" })Tổng kết hết</td>
+                <td>
+                    @Html.RadioButton("searchByName", "searchByNameSingle", new { id = "rdoNameSingle3" }) Tổng kết theo tên
+                </td>
+            </tr>
+            <tr id="trName" style="display: none">
+                <td colspan="2">
+                    @Html.DropDownList("searchTen", null, string.Empty, htmlAttributes: new { @class = "form-control", id = "searchTen3" })
+                </td>
+            </tr>
+            <tr>
+                <td>Ngày Cần Tổng Kết:</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>@Html.RadioButton("searchByDate", "searchByDateAll", true, new { id = "rdoDateAll3" })Tổng kết hết</td>
+                <td>
+                    @Html.RadioButton("searchByDate", "searchByDateSingle", new { id = "rdoDateSingle3" })Tổng kết theo ngày
+                </td>
+            </tr>
+            <tr id="trDate" style="display: none">
+                <td>Từ Ngày @Html.TextBox("searchNgayFrom", null, new { @class = "datefield", id = "searchNgayFrom3" })</td>
+                <td>Đến Ngày @Html.TextBox("searchNgayTo", null, new { @class = "datefield", id = "searchNgayTo3" })</td>
+            </tr>
+            <tr><td colspan="2"><input type="button" value="Tổng Kết" onclick="FetchData(3)" /></td></tr>
+        </table>
+        <table class="table-condensed table-responsive display" id="tblCt3">
+            <thead>
+                <tr>
+                    <th style="width: 10px">STT</th>
+                    <th style="width: 70px">Khách Hàng</th>
+                    <th style="width: 55px">Ngày</th>
+                    <th style="width: 20px">Mã Phiếu</th>
+                    <th style="width: 50px">C.k</th>
+                    <th style="width: 70px">Tổng Tiền</th>
+                    <th style="width: 50px">Tiền Trả</th>
+                    <th style="width: 50px">Tiền Nợ</th>                    
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/datepicker-vi.js"></script>
+    <script type="text/javascript">
+        var table;
+        $(function () {
+            $("#tabs").tabs();
+            //bind date
+            var datefield = $(".datefield");
+            datefield.removeClass('hasDatepicker');
+            datefield.datepicker({
+                dateFormat: "dd/mm/yy",
+                changeMonth: true,
+                changeYear: true,
+                onClose: function () {
+                    $(this).parent().parent().find('input.save-thuoc').focus();
+                }
+            });
+
+            //Radio button
+            $('input:radio[name="searchByName"]').change(
+                function () {
+                    var trName = $(this).parents().eq(2).find("tr#trName");
+                    // checks that the clicked radio button is the one of value
+                    if ($(this).val() == 'searchByNameSingle') {
+                        trName.show();
+                    }
+                    else {
+                        trName.hide();
+                    }
+                });
+            $('input:radio[name="searchByDate"]').change(
+                function () {
+                    var trDate = $(this).parents().eq(2).find("tr#trDate");
+                    // checks that the clicked radio button is the one of value
+                    if ($(this).val() == 'searchByDateSingle') {
+                        trDate.show();
+                    }
+                    else {
+                        trDate.hide();
+                    }
+                });
+        });
+
+        function FetchData(type) {
+            var postData = { searchTen: "", searchNgayFrom: "", searchNgayTo: "", isKhachHang: "true" };
+            var dest = "";
+            var result = [];
+            if (type == 1) {
+                dest = "ByKhachHang";
+            }
+            else if (type == 2) {
+                dest = "ByThuoc";
+            }
+            else if (type == 3) {
+                dest = "ByNhaCungCap";
+            }
+            //check for the rdo
+            if ($("#rdoNameSingle" + type).prop('checked')) {
+                postData.searchTen = $("#searchTen" + type).val();
+            }
+            if ($("#rdoDateSingle" + type).prop('checked')) {
+                postData.searchNgayFrom = $("#searchNgayFrom" + type).val();
+                postData.searchNgayTo = $("#searchNgayTo" + type).val();
+            }
+            //The main table Id
+            var tblId = "#tblCt" + type;
+            //Get data
+            $.ajax({
+                url: '/BaoCao/' + dest,
+                data: postData,
+                traditional: true,
+                success: function (data) {
+                    result = data;
+                    if ($.fn.dataTable.isDataTable(tblId)) {
+                        $(tblId).dataTable().fnClearTable();
+                        $(tblId).dataTable().fnAddData(ConvertRows(result));
+                        $(tblId).dataTable().fnDraw();
+                    }
+                    else {
+                        table = $(tblId).DataTable({
+                            "data": ConvertRows(result),
+                            "ordering": false,
+                            "info": false,
+                            "scrollY": "250px",
+                            "scrollCollapse": true,
+                            "paging": false
+                        });
+                    }
+                }
+            });
+        }
+
+        //Turn the dateTime
+        function ConvertRows(data) {
+            var result = [];
+            var stt = 1;
+            for (var i = 0; i < data.length; i++) {
+                var rowNum = data[i].SoPhieu.length;
+                var rows = [];
+                for (var t = 0; t < rowNum; t++) {
+                    rows.push([stt]);
+                    stt++;
+                }
+                $.each(data[i], function (key, value) {
+                    if (value == null)
+                        return true;
+
+                    if (key == "NgayThang") {
+                        for (var j = 0; j < rowNum; j++) {
+                            var date = new Date(parseInt(value[j].substr(6)));
+                            rows[j].push(('0' + date.getDate()).slice(-2) + "/" + ('0' + (date.getMonth() + 1)).slice(-2) + "/" + date.getFullYear());
+                        }
+                    }
+                    else if (key == "KhachHang") {
+                        rows[0].push(value);
+                        for (j = 1; j < rowNum; j++) {
+                            rows[j].push("");
+                        }
+                    }
+                    else if (key == "NhaCungCap") {
+                        rows[0].push(value);
+                        for (j = 1; j < rowNum; j++) {
+                            rows[j].push("");
+                        }
+                    }
+                    else if (key == "LoiNhuan") {
+                        for (j = 0; j < rowNum; j++) {
+                            rows[j].push(value[j]);
+                        }
+                    }
+                    else {
+                        for (j = 0; j < rowNum; j++) {
+                            rows[j].push(value[j]);
+                        }
+                    }
+                });
+                result.push.apply(result, rows);
+            }
+            return result;
+        }
+
+    </script>
+}

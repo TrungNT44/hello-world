@@ -1,0 +1,119 @@
+﻿@model sThuoc.Models.PhieuKiemKe
+
+@{
+    ViewBag.Title = "Xóa phiếu kiểm kê";
+}
+
+<h4><b>Bạn có chắc chắn xóa phiếu kiểm kê này?</b></h4>
+<link href="~/Content/baocao.css" rel="stylesheet" />
+<div>
+    <hr />
+    <table>
+        <tr>
+            <td>
+                <label>Mã Phiếu: </label>
+            </td>
+            <td>&nbsp;&nbsp;&nbsp;@Model.MaPhieuKiemKe</td>
+
+        </tr>
+        <tr>
+            <td>
+                <label>Người tạo: </label>
+            </td>
+            <td>&nbsp;&nbsp;&nbsp;@Model.CreatedBy.TenDayDu</td>
+
+        </tr>
+        <tr>
+            <td>
+                <label>ngày tạo: </label>
+            </td>
+            <td>&nbsp;&nbsp;&nbsp;@Html.DisplayFor(model => model.Created)</td>
+
+        </tr>
+        <tr>
+            <td>
+                <label>Cân kho: </label>
+            </td>
+            <td>
+                &nbsp;&nbsp;&nbsp;
+                @if (Model.DaCanKho)
+                {
+                    @*<i class="glyphicon glyphicon-check text-success"></i>*@
+                    <i class="fa fa-check text-success"></i>
+                }
+                else
+                {
+                    @*<i class="glyphicon glyphicon-remove text-danger"></i>*@
+                    <i class="fa fa-times text-danger"></i>
+                }
+
+            </td>
+
+        </tr>
+    </table><br />
+    @*<table class="table table-striped" id="tbl">*@
+        <table class="table table-responsive table-bordered" id="tbl">
+            <thead>
+                <tr>
+                    <th style="background-color:darkgray">#</th>
+                    <th style="background-color:darkgray">Mã thuốc</th>
+                    <th style="background-color:darkgray">Tên thuốc</th>
+                    <th style="text-align: right;background-color:darkgray">
+                        SL hệ thống
+                        @*@if (Model.DaCanKho)
+                        {
+                            <a href="javascript:void(0)" title="Số lượng tài thời điểm cân kho">
+                                <small><i class="glyphicon glyphicon-info-sign text-info"></i></small>
+                            </a>
+                        }
+                        else
+                        {
+                            <a href="javascript:void(0)" title="Số lượng tài thời điểm hiện tại">
+                                <small><i class="glyphicon glyphicon-info-sign text-info"></i></small>
+                            </a>
+                        }*@
+
+                    </th>
+                    <th style="text-align: right;background-color:darkgray">SL thực</th>
+                    <th style="text-align: right;background-color:darkgray">Chênh lệch</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{ var stt = 0;}
+                @foreach (var item in Model.PhieuKiemKeChiTiets)
+                {
+                        ++stt;
+                       <tr>
+                        <td>@stt</td>
+                        <td>
+                            <span>@item.Thuoc.MaThuoc</span>
+                        </td>
+                        <td>
+                            <span>@item.Thuoc.TenThuoc</span>
+                        </td>
+                        <td style="text-align:right">
+                            <span class="soluonghethong">@item.TonKho</span><span> @item.Thuoc.DonViXuatLe.TenDonViTinh</span>
+                        </td>
+                        <td style="text-align: right">
+                            <span class="soluonghethong">@item.ThucTe</span>
+                        </td>
+                        <td style="text-align: right"><span class="chenhlech">@(item.TonKho - item.ThucTe)</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+</div>
+<p class="btn-actiongroup">
+    
+   @using (Html.BeginForm())
+   {          
+        @*@Html.ActionLink("Quay lại", "Index", null, new { @class = "btn btn-default" })*@
+        <input type="button" value="Quay lại" class="btn btn-default" onclick="javascript:window.history.go(-1);" />
+        <span class="btn-separator"></span>
+        @Html.HiddenFor(model=> model.MaPhieuKiemKe)
+        <input type="submit" value="Xác nhận" class="btn btn-default btn-danger" />
+   }
+    
+
+
+</p>

@@ -1,0 +1,27 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Barcode Scanner Reading</title>
+    <script type="text/javascript" src="../../Scripts/jquery-2.1.3.js"></script>
+    <script type="text/javascript" src="../../Scripts/Custom/BCScanner.js"></script>
+    <script type="text/javascript">
+        $(document).BCScanner(
+		{
+			timeBeforeScanTest: 200, // wait for the next character for upto 200ms
+			startChar: [], // Prefix character for the cabled scanner (YHD-3100 - No prefix chars for YHD )
+			endChar: [13,71], // be sure the scan is complete if key 13 (enter) and 71 (g) are detected
+			avgTimeByChar: 40, // it's not a barcode if a character takes longer than 40ms
+			onComplete: function(barcode, qty) // main callback function	
+			{ 
+				$("#barcode").val(barcode);
+			}
+			//,onKeyDetect: function(event){console.log(event.which); return false;}
+		});
+    </script>
+</head>, 
+<body>
+    <input type="text" id="barcode" placeholder="Waiting for barcode scan..." size="40">
+</body>
+</html>

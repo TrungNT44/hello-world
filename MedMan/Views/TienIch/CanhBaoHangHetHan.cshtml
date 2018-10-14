@@ -1,0 +1,193 @@
+﻿@using System.Globalization
+@using sThuoc.Models;
+@using System.Collections;
+@using PagedList.Mvc;
+@model PagedList.IPagedList<CanhBaoHetHan>
+
+@{
+    ViewBag.Title = "Danh sách hàng hết hạn sử dụng";
+}
+<link href="~/Content/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/phieuStyle.css" rel="stylesheet" />
+
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <h4>
+        <b>Danh sách hàng hết hạn sử dụng</b>
+    </h4>
+    <hr style="margin-top:0px" />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="row" id="divMain" ng-controller="ExpiryWarningController">
+        <div class="col-md-3">
+            @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+            {
+                <div class="text-danger text-center errorMessage">
+                    <span>@ViewBag.ErrorMessage</span>
+                </div>
+                <br />
+            }
+            <fieldset class="">
+                <label>Mặt hàng</label>
+                <div class="control-group">
+                    @Html.DropDownList("slType",
+                            new List<SelectListItem>() {
+                                        new SelectListItem() { Text= "Tất cả", Value="1", Selected= (ViewBag.SearchFor == null|| ViewBag.SearchFor == "1"?true:false)},
+                                        new SelectListItem() { Text= "Theo nhóm", Value="2", Selected= (ViewBag.SearchFor == "2"?true:false)},
+                                        new SelectListItem() { Text= "Theo tên", Value="3", Selected= (ViewBag.SearchFor == "3"?true:false)}
+                                    }
+                            , htmlAttributes: new { @class = "form-control", @ng_model = "sType" , @ng_change= "resetFilter()" })&nbsp;
+                    @Html.DropDownList("nhomthuoc", new SelectList(ViewBag.NhomThuoc, "MaNhomThuoc", "TenNhomThuoc"), htmlAttributes: new { @class = "form-control", @style = "display:none", @ng_model = "sNhomThuocId" }, optionLabel: "Chọn nhóm thuốc")
+                    @Html.TextBox("tenthuoc", null, htmlAttributes: new { @class = "form-control", @style = "display:none", @ng_model = "sTenThuoc", placeholder = "Nhập tên thuốc..." })
+                    <input id="mathuoc" type="text" style="display:none" ng-model="option_filter.ma_thuoc" />
+                </div>
+            </fieldset>
+            <br />
+            <hr style="margin-top:0px" />
+            <div>
+                <input type="button" value="Xem" ng-click="fnFilter();" class="btn btn-default" />
+                @*<span class="btn-separator"></span>
+                    @Html.ActionLink("Xuất Excel", "ExportHetHanToExcel", "Tienich", null, new { @class = "btn btn-default" })
+                    @Html.ActionLink("In", "HetHanIn", "Tienich", null, new { @class = "btn btn-default", target = "_blank" })*@
+            </div>
+
+        </div>
+        <div class="col-md-9">
+            <div class="baocao-container">
+                <table tr-ng-grid="" items="model.items"
+                       locale="en"
+                       class="table table-striped table-bordered table-hover"
+                       selection-mode="None"
+                       current-page="setCurrentPage"
+                       enable-filtering="false"
+                       enable-sorting="false"
+                       page-items="model.pageSize" total-items="model.totalItems"
+                       on-data-required="onServerSideItemsRequested(currentPage, pageItems, filterBy, filterByFields, orderBy, orderByReverse)">
+                    <thead>
+                        <tr>
+                            <th display-name="#" ></th>
+                            <th display-name="Số phiếu nhập"></th>
+                            <th display-name="Mã thuốc"></th>
+                            <th display-name="Tên thuốc"></th>
+                            <th display-name="Đơn vị"></th>
+                            <th display-name="Số lượng tồn"></th>
+                            <th display-name="Số ngày không g.dịch"></th>
+                            <th display-name="Hạn sử dụng"></th>
+                            <th display-name=""></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div style="text-align:right">
+                                    {{gridItem.STT}}
+                                </div>
+                            </td>
+                            <td>
+                                <div style="text-align:right">
+                                    <a href="/PhieuNhaps/Details/{{gridItem.MaPhieuNhap}}" target="_blank">{{gridItem.SoPhieuNhap}}</a>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    {{gridItem.MaThuoc}}
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    {{gridItem.TenThuoc}}
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    {{gridItem.DonVi}}
+                                </div>
+                            </td>
+                            <td>
+                                <div style="text-align:right">
+                                    {{gridItem.SoLuong}}
+                                </div>
+                            </td>
+                            <td>
+                                <div style="text-align:right">
+                                    {{gridItem.HangItGiaoDich}}
+                                </div>
+                            </td>
+                            <td>
+                                <div style="text-align:right">
+                                    {{gridItem.Han}}
+                                </div>
+                            </td>
+                            <td>
+                                <div style="text-align:right">
+                                    <a href="#" id="" ng-click="fnDpdateDrugPrice(gridItem)" title="Cập nhật lô/hạn dùng"><i class="fa fa-calendar" aria-hidden="true"></i></a>
+                                   
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    @Html.Partial("~/Areas/Production/Views/Drug/Partial/UpdateDrugExpriedDateDialog.cshtml")
+}
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Html.Partial("ProductionPartial")
+    <script src="~/Scripts/datepicker-vi.js"></script>
+    <script type="text/javascript">
+        var cache = {};
+        $(document).ready(function () {
+            $('select[name=slType]').on('change', function () {
+                var val = $(this).val();
+                $('select[name=nhomthuoc]').val('-1').hide();
+                $('input[name=tenthuoc]').val('').hide();
+                $('#mathuoc').val("");
+                if (val == '2') {
+                    $('select[name=nhomthuoc]').val(null).show();
+                }
+                else if (val == '3') {
+                    $('input[name=tenthuoc]').show();
+                }
+            });
+            BindAutocomplete($("#tenthuoc"));
+
+        });
+        function UpdateDrugPire() {
+            $("#update-drug-expried-date-dialog").modal("show");
+        }
+        function BindAutocomplete(elem) {
+            var url = $('input[name=baseUrl]').val() + "Thuocs/GetThuocsByMaOrTen";
+            elem.autocomplete({
+                minLength: 2,
+                source: function (request, response) {
+                    $.getJSON(url, request, function (data, status, xhr) {
+                        response(data);
+                    });
+                },
+                messages: {
+                    noResults: "Không tìm thấy"//,
+                    // results: ""
+                },
+                select: function (event, ui) {
+                    $(this).val(ui.item.label);
+                    $('#tenthuoc').val(ui.item.tenThuoc);
+                    //$('#mathuoc').val(ui.item.maThuoc);
+                    angular.element(document.getElementById('divMain')).scope().ma_thuoc = ui.item.maThuoc;
+                    return false;
+                }
+            }).each(function () {
+                $(this).autocomplete('instance')._renderItem = function (ul, item) {
+                    return $("<li>")
+                        .append("<a>" + item.desc + "</a>")
+                        .append('<input type="hidden" name="price" value="' + item.price + '"/>')
+                        .append('<input type="hidden" name="unit" value="' + item.unit + '"/>')
+                        .appendTo(ul);
+                };
+            });
+        }
+    </script>
+}

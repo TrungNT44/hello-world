@@ -1,0 +1,46 @@
+﻿@using sThuoc.Models
+@using sThuoc.Filter
+@model IEnumerable<Nuoc>
+
+@{
+    ViewBag.Title = "Danh Mục Nước";
+}
+
+<h2>Danh Mục Nước</h2>
+
+@{
+    var canCreate = FunctionsService.Authorize(FunctionResource.BacSy, Operations.Create, User.IsInRole("User") ? new[] { "User" } : new[] { "Admin" });
+    var canModify = FunctionsService.Authorize(FunctionResource.BacSy, Operations.Modify, User.IsInRole("User") ? new[] { "User" } : new[] { "Admin" });
+}
+@if (canCreate)
+{
+    <p>
+        @Html.ActionLink("Thêm Mới", "Create")
+    </p>
+}
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.TenNuoc)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.TenNuoc)
+            </td>
+            <td>
+                @Html.ActionLink("Chi Tiết", "Details", new { id = item.MaNuoc })
+                @if (canModify)
+                {
+                    @:| @Html.ActionLink("Sửa", "Edit", new { id = item.MaNuoc })
+                    @:| @Html.ActionLink("Xóa", "Delete", new { id = item.MaNuoc })
+                }
+            </td>
+        </tr>
+    }
+
+</table>

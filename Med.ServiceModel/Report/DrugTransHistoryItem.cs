@@ -13,6 +13,8 @@ namespace Med.ServiceModel.Report
         public int ItemNumber { get; set; }
         public double Quantity { get; set; }
         public double Price { get; set; }
+        public double Discount { get; set; }
+        public double VAT { get; set; }
         public double Amount { get; set; }
         public int UnitId { get; set; }
         public string UnitName { get; set; }

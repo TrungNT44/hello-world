@@ -1,0 +1,14 @@
+﻿<!-- Modal -->
+@model sThuoc.Models.ViewModels.UploadObjectInfo
+           
+<h2>@Model.Title:</h2>
+<p>Số lượng thêm mới thành công: @Model.TotalAdded</p>
+<p>Số lượng cập nhật thành công: @Model.TotalUpdated</p>
+<p>Số lượng bị lỗi: @Model.TotalError</p>
+@if (Model.TotalError > 0)
+{
+    foreach (var error in Model.ErrorMsg)
+    {
+        <p>@Html.Raw(error)</p>
+    }
+}

@@ -1,0 +1,150 @@
+﻿@using System.Globalization
+@using sThuoc.Models
+@model PhieuXuatEditModel
+
+@{
+    ViewBag.Title = "Tạo mới phiếu xuất hàng";
+}
+<link href="~/Content/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/phieuStyle.css" rel="stylesheet" />
+<link href="~/Content/selectize.bootstrap3.css" rel="stylesheet" />
+<link href="~/Content/Barcode.css" rel="stylesheet" />
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    var title = "IN MÃ VẠCH";
+    <div class="form-horizontal">
+        <h2 style="font-size: 30px; text-align: center;color: coral">@title</h2>
+        @Html.HiddenFor(model => model.JsonDrugOderItems, new { @Value = "" })
+        @Html.HiddenFor(model => model.BillType, new { @Value = "1" })
+        @Html.HiddenFor(model => model.NgayXuat, new { @Value = DateTime.Now.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture) })
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.MaPhieuXuat, new { @Value = "0" })
+        @Html.HiddenFor(model => model.MaLoaiXuatNhap, new { @Value = ViewBag.LoaiPhieu })
+        <div id=" divDrugItems" class="box box-print-barcode-drugitems">
+            <table class="table borderless table-condensed">
+                <thead>
+                    <tr>
+                        <th style="width:10%; border: none; text-align: left">
+                            <label>Mã vạch:</label>
+                        </th>
+                        <th style="width:90%; border: none">
+                            <input type="text" class="form-control" id="barcode" style="width: 80%">
+                        </th>
+                    </tr>
+                </thead>
+                <tbody style="border: none"></tbody>
+            </table>
+            <table class="table-condensed table-responsive display" id="drugItems">
+                <thead>
+                    <tr>
+                        <th style="width: 7%" class="header-bg"></th>
+                        <th style="width: 7%" class="header-bg">STT</th>
+                        <th style="width: 7%" class="header-bg">Mã</th>
+                        <th style="width: 30%" class="header-bg">Tên Hàng</th>
+                        <th style="width: 12%" class="header-bg">Đơn Vị</th>
+                        <th style="width: 10%" class="header-bg">SL Tem</th>
+                        <th style="width: 10%" class="header-bg">Đơn Giá</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div id="divSummary" class="box-print-barcode-summary">
+            <table class="table borderless table-condensed" style="padding: 5px">
+                <tr>
+                    <th class="header-bg" style="width:30%" colspan="2">
+                        <b>Thêm vào danh sách theo nhóm thuốc</b>
+                    </th>
+                </tr>
+                <tr>
+                    <td style="text-align: left;width:100px">
+                        @Html.EditorFor(model => model.DienGiai, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.DienGiai, "", new { @class = "text-danger" })
+                    </td>
+                    <td style="text-align: left;">
+                        <input type="button" value="Thêm" class="btn btn-default" onclick="javascript:window.history.go(-1);" />
+                    </td>
+                </tr>
+            </table>
+
+            <table class="table borderless table-condensed" style="padding: 5px">
+                <tr>
+                    <th class="header-bg" style="width:30%" colspan="2">
+                        <b>Thêm thông tin in ra</b>
+                    </th>
+                </tr>
+                <tr>
+                    <td style="text-align: left;width:100px"><label class="control-label" style="font-weight: normal">In thêm thông tin:</label></td>
+                    <td style="text-align: left;">
+                        <select>
+                            <option value="0">Tên thuốc</option>
+                            <option value="1">Giá bán</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;width:100px">
+                        <input type="button" value="In" class="btn btn-default" onclick="javascript:window.history.go(-1);" />
+                    </td>
+                    <td style="text-align: left;">
+                        <input type="button" value="Xuất Excel" class="btn btn-default" onclick="javascript:window.history.go(-1);" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+}
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/datepicker-vi.js"></script>
+    <script src="~/Scripts/Custom/Utility.js"></script>
+    <script src="~/Scripts/Custom/BillWithBarcode.js"></script>
+    <script src="~/Scripts/jquery.inputmask/inputmask.js"></script>
+    <script src="~/Scripts/jquery.inputmask/jquery.inputmask.js"></script>
+    <script src="~/Scripts/jquery.inputmask/inputmask.numeric.extensions.js"></script>
+    <script src="~/Scripts/jquery.selectize.js"></script>
+    <script src="~/Scripts/Custom/BCScanner.js"></script>
+    <script type="text/javascript">
+        var drugs = JSON.parse('@Html.Raw(ViewBag.Drugs)');
+        var fromBCScanner = false;
+    $.validator.methods["date"] = function(value, element) { return true; };
+    $(document).BCScanner(
+    {
+        timeBeforeScanTest: 200, // wait for the next character for upto 200ms
+        startChar: [], // Prefix character for the cabled scanner (YHD-3100 - No prefix chars for YHD )
+        endChar: [13,71], // be sure the scan is complete if key 13 (enter) and 71 (g) are detected
+        avgTimeByChar: 40, // it's not a barcode if a character takes longer than 40ms
+        onComplete: function(barcode, qty) // main callback function
+        {
+            fromBCScanner = true;
+            $("#barcode").val(barcode);
+            handleInputBarcode(barcode);
+        }
+        //,onKeyDetect: function(event){console.log(event.which); return false;}
+    });
+
+    $(document).ready(function () {
+        initAndBindEvents();
+        $('#frmPhieuXuat').submit(function (event) {
+            $("#JsonDrugOderItems").val(JSON.stringify(drugOrderItems));
+        });
+        $("#barcode").keyup(function(event){
+            if(event.keyCode == 13){
+                handleInputBarcode($("#barcode").val());
+            }
+        });
+
+        // input masks
+        inputmask.extendDefaults({
+            'autoUnmask': true,
+            'removeMaskOnSubmit': true
+        });
+        $(":input,span").inputmask();
+    });
+</script>
+}

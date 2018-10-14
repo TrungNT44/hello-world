@@ -1,0 +1,470 @@
+﻿@using System.Text.RegularExpressions;
+@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using System.Web;
+@using System.Web.Mvc;
+@using System.Web.WebPages;
+@using Med.Web.Extensions
+
+@model sThuoc.Models.ViewModels.ThuocEditModel
+@{
+    var nT = this.GetNhaThuoc();
+    bool checkNhaThuocCon = (nT.MaNhaThuoc == nT.MaNhaThuocCha);
+}
+@{
+    string u = Request.ServerVariables["HTTP_USER_AGENT"];
+    Regex mobi = new Regex(@"(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+    Regex tabl = new Regex(@"(tablet|ipad|playbook|silk)|(android(?!.*mobile))", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+    var action = this.ViewContext.RouteData.Values["action"].ToString();
+}
+@if (action.ToLower() == "create")
+{
+    ViewBag.Title = "Thêm thuốc mới";
+    <h4><b>Thêm mới thuốc</b></h4>
+    Model.BarCode = ViewBag.MaVachThuoc;
+}
+else
+{
+    ViewBag.Title = "Cập nhật thuốc";
+    <h4><b>Cập nhật thông tin thuốc</b></h4>
+}
+
+
+
+
+@using (Html.BeginForm())
+{
+
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.ThuocId)
+        <table class="table" id="tblMain">
+            <tr>
+                <td>@Html.LabelFor(model => model.MaNhomThuoc, "Nhóm thuốc", htmlAttributes: new { @class = "control-label" })</td>
+                <td>
+                    @Html.DropDownList("MaNhomThuoc", null, htmlAttributes: new { @class = "form-control noBind", tabindex="1" }, optionLabel: "Hãy chọn nhóm thuốc")
+                    @Html.ValidationMessageFor(model => model.MaNhomThuoc, "Bạn phải chọn nhóm thuốc", new { @class = "text-danger" })
+                </td>
+
+                <td>@Html.LabelFor(model => model.MaDonViXuat, "Đơn vị xuất lẻ", htmlAttributes: new { @class = "control-label" })</td>
+                <td>
+                    @Html.DropDownList("MaDonViXuat", null, htmlAttributes: new { @class = "form-control", tabindex = "9" }, optionLabel: "Hãy chọn đơn vị xuất lẻ")
+                    @Html.ValidationMessageFor(model => model.MaDonViXuat, "Bạn phải chọn đơn vị xuất", new { @class = "text-danger" })
+                </td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(model => model.MaThuoc, htmlAttributes: new { @class = "control-label " })</td>
+                <td>
+                    @if (action.ToLower() == "create")
+                    {
+                        <input type="text" name="MaThuoc" value="@ViewBag.MaThuoc" class="form-control" tabindex="1" />
+                    }
+                    else
+                    {
+                        @Html.EditorFor(model => model.MaThuoc, new { htmlAttributes = new { @class = "form-control", tabindex = "1" } })
+                    }
+                    @Html.ValidationMessageFor(model => model.MaThuoc, "", new { @class = "text-danger" })
+                </td>
+                
+                <td>@Html.LabelFor(model => model.GiaNhap, htmlAttributes: new { @class = "control-label " })</td>
+                <td>
+                    @if (tabl.IsMatch(u))
+                    {
+                        @Html.TextBoxFor(model => model.GiaNhap, new { @class = "form-control", tabindex = "10", placeholder = "Giá nhập theo đơn vị xuất lẻ" })
+                        @Html.ValidationMessageFor(model => model.GiaNhap, "", new { @class = "text-danger" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(model => model.GiaNhap, new { @class = "form-control", tabindex = "10", placeholder = "Giá nhập theo đơn vị xuất lẻ", @data_inputmask = "'alias': 'numeric', 'groupSeparator': ',', 'autoGroup': true, 'digits': 0, 'digitsOptional': false, 'suffix': '', 'placeholder': '0'" })
+                        @Html.ValidationMessageFor(model => model.GiaNhap, "", new { @class = "text-danger" })
+                    }
+
+                </td>               
+            </tr>
+            <tr>
+
+                <td>@Html.LabelFor(model => model.TenThuoc, htmlAttributes: new { @class = "control-label " })</td>
+                <td>
+
+                    @Html.EditorFor(model => model.TenThuoc, new { htmlAttributes = new { @class = "form-control", placeholder = "Tên biệt dược + Hàm lượng/Hãng", tabindex = "3" } })
+                    @Html.ValidationMessageFor(model => model.TenThuoc, "", new { @class = "text-danger" })
+                </td>
+
+                <td>@Html.LabelFor(model => model.GiaBanLe, htmlAttributes: new { @class = "control-label " })</td>
+                <td>
+                    @if (tabl.IsMatch(u))
+                    {
+                        @Html.TextBoxFor(model => model.GiaBanLe, new { @class = "form-control", tabindex = "11", placeholder = "Giá bán lẻ theo đơn vị xuất lẻ" })
+                        @Html.ValidationMessageFor(model => model.GiaBanLe, "", new { @class = "text-danger" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(model => model.GiaBanLe, new { @class = "form-control", tabindex = "11", placeholder = "Giá bán lẻ theo đơn vị xuất lẻ", @data_inputmask = "'alias': 'numeric', 'groupSeparator': ',', 'autoGroup': true, 'digits': 0, 'digitsOptional': false, 'suffix': '', 'placeholder': '0'" })
+                        @Html.ValidationMessageFor(model => model.GiaBanLe, "", new { @class = "text-danger" })
+                    }
+                </td>              
+                
+            </tr>
+            <tr>
+                <td><b>Mô tả thêm</b></td>
+                <td>
+                    @Html.TextBoxFor(model => model.ThongTin, new { @class = "form-control",  tabindex = "4" ,placeholder = "Vị trí tủ, hoạt chất" })
+                    @Html.ValidationMessageFor(model => model.ThongTin, "", new { @class = "text-danger" })
+                </td>              
+                
+                <td>@Html.LabelFor(model => model.GiaBanBuon, htmlAttributes: new { @class = "control-label " })</td>
+                <td>
+                    @if (tabl.IsMatch(u))
+                    {
+                        @Html.TextBoxFor(model => model.GiaBanBuon, new { @class = "form-control", tabindex = "12", placeholder = "Giá bán sỉ theo đơn vị xuất lẻ" })
+                        @Html.ValidationMessageFor(model => model.GiaBanBuon, "", new { @class = "text-danger" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(model => model.GiaBanBuon, new { @class = "form-control", tabindex = "12", placeholder = "Giá bán sỉ theo đơn vị xuất lẻ", @data_inputmask = "'alias': 'numeric', 'groupSeparator': ',', 'autoGroup': true, 'digits': 0, 'digitsOptional': false, 'suffix': '', 'placeholder': '0'", style = "text-align:right" })
+                        @Html.ValidationMessageFor(model => model.GiaBanBuon, "", new { @class = "text-danger" })
+                    }
+                </td>          
+            </tr>
+            <tr>             
+                <td>@Html.LabelFor(model => model.BarCode, htmlAttributes: new { @class = "control-label " })</td>
+                <td class="col-md-4">
+                    @*@Html.EditorFor(model => model.BarCode, new { htmlAttributes = new { @class = "form-control", tabindex = "5" } })
+                    @Html.ValidationMessageFor(model => model.BarCode, "", new { @class = "text-danger" })*@   
+                    @if (mobi.IsMatch(u) || tabl.IsMatch(u))
+                    {                        
+                        @Html.EditorFor(model => model.BarCode, new { htmlAttributes = new { @class = "form-control", tabindex = "5" } })
+                        @Html.ValidationMessageFor(model => model.BarCode, "", new { @class = "text-danger" })
+                        <a href="javascript:void(0);" class="btn btn-default" onclick="genbarcode()"><i class="fa fa-arrow-up"></i></a>
+                        <a href="javascript:void(0);" class="btn btn-default" onclick="scanbarcode()"><i class="fa fa-barcode"></i></a>
+                    }
+                    else
+                    {
+                         <div class="input-group">
+                             @Html.EditorFor(model => model.BarCode, new { htmlAttributes = new { @class = "form-control", tabindex = "5" } })
+                             @Html.ValidationMessageFor(model => model.BarCode, "", new { @class = "text-danger" })
+                            <span class="input-group-btn">
+                                <a href="javascript:void(0);" class="btn btn-default" onclick="genbarcode()"><i class="fa fa-arrow-left"></i></a>
+                                                        
+                            </span>
+                        </div><!-- /input-group -->
+                    }
+                </td>
+
+                @if (checkNhaThuocCon)
+                {
+                    <td>@Html.LabelFor(model => model.SoDuDauKy,"Số tồn b.đầu", htmlAttributes: new { @class = "control-label " })</td>
+                    if (action.ToLower() == "create")
+                    {
+                        <td>
+                            @Html.TextBoxFor(model => model.SoDuDauKy, new { @class = "form-control", tabindex = "13", placeholder = "Số tồn ban đầu theo đơn vị xuất lẻ" })
+                            @Html.ValidationMessageFor(model => model.SoDuDauKy, "", new { @class = "text-danger" })
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            @Html.TextBoxFor(model => model.SoDuDauKy, new { @class = "form-control", tabindex = "13", placeholder = "Số tồn ban đầu theo đơn vị xuất lẻ" })
+                            @Html.ValidationMessageFor(model => model.SoDuDauKy, "", new { @class = "text-danger" })
+                        </td>
+                    }                    
+                }               
+                
+            </tr>
+            <tr>
+
+                <td><b>Hàng tư vấn</b></td>
+                <td>
+                    @Html.EditorFor(model => model.HangTuVan, new { htmlAttributes = new { @class = "form-control", tabindex = "6" } })
+                    @Html.ValidationMessageFor(model => model.HangTuVan, "", new { @class = "text-danger" })
+
+                </td>
+
+                @if (checkNhaThuocCon)
+                {                    
+                    <td>@Html.LabelFor(model => model.GiaDauKy, htmlAttributes: new { @class = "control-label " })</td>
+                    <td>
+                        @if (tabl.IsMatch(u))
+                        {
+                            @Html.TextBoxFor(model => model.GiaDauKy, new { @class = "form-control", tabindex = "14", Value = "0" })
+                            @Html.ValidationMessageFor(model => model.GiaDauKy, "", new { @class = "text-danger" })
+                        }
+                        else
+                        {
+                            @Html.TextBoxFor(model => model.GiaDauKy, new { @class = "form-control", tabindex = "14", placeholder = "Giá nhập ban đầu cho số tồn b.đầu", @data_inputmask = "'alias': 'numeric', 'groupSeparator': ',', 'autoGroup': true, 'digits': 0, 'digitsOptional': false, 'suffix': '', 'placeholder': '0'" })
+                            @Html.ValidationMessageFor(model => model.GiaDauKy, "", new { @class = "text-danger" })
+                        }
+
+                    </td>
+                }   
+            </tr>
+            <tr>
+                @if (checkNhaThuocCon)
+                {
+                    <td>@Html.LabelFor(model => model.HanDung, "Hạn dùng", htmlAttributes: new { @class = "control-label" })</td>
+                    <td>@Html.TextBoxFor(model => model.HanDung, new { @class = "input-datetime form-control text-box single-line", tabindex = "7" }) </td>
+                }
+                else
+                {
+                    <td></td>
+                    <td></td>
+                }
+
+
+                <td>@Html.LabelFor(model => model.MaDonViThuNguyen, "Đơn vị nhập", htmlAttributes: new { @class = "control-label " })</td>
+                <td>
+                    @Html.DropDownList("MaDonViThuNguyen", null, htmlAttributes: new { @class = "form-control", tabindex = "15" }, optionLabel: "")
+                    @Html.ValidationMessageFor(model => model.MaDonViThuNguyen, "", new { @class = "text-danger" })
+                </td>
+                
+               
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(model => model.GioiHan, "Dự trù", htmlAttributes: new { @class = "control-label " })</td>
+                @if (action.ToLower() == "create")
+                {
+                    <td>
+                        @Html.TextBoxFor(model => model.GioiHan, htmlAttributes: new { @class = "form-control", tabindex = "8", Value = "0", style = "text-align:left" })
+                        @Html.ValidationMessageFor(model => model.GioiHan, "Giới hạn phải là dạng số", new { @class = "text-danger" })
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        @Html.TextBoxFor(model => model.GioiHan, htmlAttributes: new { @class = "form-control", tabindex = "8", style = "text-align:left" })
+                        @Html.ValidationMessageFor(model => model.GioiHan, "Giới hạn phải là dạng số", new { @class = "text-danger" })
+                    </td>
+                }
+
+                <td>@Html.LabelFor(model => model.HeSo, htmlAttributes: new { @class = "control-label " })</td>
+                <td>
+                    @Html.TextBoxFor(model => model.HeSo, htmlAttributes: new { @class = "form-control", tabindex = "16", style = "text-align:left" })
+                    @Html.ValidationMessageFor(model => model.HeSo, "", new { @class = "text-danger" })
+                </td>
+                
+            </tr>
+            @Html.HiddenFor(model => model.HoatDong)
+            @Html.HiddenFor(model => model.ThuocIdRef, htmlAttributes: new { @id = "hdfThuocIdRef" })
+            @*<tr>
+                <td>
+                    <p class="msg_head">Thêm <span style="cursor: pointer">[+]</span></p>
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr id="trSlide">
+                <td>@Html.LabelFor(model => model.MaDangBaoChe, "Dạng bào chế", htmlAttributes: new { @class = "control-label " })</td>
+                <td>
+                    @Html.DropDownList("MaDangBaoChe", null, htmlAttributes: new { @class = "form-control" }, optionLabel: "Dạng bào chế")
+                    @Html.ValidationMessageFor(model => model.MaDangBaoChe, "", new { @class = "text-danger" })
+                </td>
+                <td>@Html.LabelFor(model => model.MaNuoc, "Quốc gia", htmlAttributes: new { @class = "control-label " })</td>
+                <td>
+                    @Html.DropDownList("MaNuoc", null, htmlAttributes: new { @class = "form-control" }, optionLabel: "Nước sản xuất")
+                    @Html.ValidationMessageFor(model => model.MaNuoc, "", new { @class = "text-danger" })
+                </td>
+            </tr>*@
+
+        </table>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="button" value="Quay lại" class="btn btn-default" tabindex="17" onclick="location.href='@Url.Action("Index", "Thuocs")'" />
+                @*<input type="button" value="Quay lại" class="btn btn-default" onclick="javascript:window.history.go(-1);" />*@
+                <span class="btn-separator"></span>
+                @if (action.ToLower() == "create")
+                {
+                    <input type="submit" onclick="return check_submit();" value="Thêm mới" class="btn btn-primary" tabindex="18" />
+                }
+                else
+                {
+                    <input type="submit" onclick="return check_submit();" value="Cập nhật" class="btn btn-default" tabindex="18" />
+                }
+
+            </div>
+        </div>
+    </div>
+}
+
+@*<div>
+        @Html.ActionLink("Back to List", "GridIndex")
+    </div>*@
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery.inputmask/inputmask.js"></script>
+    <script src="~/Scripts/jquery.inputmask/jquery.inputmask.js"></script>
+    <script src="~/Scripts/jquery.inputmask/inputmask.numeric.extensions.js"></script>
+    <script src="~/Scripts/Custom/formUtil.js"></script>
+    <script src="~/Scripts/datepicker-vi.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            initialForm();
+            $('#MaDonViThuNguyen').on('change', function () {
+                var currentValue = $(this).val();
+                if (currentValue == "") {
+                    $('#HeSo').val('0').attr('readonly', 'readonly');
+                } else {
+                    $('#HeSo').removeAttr('readonly');
+                }
+            }).trigger('change');
+
+            var datefield = $(".datefield");
+            datefield.removeClass('hasDatepicker');
+            datefield.datepicker({
+                dateFormat: "dd/mm/yy",
+                changeMonth: true,
+                changeYear: true
+            });
+
+            $("#btnGenBarcode").click(function () {
+                $.ajax({
+                    // edit to add steve's suggestion.
+                    //url: "/ControllerName/ActionName",
+                    url: $('input[name=baseUrl]').val() + "/Thuocs/GenUniqueBarcode",
+                    success: function (data) {
+                        // your data could be a View or Json or what ever you returned in your action method
+                        // parse your data here
+                        $("#BarCode").val(data);
+                    }
+                });
+            });
+            BindAutocomplete($("#TenThuoc"));
+        });
+        $("#btnScanBarcode").click(function () {
+            var href = window.location.href.split("\#")[0];
+            window.addEventListener("storage", zxinglistener, false);
+            zxingWindow = window.open("zxing://scan/?ret=" + encodeURIComponent(href + "#{CODE}"), '_self');
+
+        });
+        $("#MaDonViXuat, #MaDonViThuNguyen").change(function () {
+            check_DVX_TN();
+        });
+        function check_submit() {
+            if (check_DVX_TN() === true) {
+                if ($("#HeSo").attr("readonly") == null || $("#HeSo").attr("readonly") == "") {
+                    if ($("#HeSo").val().trim() == "0") {
+                        app.notice.error("Hệ số phải lớn hơn 1");
+                        return false;
+                    }
+                }
+                return true;
+            }
+            else
+                return false;
+        }
+        function check_DVX_TN() {
+            if (($("#MaDonViXuat").val() || null) != null && ($("#MaDonViThuNguyen").val() || null) != null) {
+                if ($("#MaDonViXuat").val() == $("#MaDonViThuNguyen").val()) {
+                    app.notice.error("Đơn vị xuất và thứ nguyên không được trùng nhau");
+                    return false;
+                }
+            }
+            return true;
+        }
+        function genbarcode() {
+            $.ajax({
+                // edit to add steve's suggestion.
+                //url: "/ControllerName/ActionName",
+                url: $('input[name=baseUrl]').val() + "/Thuocs/GenUniqueBarcode",
+                success: function (data) {
+                    // your data could be a View or Json or what ever you returned in your action method
+                    // parse your data here
+                    $("#BarCode").val(data);
+                }
+            });
+        };
+
+        function scanbarcode() {
+            var href = window.location.href.split("\#")[0];
+            window.addEventListener("storage", zxinglistener, false);
+            zxingWindow = window.open("zxing://scan/?ret=" + encodeURIComponent(href + "#{CODE}"), '_self');
+
+        };
+        function zxinglistener(e) {
+            localStorage["zxingbarcode"] = "";
+            if (e.url.split("\#")[0] == window.location.href) {
+                window.focus();
+                processBarcode(decodeURIComponent(e.newValue));
+            }
+            window.removeEventListener("storage", zxinglistener, false);
+        }
+        if (window.location.hash != "") {
+            localStorage["zxingbarcode"] = window.location.hash.substr(1);
+            self.close();
+            window.location.href = "about:blank";//In case self.close is disabled
+        } else {
+            window.addEventListener("hashchange", function (e) {
+                window.removeEventListener("storage", zxinglistener, false);
+                var hash = window.location.hash.substr(1);
+                if (hash != "") {
+                    window.location.hash = "";
+                    processBarcode(decodeURIComponent(hash));
+                }
+            }, false);
+        }
+        function processBarcode(b) {
+            b = b.replace("/", "");
+            $("#BarCode").val(b);
+        }
+        function BindAutocomplete(elem) {
+            var url = $('input[name=baseUrl]').val() + "Thuocs/GetThuocsByMaOrTen_CatalogsCommons";
+            elem.autocomplete({
+                minLength: 2,
+                source: function (request, response) {
+                    $.getJSON(url, request, function (data, status, xhr) {
+                        response(data);
+                    });
+                },
+                messages: {
+                    noResults: "Không tìm thấy"//,
+                    // results: ""
+                },
+                select: function (event, ui) {
+                    //console.log(ui.item);
+                    elem.val(ui.item.TenThuoc.trim());
+                    fnBindingToView(ui.item.drugId);
+                    return false;
+                }
+            }).each(function () {
+                $(this).autocomplete('instance')._renderItem = function (ul, item) {
+                    return $("<li>")
+                        .append("<a>" + item.TenThuoc + "</a>")
+                        .appendTo(ul);
+                };
+            });
+        }
+        function fnBindingToView(drugId) {
+            var url = $('input[name=baseUrl]').val() + "Thuocs/GetDetailDrugInCatalogCommons";
+            $.getJSON(url, { id: drugId }, function (oData, status, xhr) {
+                if (oData) {
+                    delete oData.MaThuoc;
+                    if (!oData.BarCode)
+                        delete oData.BarCode;
+                    if ($("#ThuocId").val() === "0") {
+                        $("#tblMain").find("input:not(input[type=button])[name][name!=''],select[name][name!='']").each(function (index, el) {
+                            var sName = $(el).attr("name");
+                            if (oData[sName] && oData[sName] != -1 && !$(el).hasClass("noBind")) {
+                                if (el.tagName == "SELECT") {
+                                    $(el).val(oData[sName]);
+                                }
+                                else {
+                                    if ($(el).attr("type") == "checkbox") {
+                                        $(el).prop("checked", oData[sName]);
+                                    }
+                                    else
+                                        $(el).val(oData[sName]);
+                                }
+                            }
+                        });
+                    }
+                    $("#tblMain #hdfThuocIdRef").val(oData.drugId);
+                    $("#MaDonViThuNguyen").trigger("change");
+                }
+            });
+        }
+    </script>
+}

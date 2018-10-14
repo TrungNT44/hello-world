@@ -1,0 +1,673 @@
+﻿@using App.Common.Extensions;
+@using Med.Web.Data.Session
+@using MedMan
+@using MedMan.App_Start
+@using Med.Web.Extensions
+@using sThuoc.Filter
+@using Med.Web.Helpers
+@using System.Web.Optimization
+
+<!DOCTYPE html>
+<html ng-app="appInstance">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>@ViewBag.Title - Web Nhà Thuốc</title>        
+        @Styles.Render("~/Content/css")
+        @Styles.Render("~/Content/themes/base/css")
+        @Styles.Render("~/bundles/base-lib-css")
+        @Styles.Render("~/bundles/production-css")
+        <link rel="stylesheet" href="~/Content/font-awesome.min.css">
+        <meta name="description" content="The description of my page" />
+        @Scripts.Render("~/bundles/base-lib-js")
+        @Scripts.Render("~/bundles/production-js")
+        @Scripts.Render("~/bundles/production-nonminify-js")
+        @Html.IncludeVersionedJs("/Scripts/app-version.js")
+        <link rel="icon"
+              type="image/png"
+              href="~/img/web_icon_300.png" />
+        <script>
+            var socketServerUrl = "@Html.Raw(ViewBag.WebSocketUrl)";
+            if (!app.utils.isStringEmpty(socketServerUrl))
+            {
+                handleSocketEvents();
+            }
+        </script>
+        <style>
+            .notifi_red {
+                color: red;
+            }
+
+            .notifi_yellow {
+                color: sandybrown;
+            }
+        </style>
+    </head>
+    <body>
+        <!--Notification box-->
+        @Html.Partial("~/Views/Shared/ProductionPartial.cshtml")
+        <input type="hidden" name="baseUrl" id="baseUrl" value="@Url.Action("Index", "Home", null, "http")"/>
+          
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" data-toggle="collapse" data-target=".navbar-collapse" class="navbar-toggle"><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        @*Home*@
+                        <div>
+                           
+                            
+                            @{ var tenNhaThuoc = this.GetNhaThuoc(false) != null ? this.GetNhaThuoc().TenNhaThuoc : "...";}
+                            @if (this.GetNhaThuoc(false) != null)
+                            {
+                               
+                                <div id="block-container">
+                                    <div id="bloc1"><a href=@Url.Action("Index","Home") class="navbar-brand"><i class="fa fa-home" style="font-size:20px;color:#35A6CA"></i></a></div>
+                                   
+                                    <div class="divNotification">
+                                        <a href="javascript:;" class="navbar-brand dropdown-toggle count-info" data-toggle="dropdown" data-hover="collapse">
+                                            <i class="fa fa-bell" style="color:#35A6CA"> </i>
+                                            <span id="lbNumberNotification" style="background-color: #f36a5a;color: #fff;position: absolute;top: 5px;padding: 0% 1%;border-radius: 4px!important;font-size: 10px;text-align: center;margin-left: 15px;"></span>
+                                        </a>
+                                        <ul class="divNotificationBox dropdown-menu" style="width: 360px">
+                                            <div id="notificationBlog">
+
+                                            </div>
+                                            <li class="dropdown-submenu">
+                                                <a href="/Notification/History" style="text-align: center;font-weight: bold;">Xem tất cả</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                @Html.ActionLink("" + tenNhaThuoc, "ChonNhaThuocMacDinh", "Account", null, new { @class = "navbar-brand" })
+                            }
+                            
+                        </div>                        
+                        @*Nhập - Xuất*@
+                        <div>
+                            <a href="#" data-toggle="dropdown" role="button" aria-expanded="false" class="navbar-brand"><i class="fa fa-refresh" style="font-size:20px;color:#35A6CA"></i></a>
+                            <ul class="dropdown-menu" role="menu">
+                                @if (this.HasPermisson("phieuxuats", "Create"))
+                                {
+                                    <li style="font-size:large"><row>&nbsp;<i class="fa fa-backward" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Bán hàng", "Create", "PhieuXuats")</li>
+                                }
+                                @if (this.HasPermisson("PhieuNhaps", "Create"))
+                                {
+                                    <li class="divider"></li>
+                                    <li style="font-size:large"><row>&nbsp;<i class="fa fa-forward" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Nhập hàng", "Create", "PhieuNhaps")</li>
+                                }
+                                @if (this.HasPermisson("PhieuNhaps", "Create"))
+                                {
+                                    <li class="divider"></li>
+                                    <li style="font-size:large"><row>&nbsp;<i class="fa fa-forward" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Khách hàng trả lại", "Create", "PhieuNhaps", new { loaiPhieu = "3" }, null)</li>
+                                }
+                                @if (this.HasPermisson("PhieuXuats", "Create"))
+                                {
+                                    <li class="divider"></li>
+                                    <li style="font-size:large"><row>&nbsp;<i class="fa fa-backward" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Trả lại nhà cung cấp", "Create", "PhieuXuats", new { loaiPhieu = "4" }, null)</li>
+                                }
+                                <li class="divider"></li>
+                                <li style="font-size:large"><row>&nbsp;<i class="fa fa-list" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Danh sách phiếu Nhập-Xuất", "Index", "PhieuNhaps")</li>
+                                <li class="divider"></li>
+                                <li style="font-size:large"><row>&nbsp;<i class="fa fa-undo" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Khôi phục các chứng từ bị xóa", "Index", "PhieuNhaps", new { KhoiPhuc = 1 }, null)</li>
+
+                            </ul>
+                        </div>
+                        @*Tìm kiếm*@
+                        <div>
+                            <a href="#" data-toggle="dropdown" role="button" aria-expanded="false" class="navbar-brand"><i class="fa fa-search" style="font-size:20px;color:#35A6CA"></i></a>
+                            <ul class="dropdown-menu" role="menu">
+                                @if (this.HasPermisson("PhieuNhaps", "Index"))
+                                {
+                                    <li style="font-size:large"><row>&nbsp;<i class="fa fa-search fa-fw" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Phiếu nhập-xuất  ", "Index", "PhieuNhaps")</li>
+                                    <li class="divider"></li>
+                                }
+                                @if (this.HasPermisson("PhieuThuChis", "Index"))
+                                {
+                                    <li style="font-size:large"><row>&nbsp;<i class="fa fa-search fa-fw" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Phiếu thu-chi", "Index", "PhieuThuChis")</li>
+                                    <li class="divider"></li>
+                                }
+                                @if (this.HasPermisson("PhieuKiemKes", "Index"))
+                                {
+                                    <li style="font-size:large"><row>&nbsp;<i class="fa fa-search fa-fw" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Phiếu kiểm kê", "Index", "PhieuKiemKes")</li>
+                                    <li class="divider"></li>
+                                }
+                                @if (this.HasPermisson("Thuocs", "Index"))
+                                {
+                                    <li style="font-size:large"><row>&nbsp;<i class="fa fa-search fa-fw" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Hàng hóa", "Index", "Thuocs")</li>
+                                    <li class="divider"></li>
+                                }                                
+                                @if (this.HasPermisson("KhachHangs", "Index"))
+                                {
+                                    <li style="font-size:large"><row>&nbsp;<i class="fa fa-search fa-fw" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Khách hàng", "Index", "KhachHangs")</li>
+                                    <li class="divider"></li>
+                                }                                
+                                @if (this.HasPermisson("NhaCungCaps", "Index"))
+                                {
+                                    <li style="font-size:large"><row>&nbsp;<i class="fa fa-search fa-fw" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Nhà cung cấp", "Index", "NhaCungCaps")</li>
+                                    <li class="divider"></li>
+                                }
+                                @if (this.HasPermisson("BacSys", "Index"))
+                                {
+                                    <li style="font-size:large"><row>&nbsp;<i class="fa fa-search fa-fw" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Bác sỹ", "Index", "BacSys")</li>
+                                    <li class="divider"></li>
+                                }
+                                @if (this.IsNhaThuocAdmin())
+                                {
+                                    <li style="font-size:large"><row>&nbsp;<i class="fa fa-search fa-fw" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Nhân viên", "staff", "Account")</li>
+                                }
+                                
+                            </ul>
+                        </div>
+                        @*Báo cáo*@
+                        <div>
+                            <a href="#" data-toggle="dropdown" role="button" aria-expanded="false" class="navbar-brand"><i class="fa fa-file-text" style="font-size:20px;color:#35A6CA"></i></a>
+                            <ul class="dropdown-menu" role="menu">
+                                @if (this.HasPermisson("Baocao", "TheoNgay"))
+                                {
+                                   
+                                    <li style="font-size:large"><row>&nbsp;<i class="fa fa-file-text fa-fw" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Báo cáo doanh thu chi tiết theo ngày", "RevenueDetailsByDay", "Report")</row></li>
+                                    <li class="divider"></li>
+                                   
+                                }
+                                @if (this.HasPermisson("Baocao", "Index"))
+                                {
+                                    @*<li style="font-size:large"><row>&nbsp;<i class="fa fa-file-text fa-fw" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Báo cáo tổng hợp  ", "Index", "Baocao")</row></li>*@
+                                    <li style="font-size:large"><row>&nbsp;<i class="fa fa-file-text fa-fw" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Báo cáo tổng hợp", "SynthesisReport", "Report")</row></li>                                   
+                                    //
+                                    //Báo cáo được phát triển riêng cho nhà thuốc 0070
+                                    if (this.GetNhaThuoc().MaNhaThuoc == "0070")
+                                    {
+                                        <li style="font-size:large"><row>&nbsp;<i class="fa fa-file-text fa-fw" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Báo cáo tổng hợp doanh thu", "ViewCustomizeReport", "Report")</row></li>
+                                    }
+
+                                    <li class="divider"></li>
+                                }
+                                @if (this.HasPermisson("Baocao", "TheoNhanVien"))
+                                {
+                                    @*<li style="font-size:large"><row>&nbsp;<i class="fa fa-file-text fa-fw" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Theo nhân viên", "TheoNhanVien", "Baocao")</li>*@
+                                    <li style="font-size:large"><row>&nbsp;<i class="fa fa-file-text fa-fw" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Theo nhân viên", "ReportByStaff", "Report")</li>        
+                                    <li class="divider"></li>
+                                }
+                                @if (this.HasPermisson("Baocao", "TheoKhachHang"))
+                                {
+                                    @*<li style="font-size:large"><row>&nbsp;<i class="fa fa-file-text fa-fw" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Theo khách hàng", "TheoKhachHang", "Baocao")</li>*@
+                                    <li style="font-size:large"><row>&nbsp;<i class="fa fa-file-text fa-fw style=" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Theo khách hàng", "ReportByCustomer", "Report")</li>
+                                    <li class="divider"></li>
+                                }
+                                @if (this.HasPermisson("Baocao", "TheoMatHang"))
+                                {
+                                    @*<li style="font-size:large"><row>&nbsp;<i class="fa fa-file-text fa-fw style=" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Theo mặt hàng bán", "TheoMatHang", "Baocao")</li>*@
+                                    <li style="font-size:large"><row>&nbsp;<i class="fa fa-file-text fa-fw" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Theo mặt hàng bán", "ReportByGoods", "Report")</li>
+                                    <li class="divider"></li>
+                                }
+                                @if (this.HasPermisson("Baocao", "TheoBacSy"))
+                                {
+                                    @*<li style="font-size:large"><row>&nbsp;<i class="fa fa-file-text fa-fw style=" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Theo bác sỹ", "TheoBacSy", "Baocao")</li>*@
+                                    <li style="font-size:large"><row>&nbsp;<i class="fa fa-file-text fa-fw style=" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Theo bác sỹ", "ReportByDoctor", "Report")</li>
+                                    <li class="divider"></li>
+                                }
+                                @if (this.HasPermisson("Baocao", "TheoNhaCungCap"))
+                                {
+                                    <li style="font-size:large"><row>&nbsp;<i class="fa fa-file-text fa-fw" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Theo nhà cung cấp", "TheoNhaCungCap", "Baocao")</li>
+                                    <li class="divider"></li>
+                                }
+
+                                @*@if (this.HasPermisson("Baocao", "TheoKhoHang"))
+                                {
+                                    <li style="font-size:large"><row>&nbsp;<i class="fa fa-file-text fa-fw" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Theo kho hàng", "TheoKhoHang", "Baocao")</li>
+                                }*@
+                                @if (this.HasPermisson("Baocao", "TheoKhoHang"))
+                                {                   
+                                    <li style="font-size:large"><row>&nbsp;<i class="fa fa-file-text fa-fw" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Theo kho hàng", "DrugWarehouses", "Report")</li>
+                                }
+                            </ul>
+
+                        </div>
+                        @*Cảnh báo*@
+                        @*<div>
+                            <a href="#" data-toggle="dropdown" role="button" aria-expanded="false" class="navbar-brand"><i class="fa fa-exclamation-triangle" style="font-size:20px;color:#35A6CA"></i></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li style="font-size:large;"><row>&nbsp;<i class="fa fa-exclamation-triangle" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Cảnh báo hàng hết", "InventoryWarning", "DrugManagement")</li>
+                                <li class="divider"></li>
+                                <li style="font-size:large"><row>&nbsp;<i class="fa fa-exclamation-triangle" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Cảnh báo hàng hết hạn", "CanhBaoHangHetHan", "TienIch")</li>
+                                <li class="divider"></li>
+                                <li style="font-size:large"><row>&nbsp;<i class="fa fa-exclamation-triangle" style="color:#35A6CA"></i>&nbsp;@Html.ActionLink("Cảnh báo hàng lợi nhuận âm", "NegativeRevenueWarning", "Utilities")</li>
+                            </ul>
+                        </div>*@
+                        
+                       
+                    }
+                    
+                            
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">              
+                    <ul class="nav navbar-nav">
+                        @*Hệ thống*@
+                        @if (User.Identity.IsAuthenticated)
+                        {                                                   
+                            <li class="dropdown menu">
+                                <a href="#" data-toggle="dropdown" role="button" aria-expanded="false" class="dropdown-toggle" style="font-size:large"><i class="fa fa-desktop"></i>&nbsp;&nbsp;&nbsp;Hệ Thống<span class="caret"></span></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    @if (User.IsInRole(Constants.Security.Roles.SuperUser.Value))
+                                    {
+                                        <li class="active"><a href="#">Hệ thống</a></li>
+                                        <li>@Html.ActionLink("Quản lý người dùng", "Index", "Account")</li>
+                                        <li>@Html.ActionLink("Quản lý Nhà thuốc", "Index", "Nhathuoc")</li>
+                                        <li class="divider"></li>
+                                        <li>@Html.ActionLink("Tạo thông báo", "Create", "Notification")</li>
+                                        <li>@Html.ActionLink("Danh sách thông báo", "List", "Notification")</li>
+                                        <li class="divider"></li>
+                                    }
+                                    @if (WebSessionManager.Instance.HasPermisionToAccessDrugMappings())
+                                    {
+                                        <li>@Html.ActionLink("Tra cứu danh mục thuốc", "SearchDrugCatalog", "Thuocs")</li>
+                                        <li>@Html.ActionLink("Mapping danh mục thuốc", "MappingCatalog", "Thuocs")</li>
+                                        <li class="divider"></li>
+                                    }
+                                    @if (this.IsNhaThuocAdmin())
+                                    {
+                                        <li>@Html.ActionLink("Danh sách nhân viên", "staff", "Account")</li>
+                                    }
+                                    <li>@Html.ActionLink("Tùy chọn", "Settings", "Nhathuoc")</li>
+                                    @if (this.GetNhaThuoc(false) != null && this.IsNhaThuocAdmin())
+                                    {
+                                        if (this.MultiNhaThuoc())
+                                        {
+                                            <li>@Html.ActionLink("Đổi nhà thuốc khác", "ChonNhaThuocMacDinh", "Account")</li>
+                                        }
+                                        <li>@Html.ActionLink("Thông tin Nhà thuốc", "thongtin", "Nhathuoc", new { id = this.GetNhaThuoc(false).MaNhaThuoc }, null)</li>
+                                    }
+                                    <li class="divider"></li>
+                                    <li>@Html.ActionLink("Đổi mật khẩu", "Manage", "Account")</li>
+                                    <li class="divider"></li>
+                                    <li><a href="javascript:document.getElementById('logoutForm').submit()">Đăng xuất</a></li>
+                                </ul>
+                            </li>
+                        }
+                        @*Nhập Xuất*@
+                        @*<li class="dropdown menu">
+                            <a href="#" data-toggle="dropdown" role="button" aria-expanded="false" class="dropdown-toggle" style="font-size:large"><i class="fa fa-refresh"></i>&nbsp;&nbsp;&nbsp;Nhập - Xuất<span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                @if (this.HasPermisson("phieuxuats", "Create")){
+                                    <li>@Html.ActionLink("Bán hàng", "Create", "PhieuXuats")</li>
+                                }
+                                @if (this.HasPermisson("PhieuNhaps", "Create"))
+                                {
+                                    <li class="divider"></li>
+                                    <li>@Html.ActionLink("Nhập hàng", "Create", "PhieuNhaps")</li>
+                                }
+                                @if (this.HasPermisson("PhieuNhaps", "Create"))
+                                {
+                                    <li class="divider"></li>
+                                    <li>@Html.ActionLink("Khách hàng trả lại", "Create", "PhieuNhaps", new {loaiPhieu = "3"}, null)</li>
+                                }
+                                @if (this.HasPermisson("PhieuXuats", "Create"))
+                                {
+                                    <li class="divider"></li>
+                                    <li>@Html.ActionLink("Trả lại nhà cung cấp", "Create", "PhieuXuats", new {loaiPhieu = "4"}, null)</li>
+                                }
+                                @if (this.HasPermisson("PhieuNhaps", "Index"))
+                                {                                    
+                                    <li class="divider"></li>
+                                    <li>@Html.ActionLink("Danh sách phiếu Nhập-Xuất", "Index", "PhieuNhaps")</li>
+                                    <li class="divider"></li>
+                                    <li>@Html.ActionLink("Khôi phục các chứng từ bị xóa", "Index", "PhieuNhaps", new {KhoiPhuc = 1}, null)</li>
+                                }
+                            </ul>
+                        </li>*@
+                        @* Thu-Chi*@
+                        <li class="dropdown menu">
+                            <a href="#" data-toggle="dropdown" role="button" aria-expanded="false" class="dropdown-toggle" style="font-size:large"><i class="fa fa-usd"></i>&nbsp;&nbsp;&nbsp;Thu - Chi<b class="caret"></b></a>
+                            <ul class="dropdown-menu" role="menu">
+                                @if (this.HasPermisson("PhieuThuChis", "Create"))
+                                {
+                                    @*<li>@Html.ActionLink("Viết phiếu thu", "Create", "PhieuThuChis", new {loaiPhieu = 1}, null)</li>*@
+                                    <li> @Html.ActionLink("Viết phiếu thu nợ khách hàng", "InOutcommingNoteScreen", "InOutCommingNote", new { noteTypeId = 1 }, null)</li>
+                                    <li class="divider"></li>
+                                    @*<li>@Html.ActionLink("Viết phiếu chi", "Create", "PhieuThuChis", new {loaiPhieu = 2}, null)</li>*@
+                                    <li> @Html.ActionLink("Viết phiếu trả nợ nhà cung cấp", "InOutcommingNoteScreen", "InOutCommingNote", new { noteTypeId = 2 }, null)</li>
+                                        <li class="divider"></li>
+                                    <li>@Html.ActionLink("Nhập các khoản thu chi khác", "Create", "PhieuThuChis", new { loaiPhieu = 3 }, null)</li>
+                                }
+                                @if (this.HasPermisson("PhieuThuChis", "Index"))
+                                {
+                                    <li class="divider"></li>
+                                    <li>@Html.ActionLink("Danh sách phiếu Thu-Chi", "Index", "PhieuThuChis")</li>
+                                }
+                            </ul>
+                        </li>
+                        @*Hang Hoa*@
+                        <li class="dropdown menu">
+                            <a href="#" data-toggle="dropdown" role="button" aria-expanded="false" class="dropdown-toggle" style="font-size:large"><i class="fa fa-archive"></i>&nbsp;&nbsp;&nbsp;Hàng Hóa<b class="caret"></b></a>
+                            <ul class="dropdown-menu" role="menu">
+                                @if (this.HasPermisson("NhomThuocs", "Index"))
+                                {
+                                    <li>@Html.ActionLink("Nhóm thuốc", "Index", "NhomThuocs")</li>
+                                    
+                                }
+                                @if (this.HasPermisson("Thuocs", "Index"))
+                                {
+                                    <li class="divider"></li>
+                                    <li>@Html.ActionLink("Danh sách thuốc", "Index", "Thuocs")</li>                                    
+                                }
+                                @if (this.HasPermisson("Thuocs", "Create"))
+                                {
+                                    <li class="divider"></li>
+                                    <li>@Html.ActionLink("Thêm thuốc mới", "Create", "Thuocs")</li>
+                                }
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <li class="divider"></li>
+                                    <li>@Html.ActionLink("In mã vạch thuốc", "InMaVach", "Thuocs")</li>
+                                }                               
+                                @if (this.HasPermisson("PhieuNhaps", "Details") || this.HasPermisson("PhieuXuats", "Details"))
+                                {
+                                    <li class="divider"></li>
+                                    <li>@Html.ActionLink("Lịch sử giao dịch", "DrugTransHistories", "Report")</li>
+                                }
+                               
+                                @if (this.HasPermisson("DrugManagement", "LapDuTru"))
+                                {
+                                    <li class="divider"></li>
+                                    <li>@Html.ActionLink("Lập dự trù thuốc", "CreateReserve", "DrugManagement")</li>
+                                }
+                               @if (this.HasPermisson("PhieuKiemKes", "Index"))
+                                {
+                                    <li class="divider"></li>
+                                    <li>@Html.ActionLink("Kiểm kê kho", "Index", "PhieuKiemKes")</li>
+                                }
+                            </ul>
+                        </li> 
+                        @*Đối tác*@
+                        <li class="dropdown menu">
+                            <a href="#" data-toggle="dropdown" role="button" aria-expanded="false" class="dropdown-toggle" style="font-size:large"><i class="fa fa-users"></i>&nbsp;&nbsp;&nbsp;Đối Tác<b class="caret"></b></a>
+                            <ul class="dropdown-menu" role="menu">
+                                @if (this.HasPermisson("NhomKhachHangs", "Index"))
+                                { 
+                                    <li>@Html.ActionLink("Nhóm khách hàng", "Index", "NhomKhachHangs")</li>                                    
+                                }
+                                @if (this.HasPermisson("KhachHangs", "Index"))
+                                {
+                                    <li class="divider"></li>
+                                    <li>@Html.ActionLink("Khách hàng", "Index", "KhachHangs")</li>
+                                }
+                                @if (this.HasPermisson("NhomNhaCungCaps", "Index"))
+                                {
+                                    <li class="divider"></li>
+                                    <li>@Html.ActionLink("Nhóm nhà cung cấp", "Index", "NhomNhaCungCaps")</li>                                    
+                                }
+                                @if (this.HasPermisson("NhaCungCaps", "Index"))
+                                {
+                                    <li class="divider"></li>
+                                    <li>@Html.ActionLink("Nhà cung cấp", "Index", "NhaCungCaps")</li>
+                                }
+                                @if (this.HasPermisson("BacSys", "Index"))
+                                {
+                                    <li class="divider"></li>
+                                    <li>@Html.ActionLink("Danh sách bác sỹ", "Index", "BacSys")</li>
+                                }
+                            </ul>
+                        </li>                     
+                        @*Tiện ích*@
+                        @if(User.Identity.IsAuthenticated){
+                            <li class="dropdown menu">
+                                <a href="#" data-toggle="dropdown" role="button" aria-expanded="true" class="dropdown-toggle" style="font-size:large"><i class="fa fa-cogs"></i>&nbsp;&nbsp;&nbsp;Tiện Ích<b class="caret"></b></a>
+                                <ul class="dropdown-menu" role="menu">
+                                     @if (User.Identity.IsAuthenticated)
+                                    {
+                                        <li> @Html.ActionLink("Danh sách hàng hết", "InventoryWarning", "DrugManagement")</li>
+                                        <li class="divider"></li>
+                                        <li> @Html.ActionLink("Danh sách hàng hết hạn", "NearExpiredDrugWarning", "Utilities")</li>
+                                        <li class="divider"></li>
+                                        <li>@Html.ActionLink("Danh sách hàng lợi nhuận âm", "CanhBaoLoiNhuanAm", "TienIch") </li>
+                                        if (this.IsNhaThuocAdmin())
+                                        {
+                                            <li class="divider"></li>
+                                            <li> @Html.ActionLink("Tin tuyển dụng nhân viên", "ListRecruits", "Recruitment")</li>
+                                        }
+                                    }
+                                    <li class="divider"></li>
+                                    <li><a href="http://webnhathuoc.com/home/tuyen-dung-nha-thuoc/">Trang tổng hợp tin tuyển dụng</a> </li>
+                                    @*<li><a href = @Url.Action("MoiBatDau","TienIch")>Dành cho người mới bắt đầu</a> </li>
+                                    <li class="divider"></li>
+                                    <li><a href="http://webnhathuoc.com/home/cau-hoi-thuong-gap/">Câu hỏi thường gặp</a> </li>
+                                    <li class="divider"></li>
+                                    <li><a href="http://webnhathuoc.com/home/">Thông tin về chương trình</a> </li>*@
+                                </ul>
+                            </li>
+                        } 
+                        @*Trợ giúp*@
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="dropdown menu">
+                                <a href="#" data-toggle="dropdown" role="button" aria-expanded="true" class="dropdown-toggle" style="font-size:large"><i class="fa fa-yelp"></i>&nbsp;&nbsp;&nbsp;Trợ giúp<b class="caret"></b></a>
+                                <ul class="dropdown-menu" role="menu">                                    
+                                   
+                                    @*<li><a href=@Url.Action("MoiBatDau","TienIch")>Dành cho người mới bắt đầu</a> </li>*@
+                                    <li>@Html.ActionLink("Chính sách hỗ trợ online", "TuvanOnline", "TienIch")</li>                                                              
+                                    <li class="divider"></li>
+                                    <li><a href="http://webnhathuoc.com/home/kinh-nghiem/">Kinh nghiệm chia sẻ</a> </li>                                    
+                                    <li class="divider"></li>
+                                    <li><a href="http://webnhathuoc.com/home/huong-dan-su-dung/">Hướng dẫn sử dụng</a> </li>
+                                    <li class="divider"></li>
+                                    <li><a href="https://www.youtube.com/channel/UCG4ayMVzbME9Vs-PUNW7Xug/playlists/">Video hướng dẫn sử dụng</a> </li>
+                                    <li class="divider"></li>
+                                    <li><a href="http://webnhathuoc.com/home/cau-hoi-thuong-gap/">Câu hỏi thường gặp</a> </li>
+                                    @*<li class="divider"></li>
+                                    <li><a href="http://webnhathuoc.com/home/">Thông tin về chương trình</a> </li>*@
+                                </ul>
+                            </li>
+                        }
+                        @*@if (User.Identity.IsAuthenticated)
+                        {
+                            <li class="dropdown menu">
+                                <a href="#" class="navbar-brand"><i class="fa fa-barcode" style="font-size:large"></i>&nbsp;&nbsp;Quét mã vạch thuốc</a>                            
+                            </li>
+                        }*@                       
+                    </ul>
+                    @Html.Partial("_LoginPartial")
+                     @if (User.Identity.IsAuthenticated)
+                     {
+                        <ul class="nav navbar-nav">
+                            <li>
+                                <a href="javascript:document.getElementById('logoutForm').submit()" style="font-size:large"><i class="fa fa-sign-out"></i>&nbsp;&nbsp;Đăng xuất</a>
+                            </li>
+                        </ul>
+                     }
+                    
+                    
+                </div>
+            </div>
+        </nav>
+        <div class="container body-content">    
+            @RenderBody()
+            <hr style="margin-top:20px; margin-bottom:10px" />
+            <footer> 
+                @{
+                    var nhaThuoc = this.GetNhaThuoc(false);
+                }
+                @if (nhaThuoc != null)
+                {
+                    <p style="padding:0px;margin:0px" >@nhaThuoc.TenNhaThuoc - @nhaThuoc.DiaChi</p>
+                    <p style="padding:0px">Được phát triển bởi <a href="https://facebook.com/webnhathuoc"><strong style="color:#35A6CA">WEB</strong> <strong style="color:orange">NHÀ</strong> <strong style="color:#28CC28">THUỐC</strong></a></p>
+                }
+                else
+                {
+                    <p style="padding:0px">Được phát triển bởi <a href="https://facebook.com/webnhathuoc"><strong style="color:#35A6CA">WEB</strong> <strong style="color:orange">NHÀ</strong> <strong style="color:#28CC28">THUỐC</strong></a></p>
+                }
+                
+            </footer>
+        </div>
+        <!--Ajax loader-->
+        <div class="loader-div" id="loader-div" loader style="display: none; position: relative; z-index: 99999;">
+            <div class="ajax-loader">
+                <div class="sk-spinner sk-spinner-double-bounce">
+                    <div class="sk-double-bounce1"></div>
+                    <div class="sk-double-bounce2"></div>
+                </div>
+
+            </div>
+        </div>
+        <!--Javascript files-->
+        @Scripts.Render("~/bundles/modernizr")
+        @RenderSection("scripts", required: false)
+        <script>
+        // Dropdown Menu Fade
+            jQuery(document).ready(function () {
+                $(".dropdown").hover(
+
+                    function () {
+                        $('.dropdown-menu', this).stop().fadeIn("fast");
+                    },
+
+                    function () {
+                        $('.dropdown-menu', this).stop().fadeOut("fast");
+                    });
+                // hiden empty menu 
+                jQuery('.dropdown-menu').each(function () {
+                    if (jQuery(this).children().size() == 0) {
+                        jQuery(this).parents('li.menu').remove();
+                    }
+                });
+                $(".divNotification").click(function (event) {
+                    fnGetListNotificationForView(this);
+                    event.stopPropagation();
+                });
+                $(window).click(function () {
+                    $(".divNotification .divNotificationBox").hide(200);
+                });
+                fnGetNumberNotification();
+            });
+            function fnGetNumberNotification() {
+                var dialogurl = $('input[name=baseUrl]').val() + 'Notification/GetNumberNotification';
+                $.post(dialogurl, function (response) {
+                    if (response) {
+                        totalNotification = response;
+                        if (response.total > 0) {
+                            $("#lbNumberNotification").text(response.total);
+                            $("#linkReadAll").show();
+                        }
+                        else {
+                            $("#lbNumberNotification").text("");
+                            $("#notificationBlog").html('');
+                        }
+                        if (response.hasNotificationHot && response.isSupperAdmin === false) {
+                            if (!$(".divNotificationBox").is(":visible")) {
+                                fnGetListNotificationForView($(".divNotification")[0]);
+                            }
+                        }
+                    }
+                });
+            }
+            function fnGetListNotificationForView(ele) {
+                var dialogurl = $('input[name=baseUrl]').val() + 'Notification/GetListNotificationForView';
+                $.post(dialogurl, function (response) {
+                    if (response) {
+                        $("#lbNumberNotification").text("");
+                        var divBlog = $("#notificationBlog");
+                        divBlog.html('');
+                        response.forEach(function (el) {
+                            divBlog.append('<li class="dropdown-submenu" style="padding: 5px;' + getColorBackground(el.NotificationReadTypeID) + '">'
+                                + '<a href="' + el.Link + '" class="nav-link nav-toggle " target="_blank" style="display: inline-flex;">'
+                                    + '<i class="' + fnGetIcon(el.NotificationTypeID) + '" style="float: left; text-align: center; line-height: 8px; font-size: 146%;margin-right: 12px;  padding: 15px 16px;"></i>'
+                                    + '<div style="float: right;margin-left: 7px;">'
+                                        + '<span style="white-space: normal;font-weight: bold;">' + el.Title + '</span>'
+                                        + '<p style="font-size: 80%;margin: 0px;">khoảng ' + fnGetTime(el.NotificationDate) + '</p>'
+                                    + '</div>'
+                                + '</a>'
+                            + '</li>');
+                        });
+                        $(ele).find(".divNotificationBox").toggle(200);
+                    }
+                });
+            }
+            function fnGetIcon(type) {
+                if (type == 3) {
+                    return "fa fa-fire notifi_red";
+                }
+                else if (type == 1) {
+                    return "fa fa-exclamation-triangle notifi_yellow";
+                }
+                else {
+                    return "fa fa-bullhorn";
+                }
+            }
+            function getColorBackground(idType) {
+                if (idType == "0") {
+                    return "background-color: #ddd;"
+                }
+                else
+                    return "";
+            }
+            function fnGetTime(sTime) {
+                var oDate = moment(sTime, "DD/MM/YYYY HH:mm:ss", true);
+                return oDate.fromNow();
+            }
+            //function MoiBatDau() {
+            //    var dialogurl = $('input[name=baseUrl]').val() + 'TienIch/MoiBatDau';
+            //    $.get(dialogurl, function (view) {
+            //        $("body").append(view);
+            //        $('#MoiBatDauDialogModal').modal('show');
+            //    });
+            //}
+
+            //function scan_thuoc() {
+            //    var href = window.location.href.split("\#")[0];
+            //    window.addEventListener("storage", zxinglistener, false);
+            //    zxingWindow = window.open("zxing://scan/?ret=" + encodeURIComponent(href + "#{CODE}"), '_self');
+
+            //};
+
+            //function zxinglistener(e) {
+            //    localStorage["zxingbarcode"] = "";
+            //    if (e.url.split("\#")[0] == window.location.href) {
+            //        window.focus();
+            //        processBarcode_thuoc(decodeURIComponent(e.newValue));
+            //    }
+            //    window.removeEventListener("storage", zxinglistener, false);
+            //}
+            //if (window.location.hash != "") {
+            //    localStorage["zxingbarcode"] = window.location.hash.substr(1);
+            //    self.close();
+            //    window.location.href = "about:blank";//In case self.close is disabled
+            //} else {
+            //    window.addEventListener("hashchange", function (e) {
+            //        window.removeEventListener("storage", zxinglistener, false);
+            //        var hash = window.location.hash.substr(1);
+            //        if (hash != "") {
+            //            window.location.hash = "";
+            //            processBarcode_thuoc(decodeURIComponent(hash));
+            //        }
+            //    }, false);
+            //}
+
+
+            //function processBarcode_thuoc(barcode) {
+            //    if (barcode) {
+            //        var url = $('input[name=baseUrl]').val() + "Thuocs/GetIdThuocsByBarcode";
+            //        $.get(url, { barcode: barcode }).done(function (id) {
+            //            //alert(data);
+            //            //Call link
+            //            //var detailurl = $('input[name=baseUrl]').val() + "Thuocs/Details/" + data;
+            //            //window.location = detailurl;
+            //            //$('#thuocDialogModal-' + data).modal('show');
+            //            var dialogurl = $('input[name=baseUrl]').val() + 'Thuocs/DialogDetail/' + id;
+            //            $.get(dialogurl, function (view) {
+            //                $("body").append(view);
+
+            //                //$('#myModalContent').html(view);                                                
+            //                $('#thuocDialogModal').modal('show');
+            //                ////$('#thuocDialogModal').modal({ show: 'false' })
+            //            });
+
+            //        });
+            //    }
+            //}
+        </script>
+    </body>
+</html>

@@ -1,0 +1,125 @@
+﻿@model sThuoc.Models.PhieuThuChi
+@using System.Web.UI.WebControls
+@using Med.Web.Extensions
+@using sThuoc.Models
+@using sThuoc.Utils
+@{
+    ViewBag.Title = "Phiếu Chi";
+    var nhaThuoc = this.GetNhaThuoc();
+    var nguoiNhan = "";
+    var diaChi = "";
+    decimal noCu = 0;
+    decimal conNo = 0;
+    string loaiPhieu = "nhận";
+
+    if (Model.LoaiPhieu == 1)
+    {
+        nguoiNhan = Model.KhachHang.TenKhachHang;
+        diaChi = Model.KhachHang.DiaChi;
+        conNo = (decimal)ViewBag.KhachHangNo;
+        noCu = conNo + Model.Amount;
+        ViewBag.Title = "Phiếu thu";
+         loaiPhieu = "nộp";
+    }
+    else if (Model.LoaiPhieu == 2)
+    {
+        nguoiNhan = Model.NhaCungCap.TenNhaCungCap;
+        diaChi = Model.NhaCungCap.DiaChi;
+        conNo = (decimal)ViewBag.NhaCungCapNo;
+        noCu = conNo + Model.Amount;
+        ViewBag.Title = "Phiếu chi";
+         loaiPhieu = "nhận";
+    }
+    else
+    {
+        nguoiNhan = Model.NguoiNhan;
+        diaChi = Model.DiaChi;
+        if (Model.LoaiPhieu == 3)
+        {
+            ViewBag.Title = "Phiếu thu";
+             loaiPhieu = "nộp";
+        }else 
+        {
+            ViewBag.Title = "Phiếu chi";
+             loaiPhieu = "nhận";
+        }
+
+    }
+}
+<div class="header">
+    <div class="storeinfo">
+        <h3 class="nhathuoc">@nhaThuoc.TenNhaThuoc</h3>
+        <h4 class="address">@nhaThuoc.DiaChi</h4>
+        <h4>ĐT: @nhaThuoc.DienThoai</h4>
+        <hr />
+    </div>
+    <div class="title-container">
+        <h2 class="title">@ViewBag.Title</h2>
+        <div style="position:absolute;right:150px;top:5px">
+            <label>Số:</label> <strong>@Model.SoPhieu</strong>
+        </div>
+    </div>
+</div>
+<div class="ui-separator"></div>
+<div class="supplierinfo">
+    <table style="width:100%">
+        <tr>
+            <td style="width: 150px"><strong>Người nhận tiền: </strong></td>
+            <td>
+                &nbsp;&nbsp;@nguoiNhan
+            </td>
+        </tr>
+        <tr>
+            <td><strong>Địa chỉ: </strong></td>
+            <td>&nbsp;&nbsp; @diaChi</td>
+        </tr>
+        <tr>
+            <td><strong>Nợ cũ: </strong></td>
+            <td>&nbsp;&nbsp; @noCu.ToString("0,###")</td>
+        </tr>
+        <tr>
+            <td><strong>Diễn giải: </strong></td>
+            <td>&nbsp;&nbsp; @Model.DienGiai</td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <hr />
+            </td>
+        </tr>
+        <tr>
+            <td><strong>Số tiền: </strong></td>
+            <td>&nbsp;&nbsp; @Model.Amount.ToString("0,###")</td>
+        </tr>
+        <tr>
+            <td><strong>Số tiền bằng chữ: </strong></td>
+            <td>&nbsp;&nbsp; @VNCurrency.ToString(Model.Amount)</td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td><strong>Còn nợ: </strong></td>
+            <td>&nbsp;&nbsp; @conNo.ToString("0,###")</td>
+        </tr>
+        <tr>
+            <td colspan="2">&nbsp;</td>
+        </tr>
+    </table>
+</div>
+<div class="ui-separator"></div>
+<div class="footer">
+    <div class="pull-right">
+        <span> Ngày @Model.NgayTao.Day tháng @Model.NgayTao.Month năm @Model.NgayTao.Year</span>
+    </div>
+    <table style="width: 100%">
+        <tr>
+            <td style="width: 33%;text-align: center;"><strong>Người @loaiPhieu tiền</strong><br />@*(Ký, ghi rõ họ tên)*@</td>
+            <td style="width: 33%;text-align: center;"><strong>Người lập phiếu</strong><br />@*(Ký, ghi rõ họ tên)*@</td>
+            <td style="width: 33%;text-align: center;"><strong>Chủ nhà thuốc</strong><br />@*(Ký, đóng dấu, ghi rõ họ tên)*@</td>
+        </tr>
+    </table>
+    <br /><br /><br /><br />
+</div>
+<div class="ui-separator"></div>

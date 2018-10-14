@@ -1,0 +1,367 @@
+﻿@using System.Globalization
+@model  sThuoc.Models.InMaVachModel
+
+@{
+    ViewBag.Title = "In mã vạch thuốc";
+}
+<link href="~/Content/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/phieuStyle.css" rel="stylesheet" />
+@*<br />*@
+@using (Html.BeginForm("InMaVach","Thuocs",FormMethod.Post, new { target = "_blank" }))
+{
+    @Html.AntiForgeryToken()
+    <h4><b>@ViewBag.Title</b></h4>
+    <hr style="margin-top:0px" />
+    @*<div style="text-align: center;font-size: 15px;padding: 0px;">
+        @*<div style=" position:absolute;right:10%">
+            Mã số: <strong>@ViewBag.SoPhieu</strong>
+        </div>
+        <div>
+            <span id="dvNgayTao" style="width: 10%">
+                Ngày @DateTime.Now.Day/@DateTime.Now.Month/@DateTime.Now.Year
+            </span>
+        </div>        
+    </div>*@
+    
+    @*@Html.HiddenFor(model => model.NgayTao, new { @Value = DateTime.Now.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture) })*@
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    
+    <div class="row">        
+        <div class="col-md-3">
+            @*<fieldset class="">                
+                <strong>Thêm vào theo nhóm thuốc</strong>
+                <div class="control-group">
+                    @Html.DropDownList("MaNhomThuoc", null, optionLabel: "Chọn nhóm thuốc", htmlAttributes: new { @class = "form-control w-70 f-left" })
+                    <input type="hidden" id="maThuoc" name="maThuoc" />
+                    <input type="button" value="Thêm" onclick="AddThuocs()" class="btn btn-default f-right" />
+                </div>
+            </fieldset>*@
+            <div class="input-group">
+                @Html.DropDownList("MaNhomThuoc", null, optionLabel: "Chọn nhóm thuốc", htmlAttributes: new { @class = "form-control"})
+                <span class="input-group-btn">
+                    <input type="hidden" id="maThuoc" name="maThuoc" />
+                    <input type="button" value="Thêm" onclick="AddThuocs()" class="btn btn-default f-right" />                  
+                </span>
+            </div><!-- /input-group -->
+            <br />
+            <fieldset class="">
+                @*<legend>Theo tên thuốc</legend>*@
+                <label>Thêm thông tin in ra</label>
+                <div class="control-group">
+                    @*<input type="text" maxlength="20" id="txtByTen" class="form-control" placeholder="Tìm kiếm theo tên thuốc" />*@
+                    @Html.DropDownListFor(model => model.ExtraPrintInfo, (SelectList)ViewBag.InThem, "", new { @class = "form-control" })
+                </div>
+            </fieldset>
+            <br />
+            <div>
+                <input type="submit" value="In" name="action" class="btn btn-default" />
+                <input type="submit" value="Xuất Excel" name="action" class="btn btn-default" />
+                <input type='button' onclick='location.reload();' value='Xóa hết' class="btn btn-default" />
+                @*@Html.ActionLink("Xóa hết", "InMaVach", "Thuocs", new { @class = "btn btn-default", @type="reset" })*@
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="baocao-container">
+                @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+                {
+                    <div class="text-danger text-center errorMessage">
+                        <span>@ViewBag.ErrorMessage</span>
+                    </div>
+                    <br />
+                }
+                <table class="table-responsive" style="width:100%">
+                    <tr>
+                        <td>                            
+                            <div class="input-group">
+                                <input type="text" maxlength="50" id="txtByMa" class="form-control" placeholder="Nhập mã barcode hoặc tên hàng hóa để thêm vào danh sách in" />
+                                <span class="input-group-btn">
+                                    <input type="hidden" id="maThuoc" name="maThuoc" />
+                                    <input type="button" value="Thêm" onclick="AddThuocs()" class="btn btn-default f-right" />
+                                </span>
+                            </div><!-- /input-group -->
+                        </td>
+                    </tr>
+                </table>
+                <table class="table table-responsive table-bordered" id="tbl">
+                    <thead>                        
+                        <tr>
+                            <th style="background-color: darkgray">#</th>
+                            <th style="background-color: darkgray">Mã Thuốc</th>
+                            <th style="background-color: darkgray">Tên Thuốc</th>                            
+                            <th style="background-color: darkgray">Đơn vị</th>
+                            <th style="background-color: darkgray">Giá bán</th>
+                            <th style="background-color: darkgray">Mã vạch</th>                            
+                            <th style="background-color: darkgray">SL tem</th>                                                      
+                            <th style="background-color: darkgray"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Items != null)
+                        {
+                            var stt = 0;
+                            for (var i = 0; i < Model.Items.Count; i++)
+                            {
+                                stt++;
+                                <tr>
+                                    <td>@stt.ToString() </td>
+                                    <td><input type="hidden" name="Items[@i].MaThuoc" value="@Model.Items[i].MaThuoc" /><span>@Model.Items[i].MaThuoc</span></td>
+                                    <td><input type="hidden" name="Items[@i].TenThuoc" value="@Model.Items[i].TenThuoc" /><span>@Model.Items[i].TenThuoc</span></td>
+                                    <td><input type="hidden" name="Items[@i].DonViXuatLe" value="@Model.Items[i].DonViXuatLe" /><span class="soluonghethong">@Model.Items[i].DonViXuatLe</span></td>
+                                    <td><input type="text" class="form-control txt-gia" name="Items[@i].Gia" value="@Model.Items[i].Gia" /></td>
+                                    <td><input type="hidden" name="Items[@i].MaVach" value="@Model.Items[i].MaVach" /><span class="soluonghethong">@Model.Items[i].MaVach</span></td>
+                                    <td><input type='text' name="Items[@i].SoLuongTem" value="@Model.Items[i].SoLuongTem" class="form-control txt-soluongtem" /></td>
+                                    <td><a class="delete-line text-warning" style="cursor: pointer; display: inline;" title="Xóa"><i class='glyphicon glyphicon-remove'></i></a></td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+    </div>
+}
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/datepicker-vi.js"></script>
+    <script type="text/javascript">
+        var cache = {};
+        $(document).ready(function () {
+            // binding autocomplete
+            BindAutocomplete($("#txtByMa"), "maThuoc");
+            BindAutocomplete($("#txtByTen"), "tenThuoc");
+            // thay doi nhom thuoc
+            $('#MaNhomThuoc').on('change', function () {
+                var val = $(this).val();
+                if (val > 0) {
+                    $('#txtByMa').val('');
+                    $('#txtByTen').val('');
+                    $('input[name=maThuoc]').val('');
+                }
+            });
+            // Tinh so luong chenh lech theo so luong thuc te nhap vao
+            $('#tbl').on('change keyup', '.txt-soluongthucte', function () {
+                var tr = $(this).parents('tr');
+                var soLuongHeThong = tr.find('.soluonghethong').text();
+                var soLuongThucTe = $(this).val();
+                if (!isNaN(soLuongThucTe)) {
+                    var chenhLech = parseInt(soLuongHeThong) - parseInt(soLuongThucTe);
+                    tr.find('.chenhlech').text(chenhLech);
+                }
+            });
+            $('#tbl').on('click', '.delete-line', function () {
+                $(this).parents('tr').remove();
+                $('#tbl tbody tr').each(function (index, el) {
+                    $(this).find('input').each(function () {
+                        if ($(this).attr('name').indexOf('[') > 0) {
+                            var name = $(this).attr('name');
+                            $(this).attr('name', name.replace(new RegExp("\\[.*\\]", 'gi'), '[' + index + ']'));
+                        }
+                    });
+                });
+
+                ReOrderNumber();
+            });
+
+            $("form").bind("keypress", function (e) {
+                if (e.keyCode == 13) {                  
+                    return false;
+                }
+            });
+
+        });
+
+        function AddThuocs() {
+            var maNhomThuoc = $('#MaNhomThuoc').val();
+            //var maThuoc = $('#maThuoc').val();           
+            var maThuoc = $('#txtByMa').val();
+            if (maThuoc || maNhomThuoc) {
+                var url = $('input[name=baseUrl]').val() + "Thuocs/GetThuocsWithQuantity";
+                var exsitingItems = [];
+                var blackItems = [];
+                var exsitingPhieu = [];
+                $.get(url, { nhomThuoc: maNhomThuoc, maThuoc: maThuoc }).done(function (data) {
+                    $.each(data, function (index, val) {
+                        if (val.MaVach == "" ) {
+                            blackItems.push(val.MaThuoc);
+                        }
+                        else
+                        {
+                            if ($('#tbl tbody td:nth-child(6)').find(':contains(' + val.MaVach + ')').size() > 0) {
+                                exsitingItems.push(val.MaThuoc);
+                            }
+                            else {
+                                InsertRow(val);
+                            }
+                        }                        
+
+                    });
+                    if (exsitingItems.length > 0) {
+                        var str = "Mã thuốc đã tồn tại trong danh sách: " + exsitingItems.join(', ');
+                        if (blackItems.length > 0) {
+                            str = str + "\nMã thuốc không tồn tại mã vạch: " + blackItems.join(', ');
+                        }
+                        alert(str);
+                    }
+                    else
+                    {
+                        if (blackItems.length > 0) {
+                            var str = "Mã thuốc không tồn tại mã vạch: " + blackItems.join(', ');
+                            alert(str);
+                        }
+                        
+                    }
+
+                });
+                $('select#MaNhomThuoc').find('option:first').prop('selected', 'selected');
+                $('#txtByMa').val('');
+                $('#txtByTen').val('');
+            }
+
+        }
+
+        function InsertRow(row) {
+            var index = $("#tbl tbody").children("tr").length;
+            var stt = parseInt(index) + 1;
+            var row = "<tr><td>" + stt + "</td>" + 
+                      "<td><input type='hidden' name='Items[" + index + "].MaThuoc' value='" + row.MaThuoc + "'/><span>" + row.MaThuoc + "</span>" +
+                      "</td><td><input type='hidden' name='Items[" + index + "].TenThuoc' value='" + row.TenThuoc + "'/><span>" + row.TenThuoc + "</span></td>" + 
+                      "<td><input type='hidden' name='Items[" + index + "].DonViXuatLe' value='" + row.DonViXuatLe + "'/><span class='soluonghethong'>" + row.DonViXuatLe + "</span></td>" + 
+                      "<td><input type='text' class='form-control txt-gia' name='Items[" + index + "].Gia' value='" + row.Gia + "'/></td>" +
+                      "<td><input type='hidden' name='Items[" + index + "].MaVach' value='" + row.MaVach + "'/><span class='soluonghethong'>" + row.MaVach + "</span></td>" +
+                      "<td><input type='text' name='Items[" + index + "].SoLuongTem' class='form-control txt-soluongtem'/></td>" +                      
+                      "<td><a class='delete-line text-warning' style='cursor: pointer; display: inline;'  title='Xóa'><i class='glyphicon glyphicon-remove'></i></a></td></tr>";
+            if (jQuery('#tbl').find('tbody input[value=' + row.MaThuoc + ']').size() <= 0) {
+                $('#tbl tbody').append(row);
+            }
+
+            $('.errorMessage').remove();
+        }
+
+        function ReOrderNumber() {
+            $("#tbl tbody tr").each(function (index) {
+                $(this).find("td:first").text(index + 1);
+            })
+        }
+
+        function BindAutocomplete(elem, sName) {
+            //var url = $('input[name=baseUrl]').val() + "Thuocs/GetThuocs";
+            //if (sName == "maThuoc") {
+            url = $('input[name=baseUrl]').val() + "Thuocs/GetThuocsByBarcodeOrTenHang";
+            //}
+            elem.autocomplete({
+                minLength: 2,
+                source: function (request, response) {
+                    var term = request.term;
+                    currentTerm = sName + term;
+                    if (term in cache) {
+                        response(cache[sName + term]);
+                        return;
+                    }
+                    $.getJSON(url, request, function (data, status, xhr) {
+                        cache[sName + term] = data;
+                        response(data);
+                    });
+                },
+                messages: {
+                    noResults: "Không tìm thấy"//,
+                    // results: ""
+                },
+                focus: function (event, ui) {
+                    $("#Thuocs").val(ui.item.label);
+                    return false;
+                },
+                select: function (event, ui) {
+                    $(this).val(ui.item.label);
+                    $('#txtByMa').val(ui.item.maThuoc);
+                    $('#maThuoc').val(ui.item.maThuoc);
+                    $('#txtByTen').val(ui.item.tenThuoc);
+                    AddThuocs();
+                    return false;
+                }
+            }).each(function () {
+                $(this).autocomplete('instance')._renderItem = function (ul, item) {
+                    return $("<li>")
+                        .append("<a>" + item.desc + "</a>")
+                        .append('<input type="hidden" name="price" value="' + item.price + '"/>')
+                        .append('<input type="hidden" name="unit" value="' + item.unit + '"/>')
+                        .appendTo(ul);
+                };
+            });
+        }
+        $("#NgayTao").datepicker({
+            dateFormat: "dd/mm/yy",
+            changeMonth: true,
+            changeYear: true,
+            onSelect: function (dateText, inst) {
+                var fDate = dateText.split("/");
+                //var startDate = new Date(fDate[2], fDate[1], fDate[0]);
+                //var day = startDate.getDate();
+                //var month = startDate.getMonth();
+                //var year = startDate.getFullYear();
+                //$("#dvNgayXuat").html("Ngày " + day + " Tháng " + month + " Năm " + year);
+                $("#dvNgayTao").html("Ngày " + fDate[0] + "/" + fDate[1] + "/" + fDate[2]);
+            },
+            beforeShow: function (event, ui) {
+                var $button = $("#dvNgayTao"),
+                   left = $button.offset().left,
+                   top = $button.offset().top + $button.height();
+                setTimeout(function () {
+                    ui.dpDiv.css({ left: left + "px", top: top + "px" });
+                }, 10);
+            }
+        });
+        $("#dvNgayTao").on("click", function () {
+            $("#NgayTao").datepicker("show");
+        });
+        $('#tbl').on('keydown', '.txt-soluongthucte', function (e) { -1 !== $.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) || /65|67|86|88/.test(e.keyCode) && (!0 === e.ctrlKey || !0 === e.metaKey) || 35 <= e.keyCode && 40 >= e.keyCode || (e.shiftKey || 48 > e.keyCode || 57 < e.keyCode) && (96 > e.keyCode || 105 < e.keyCode) && e.preventDefault() });
+
+        //
+        //Functions for scan barcode on mobile
+        function scan() {
+            var href = window.location.href.split("\#")[0];
+            window.addEventListener("storage", zxinglistener, false);
+            zxingWindow = window.open("zxing://scan/?ret=" + encodeURIComponent(href + "#{CODE}"), '_self');
+
+        };
+
+        function zxinglistener(e) {
+            localStorage["zxingbarcode"] = "";
+            if (e.url.split("\#")[0] == window.location.href) {
+                window.focus();
+                processBarcode(decodeURIComponent(e.newValue));
+            }
+            window.removeEventListener("storage", zxinglistener, false);
+        }
+        if (window.location.hash != "") {
+            localStorage["zxingbarcode"] = window.location.hash.substr(1);
+            self.close();
+            window.location.href = "about:blank";//In case self.close is disabled
+        } else {
+            window.addEventListener("hashchange", function (e) {
+                window.removeEventListener("storage", zxinglistener, false);
+                var hash = window.location.hash.substr(1);
+                if (hash != "") {
+                    window.location.hash = "";
+                    processBarcode(decodeURIComponent(hash));
+                }
+            }, false);
+        }
+
+        function processBarcode(barcode) {
+            if (barcode) {
+                var url = $('input[name=baseUrl]').val() + "Thuocs/GetMaThuocsByBarcode";
+                $.get(url, { barcode: barcode }).done(function (data) {
+                    //alert(data);
+                    $('select#MaNhomThuoc').find('option:first').prop('selected', 'selected');
+                    $('#txtByMa').val(data);
+                    $('#txtByTen').val('');
+                    AddThuocs();
+                });
+            }
+        }
+
+
+    </script>
+}

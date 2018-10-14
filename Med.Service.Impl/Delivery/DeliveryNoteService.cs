@@ -22,6 +22,7 @@ using Med.Service.Drug;
 using Med.Service.Report;
 using Med.Service.Caching;
 using Med.Service.Background;
+using Med.Service.Helpers;
 
 namespace Med.Service.Impl.Delivery
 {
@@ -251,7 +252,7 @@ namespace Med.Service.Impl.Delivery
             return affectedItemIds;
         }
 
-        public int DeleteDeliveryNote(string drugStoreCode, int noteId)
+        public int DeleteDeliveryNote(string drugStoreCode, int noteId, int? actorId)
         {
             var noteTypeId = 0;
             if (noteId <= 0) return noteTypeId;
@@ -276,20 +277,30 @@ namespace Med.Service.Impl.Delivery
                     .Select(i => i.Thuoc_ThuocId.Value).Distinct().ToArray();
                 using (var tran = TransactionScopeHelper.CreateReadCommittedForWrite())
                 {
-                    deliveryItemRepo.UpdateMany(i => effectedNoteIds.Contains(i.PhieuXuat_MaPhieuXuat.Value),
+                    if (effectedNoteIds.Any())
+                    {
+                        deliveryItemRepo.UpdateMany(i => effectedNoteIds.Contains(i.PhieuXuat_MaPhieuXuat.Value),
+                           i => new PhieuXuatChiTiet()
+                           {
+                               IsModified = true,
+                           });
+                    }
+
+                    deliveryItemRepo.UpdateMany(i => i.PhieuXuat_MaPhieuXuat == noteId && i.NhaThuoc_MaNhaThuoc == drugStoreCode,
                     i => new PhieuXuatChiTiet()
                     {
-                        IsModified = true
+                        IsModified = true,
+                        RecordStatusID = (byte)RecordStatus.Deleted
                     });
 
                     var deliveryRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuXuat>>();
                     deliveryRepo.UpdateMany(i => i.MaPhieuXuat == noteId, i => new PhieuXuat()
                     {
-                        Xoa = true
+                        RecordStatusID = (byte)RecordStatus.Deleted
                     });
                     tran.Complete();
                 }
-                BackgroundServiceJobHelper.EnqueueUpdateLastInventoryQuantity4CacheDrugs(drugStoreCode, drugIds);
+                BackgroundServiceJobHelper.EnqueueMakeAffectedChangesRelatedDeliveryNotes(drugStoreCode, actorId, effectedNoteIds.ToArray());
             }
             catch (Exception ex)
             {
@@ -435,6 +446,7 @@ namespace Med.Service.Impl.Delivery
                         SoLuong = (decimal)i.Quantity,
                         ChietKhau = 0
                     }).ToList();
+                    NoteServiceHelper.ApplyAdditionalInfos(deliNoteItems.ToArray());
                     var deliveryItemRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuXuatChiTiet>>();
                     deliveryItemRepo.InsertMany(deliNoteItems, true);
 

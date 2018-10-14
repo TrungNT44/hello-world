@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Med.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,6 +19,16 @@ namespace Med.ServiceModel.Drug
         public double DrugUnitFactors { get; set; }
         public double RetailQuantity { get; set; }
         public double RetailPrice { get; set; }
+        public double PreRetailQuantity { get; set; }
+        public double PreRetailPrice { get; set; }
+        public bool RetailValuesChanged
+        {
+            get
+            {
+                return Math.Abs(RetailPrice - PreRetailPrice) > MedConstants.Esp
+                    || Math.Abs(RetailQuantity - PreRetailQuantity) > MedConstants.Esp;
+            }
+        }
         public DateTime? NoteDate { get; set; }
     }
 }

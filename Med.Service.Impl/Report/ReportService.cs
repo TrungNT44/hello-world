@@ -28,6 +28,7 @@ using App.Common.FaultHandling;
 using Castle.Core.Internal;
 using Med.ServiceModel.Drug;
 using Med.Service.Drug;
+using App.Constants.Enums;
 
 namespace Med.Service.Impl.Report
 {
@@ -124,7 +125,7 @@ namespace Med.Service.Impl.Report
                 DrugId = i.ThuocId,
                 RetailQuantity = isChild ? 0 : (double)i.SoDuDauKy,
                 RetailPrice = (double)i.GiaDauKy,
-                IsActivated = i.HoatDong,
+                IsActivated = i.RecordStatusID == (byte)RecordStatus.Activated,
                 LimitQuantityWarning = i.GioiHan ?? 0
             }).ToDictionary(i => i.DrugId, i => i);
             drugWarehouseSyntheises = drugItems.Values.Select(i => new DrugWarehouseSynthesis()
@@ -608,6 +609,7 @@ namespace Med.Service.Impl.Report
                 var deliveryNotesQable = _dataFilterService.GetValidDeliveryNotes(drugStoreCode, filter, deliveryStatuses);
                 if (!deliveryNotesQable.Any())
                 {
+                    trans.Complete();
                     result.PagingResultModel = new PagingResultModel<ReportByBaseItem>(reportByItems, totalCount);
                     return result;
                 }
@@ -746,6 +748,7 @@ namespace Med.Service.Impl.Report
                     default:
                         break;
                 }
+                trans.Complete();
 
                 var order = filter.PageIndex * filter.PageSize;
                 deliveryItemsGroups.ForEach(i =>
@@ -883,6 +886,7 @@ namespace Med.Service.Impl.Report
                 totalCount = deliveryDrugs.Count();
                 if (totalCount < 1)
                 {
+                    trans.Complete();
                     result.PagingResultModel = new PagingResultModel<ReportByBaseItem>(reportByItems, totalCount);
                     return result;
                 }
@@ -918,6 +922,7 @@ namespace Med.Service.Impl.Report
                 var reduceNoteItems = _dataFilterService.GetValidReduceNoteItems(drugStoreCode)
                     .Where(i => i.NoteTypeId == (int)NoteInOutType.ReturnFromCustomer && deliveryItemIds.Contains(i.ReduceNoteItemId))
                     .GroupBy(i => i.ReduceNoteItemId).ToDictionary(i => i.Key, i => i.Sum(ii => ii.ReduceQuantity));
+                trans.Complete();
 
                 drugs.ForEach(i =>
                 {

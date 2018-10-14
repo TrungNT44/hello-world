@@ -1,0 +1,148 @@
+﻿@model sThuoc.Models.PhieuKiemKe
+
+@{
+    ViewBag.Title = "Chi tiết phiếu kiểm kê";
+    var ngayNhap = Model.Created ?? DateTime.Now;
+}
+
+<link href="~/Content/baocao.css" rel="stylesheet" />
+
+<div class="form-horizontal">
+    <h2 style="font-size: 27px; text-align: center;color: coral;margin-top:-16px"><b>PHIẾU KIỂM KÊ CHI TIẾT</b></h2>
+    <div style="text-align: center;font-size: 15px;padding: 0px;margin-top:-10px">
+        <div style="position:absolute;right:10%">
+            Mã số: <strong>@Model.MaPhieuKiemKe</strong>
+        </div>
+        <span id="dvNgayNhap" style="width: 10%">Ngày @ngayNhap.Day/@ngayNhap.Month/@ngayNhap.Year</span>
+    </div>
+    <div><span><label>Người tạo: </label> @Model.CreatedBy.TenDayDu</span></div>
+    <div>        
+        <span>
+            <label>Cân kho: </label>
+            @if (Model.DaCanKho)
+            {
+                <i class="fa fa-check text-success"></i>
+            }
+            else
+            {
+                <i class="fa fa-times text-danger"></i>
+            }
+        </span>
+    </div>
+    
+    <table class="table table-responsive table-bordered" id="tbl">
+        <thead>
+            <tr>
+                <th style="background-color:darkgray">#</th>
+                <th style="background-color:darkgray">Mã Thuốc</th>
+                <th style="background-color:darkgray">Tên Thuốc</th>
+                <th style="text-align: right; background-color:darkgray">
+                    SL hệ thống
+                </th>
+                <th style="text-align: right;background-color:darkgray">SL thực</th>
+                <th style="text-align: right;background-color:darkgray">Chênh lệch</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{ var stt = 0;}
+            @foreach (var item in Model.PhieuKiemKeChiTiets)
+            {
+                ++stt;
+
+                <tr>
+                    <td>
+                        @stt
+                    </td>
+                    <td>
+                        <span>@item.Thuoc.MaThuoc</span>
+                    </td>
+                    <td>
+                        <span>@item.Thuoc.TenThuoc</span>
+                    </td>
+                    <td style="text-align:right">
+                        <span class="soluonghethong">@item.TonKho</span><span> @item.Thuoc.DonViXuatLe.TenDonViTinh</span>
+                    </td>
+                    <td style="text-align: right">
+                        <span class="soluonghethong">@item.ThucTe</span>
+                    </td>
+                    <td style="text-align: right"><span class="chenhlech">@(item.TonKho - item.ThucTe)</span></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div>
+
+        @Html.ActionLink("Quay lại", "Index", null, new { @class = "btn btn-default" })
+        <span class="btn-separator"></span>
+        @if (!Model.DaCanKho)
+        {
+            @Html.ActionLink("Sửa/Cân kho", "Edit", new { id = Model.MaPhieuKiemKe }, new { @class = "btn btn-default" })
+        }
+        @Html.ActionLink("Xóa phiếu", "Delete", new { id = Model.MaPhieuKiemKe }, new { @class = "btn btn-default btn-danger" })
+
+
+    </div>
+
+
+</div>
+
+
+@*<div class="row">
+    
+
+    <div class="col-md-9">
+        
+            <table class="table table-responsive table-bordered" id="tbl">
+                <thead>
+                    <tr>
+                        <th style="background-color:darkgray">#</th>
+                        <th style="background-color:darkgray">Mã Thuốc</th>
+                        <th style="background-color:darkgray">Tên Thuốc</th>
+                        <th style="text-align: right; background-color:darkgray">
+                            SL hệ thống                            
+                        </th>
+                        <th style="text-align: right;background-color:darkgray">SL thực</th>
+                        <th style="text-align: right;background-color:darkgray">Chênh lệch</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{ var stt = 0;}
+                    @foreach (var item in Model.PhieuKiemKeChiTiets)
+                    {
+                        ++stt;
+
+                        <tr>
+                            <td>
+                                @stt
+                            </td>
+                            <td>
+                                <span>@item.Thuoc.MaThuoc</span>
+                            </td>
+                            <td>
+                                <span>@item.Thuoc.TenThuoc</span>
+                            </td>
+                            <td style="text-align:right">
+                                <span class="soluonghethong">@item.TonKho</span><span> @item.Thuoc.DonViXuatLe.TenDonViTinh</span>
+                            </td>
+                            <td style="text-align: right">
+                                <span class="soluonghethong">@item.ThucTe</span>
+                            </td>
+                            <td style="text-align: right"><span class="chenhlech">@(item.TonKho - item.ThucTe)</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+</div>*@
+
+@section Scripts{
+    <script language="javascript">
+        $(document).ready(function() {
+            $('.btn-print').on('click', function () {
+
+                window.print();
+            });
+        });
+    </script>
+}

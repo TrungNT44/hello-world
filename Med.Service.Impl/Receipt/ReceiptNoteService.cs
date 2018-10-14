@@ -252,7 +252,7 @@ namespace Med.Service.Impl.Receipt
 
             return result;
         }
-        public int DeleteReceiptNote(string drugStoreCode, int noteId)
+        public int DeleteReceiptNote(string drugStoreCode, int noteId, int? actorId)
         {
             var noteTypeId = 0;
             if (noteId <= 0) return noteTypeId;
@@ -277,28 +277,38 @@ namespace Med.Service.Impl.Receipt
                 var drugIds = receiptItemRepo.GetAll().Where(i => i.PhieuNhap_MaPhieuNhap == noteId)
                     .Select(i => i.Thuoc_ThuocId.Value).Distinct().ToArray();
                 using (var tran = TransactionScopeHelper.CreateReadCommittedForWrite())
-                {                    
-                    receiptItemRepo.UpdateMany(i => effectedNoteIds.Contains(i.PhieuNhap_MaPhieuNhap),
+                {
+                    if (effectedNoteIds.Any())
+                    {
+                        receiptItemRepo.UpdateMany(i => effectedNoteIds.Contains(i.PhieuNhap_MaPhieuNhap),
+                            i => new PhieuNhapChiTiet()
+                            {
+                                IsModified = true
+                            });
+                    }
+
+                    receiptItemRepo.UpdateMany(i => i.PhieuNhap_MaPhieuNhap == noteId && i.NhaThuoc_MaNhaThuoc == drugStoreCode,
                     i => new PhieuNhapChiTiet()
                     {
-                        IsModified = true
+                        IsModified = true,
+                        RecordStatusID = (byte)RecordStatus.Deleted
                     });
 
                     var receiptRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, PhieuNhap>>();
                     receiptRepo.UpdateMany(i => i.MaPhieuNhap == noteId, i => new PhieuNhap()
                     {
-                        Xoa = true
+                        RecordStatusID = (byte)RecordStatus.Deleted
                     });
 
                     var whTransitRepo = IoC.Container.Resolve<BaseRepositoryV2<MedDbContext, WarehouseTransition>>();
                     whTransitRepo.UpdateMany(i => i.ReceiptNoteId == noteId, i => new WarehouseTransition()
                     {
-                        RecordStatusId = (int)RecordStatus.Deleted
+                        RecordStatusId = (byte)RecordStatus.Deleted
                     });
 
                     tran.Complete();
                 }
-                BackgroundServiceJobHelper.EnqueueUpdateLastInventoryQuantity4CacheDrugs(drugStoreCode, drugIds);
+                BackgroundServiceJobHelper.EnqueueMakeAffectedChangesRelatedReceiptNotes(drugStoreCode, actorId, effectedNoteIds.ToArray());
             }
             catch (Exception ex)
             {

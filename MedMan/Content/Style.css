@@ -1,0 +1,208 @@
+﻿body {
+}
+
+.bottom-link a {
+    margin: 0 5px;
+}
+
+.table-userpicker tr {
+    cursor: pointer;
+}
+
+    .table-userpicker tr.active td {
+        background-color: dodgerblue !important;
+        color: white;
+    }
+.table-nhathuocpicker tr {
+    cursor: pointer;
+}
+
+    .table-nhathuocpicker tr.active td {
+        background-color: dodgerblue !important;
+        color: white;
+    }
+.btn-separator {
+    padding: 0 15px;
+}
+
+.select-nhathuoc {
+    background-color: #fff;
+    -ms-border-radius: 4px 4px 0 0;
+    border-radius: 4px;
+    border: 1px solid #dddddd;
+    -webkit-box-shadow: none;
+    -ms-box-shadow: none;
+    box-shadow: none;
+    margin-left: 0;
+    margin-right: 0;
+    margin: 3px;
+    padding: 0 15px 15px 15px;
+}
+
+    .select-nhathuoc h3 {
+        margin-top: 5px;
+        margin-bottom: 15px;
+    }
+
+#loginForm .row {
+    margin-top: 20px;
+}
+
+.setting-tabs > div {
+    padding: 30px;
+}
+
+.dvt-list {
+    max-height: 400px;
+    overflow: auto;
+}
+
+#dvt-form-holder, #dbc-form-holder, #setting-form-holder {
+    border: 1px dot-dot-dash gray;
+    background-color: lightgray;
+    margin: 15px 0;
+}
+
+input[name=MaThuoc] {
+    text-transform: uppercase;
+}
+
+#tblCt_wrapper table.dataTable thead th, #tblCt_wrapper table.dataTable thead td {
+    border-bottom: 1px solid lightgray;
+}
+
+#tblCt_wrapper .dataTables_scrollBody {
+    border-bottom: 1px solid lightgray;
+}
+
+.ui-autocomplete.ui-front.ui-menu.ui-widget.ui-widget-content {
+    list-style: outside none none;
+    margin: 0;
+    padding: 0;
+}
+
+.ui-menu-item {
+    padding: 5px;
+}
+
+.ui-menu-item {
+    padding: 5px;
+}
+
+    .ui-menu-item.ui-state-focus {
+        border-left: 0px;
+        border-right: 0px;
+    }
+
+    .ui-menu-item:first-child {
+        border-top: 0px;
+    }
+
+    .ui-menu-item:last-child {
+        border-bottom: 0px;
+    }
+
+.field-validation-valid {
+    display: none;
+}
+
+.input-validation-error {
+    border: 1px solid #a94442;
+}
+
+.chonnhathuoc-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.account-suffix {
+    position: absolute;
+    float: right;
+    right: 0px;
+    padding-right: 20px;
+    line-height: 34px;
+}
+
+.thuoc .table-bordered {
+    border: 0px solid #ddd !important;
+}
+
+.filter-td {
+    clear: both;
+    border: 0px solid #ddd !important;
+    padding-left: 0px !important;
+}
+
+.filter-td-button {
+    clear: both;
+    border: 0px solid #ddd !important;
+    padding-right: 0px !important;
+}
+
+    .filter-td-button input {
+        float: right;
+        margin-left: 5px;
+    }
+
+.txt-dutru {
+    width: 70px;
+}
+
+.txt-han {
+    width: 120px;
+}
+
+.right {
+    float: right !important;
+}
+
+.margin-left5 {
+    margin-left: 5px;
+}
+
+footer {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 1rem;
+    text-align: center;
+    border-top: 1px solid #ddd;
+}
+
+body {
+    position: relative !important;
+    margin: 0;
+    padding-bottom: 6rem;
+    min-height: 100% !important;
+}
+
+html {
+    height: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.f-left {
+    float: left !important;
+}
+
+.f-right {
+    float: right !important;
+}
+
+.w-70 {
+    width: 70% !important;
+}
+
+.m-w-100px {
+    min-width: 100px;
+}
+
+.ui-autocomplete {
+    max-height: 150px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+    /* add padding to account for vertical scrollbar */
+    padding-right: 20px;
+}

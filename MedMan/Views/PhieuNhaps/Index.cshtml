@@ -1,0 +1,841 @@
+﻿@using Med.Web.Extensions
+@using System.Text
+@using Med.Web.Extensions
+@using sThuoc.Models
+@using sThuoc.Filter
+@using PagedList.Mvc;
+@model PhieusModel
+
+@{
+    ViewBag.Title = "Tra cứu  phiếu Nhập/Xuất";
+    if (ViewBag.CurrentFilterKhoiPhuc > 0)
+    {
+        ViewBag.Title = "Khôi phục phiếu Nhập/Xuất";
+    }
+
+    <h4><b>@ViewBag.Title</b></h4>
+    <hr style="margin-top:0px" />
+}
+@{
+    var canModify = FunctionsService.Authorize(FunctionResource.NhapHang, Operations.Modify, User.IsInRole("User") ? new[] { "User" } : new[] { "Admin" });
+}
+<div class="row">
+    <div class="col-md-3">
+        @using (Html.BeginForm("Index", "PhieuNhaps", FormMethod.Get))
+        {
+            <input type="hidden" name="khoiPhuc" value="@ViewBag.CurrentFilterKhoiPhuc" />
+            <fieldset class="">
+                <label>Nơi Tìm</label>
+                <div class="control-group">
+                    @*@Html.DropDownList("loaiPhieu", new SelectList(ViewBag.LoaiPhieu, "MaLoaiXuatNhap", "TenLoaiXuatNhap", ViewBag.CurrentFilterLP))*@
+                    @Html.DropDownList("loaiPhieu", new SelectList(ViewBag.LoaiPhieu, "MaLoaiXuatNhap", "TenLoaiXuatNhap", ViewBag.CurrentFilterLP), htmlAttributes: new { @class = "form-control" })
+                </div>
+            </fieldset>
+            @*<br />*@
+            <fieldset>
+                <label>Tìm theo</label>
+                <div class="control-group">
+                    @Html.DropDownList("slType",
+                            new List<SelectListItem>() {
+                                        new SelectListItem() { Text= "Mã sản phẩm", Value="2", Selected= (ViewBag.SearchFor == null|| ViewBag.SearchFor == "2"?true:false)},
+                                        new SelectListItem() { Text= "Mã số phiếu", Value="1", Selected= (ViewBag.SearchFor == "1"?true:false)},
+                                        new SelectListItem() { Text= "Tên nhân viên", Value="3", Selected= (ViewBag.SearchFor == "3"?true:false)},
+                                        new SelectListItem() { Text= "Diễn giải", Value="4", Selected= (ViewBag.SearchFor == "4"?true:false)},
+                                        new SelectListItem() { Text= "Số lô", Value="5", Selected= (ViewBag.SearchFor == "5"?true:false)},
+                                        new SelectListItem() { Text= "Hạn dùng", Value="6", Selected= (ViewBag.SearchFor == "6"?true:false)}
+                                    }
+                            , htmlAttributes: new { @class = "form-control" })&nbsp;
+                    @Html.TextBox("searchSoPhieu", ViewBag.CurrentFilterSoPhieu as string, htmlAttributes: new { @class = "form-control", placeholder = "Nhập số phiếu vào đây..." })
+                    @Html.TextBox("searchMaThuoc", ViewBag.CurrentFilterMaThuoc as string, htmlAttributes: new { @class = "form-control", placeholder = "Nhập mã thuốc vào đây..." })
+                    @Html.TextBox("searchTenNhanVien", ViewBag.CurrentFilterTenNhanVien as string, htmlAttributes: new { @class = "form-control", placeholder = "Nhập tên nhân viên vào đây..." })
+                    @Html.TextBox("searchDienGiai", ViewBag.CurrentFilterDienGiai as string, htmlAttributes: new { @class = "form-control", placeholder = "Nhập diễn giải vào đây..." })
+                    @Html.TextBox("searchSoLo", ViewBag.CurrentFilterSoLo as string, htmlAttributes: new { @class = "form-control", placeholder = "Nhập số lô vào đây..." })
+                    @Html.TextBox("searchHanDung", ViewBag.CurrentFilterHanDung as string, new { @class = "input-datetime form-control", placeholder = "Nhập hạn dùng vào đây..." })
+                </div>
+            </fieldset>
+
+            <fieldset>
+                @if (ViewBag.CurrentFilterLP == 2 || ViewBag.CurrentFilterLP == 3)
+                {
+                    if (ViewBag.CurrentFilterKhoiPhuc <= 0)
+                    {
+                        <label>Khách hàng</label>
+                        <div>
+                            @Html.TextBox("searchTen", ViewBag.currentFilterTen as string, htmlAttributes: new { @class = "form-control" })
+                        </div>
+                    }
+
+                }
+                else
+                {
+                    if (ViewBag.CurrentFilterKhoiPhuc <= 0)
+                    {
+                        <label>Nhà cung cấp</label>
+                        <div>
+                            @Html.TextBox("searchTen", ViewBag.currentFilterTen as string, htmlAttributes: new { @class = "form-control" })
+                        </div>
+                    }
+
+                }
+
+            </fieldset>
+            <fieldset>
+                @if (ViewBag.CurrentFilterKhoiPhuc <= 0)
+                {
+                    <label>Ngày</label>
+                    <div>
+                        @Html.TextBox("searchNgay", ViewBag.CurrentFilterNgay as string, new { @class = "input-datetime form-control" })
+
+                    </div>
+                }
+
+            </fieldset>
+            <br />
+            <div>
+                <input type="submit" class="btn btn-default" value="Tìm" />
+            </div>
+            <div>
+                @if (ViewBag.CurrentFilterKhoiPhuc <= 0)
+                {
+                    <hr />
+                    <form></form>
+                    if (this.HasPermisson("PhieuNhaps", "Upload") || this.HasPermisson("PhieuNhaps", "Upload2") || this.HasPermisson("PhieuXuats", "Upload") || this.HasPermisson("PhieuXuats", "Upload2"))
+                    {
+                        <div id="dvUpPhieuNhap">
+                            @if (this.HasPermisson("PhieuNhaps", "Upload"))
+                            {
+                                using (Html.BeginForm("Upload", "PhieuNhaps", FormMethod.Post, new { id = "form1", enctype = "multipart/form-data", @class = "upload-form" }))
+                                {
+                                    @*@: Tải phiếu nhập từ nhà cung Cấp <br />*@
+                                    <label>Tải phiếu nhập từ nhà cung cấp</label> <br />
+                                    <div style="display: none"> <input name="uploadFile" type="file" id="fileupload1" /><br /></div>
+                                    <input type="button" value="Tải File" title="Tải file" onclick="return OpenFileDialog(this,1);" class="btn btn-default" />
+                                    @:&nbsp;@Html.ActionLink("Xuất Excel", "Index", "PhieuNhaps",
+                            new
+                            {
+                                loaiPhieu = 1,
+                                searchTen = ViewBag.CurrentFilterTen,
+                                searchSoPhieu = ViewBag.CurrentFilterSoPhieu,
+                                searchMaThuoc = ViewBag.CurrentFilterMaThuoc,
+                                searchTenNhanVien = ViewBag.CurrentFilterTenNhanVien,
+                                searchNgay = ViewBag.CurrentFilterNgay,
+                                searchDienGiai = ViewBag.CurrentFilterDienGiai,
+                                searchSoLo = ViewBag.CurrentFilterSoLo,
+                                searchHanDung = ViewBag.CurrentFilterHanDung,
+                                khoiPhuc = ViewBag.CurrentFilterKhoiPhuc,
+                                export = 1
+                            }, new { @class = "btn btn-default" })
+                                }
+                            }
+                        </div>
+                        <div id="dvUpPhieuNhap2">
+                            @if (this.HasPermisson("PhieuNhaps", "Upload2"))
+                            {
+                                using (Html.BeginForm("Upload2", "PhieuNhaps", FormMethod.Post, new { id = "form2", enctype = "multipart/form-data", @class = "upload-form" }))
+                                {
+                                    @*@: Tải Phiếu Nhập Từ Khách Hàng<br />*@
+                                    <label>Tải phiếu nhập khách trả hàng</label> <br />
+                                    <div style="display: none"> <input name="uploadFile" type="file" id="fileupload2" /><br /></div>
+                                    <input type="button" value="Tải File" title="Tải file" onclick="return OpenFileDialog(this,2);" class="btn btn-default" />
+                                    @:&nbsp;@Html.ActionLink("Xuất Excel", "Index", "PhieuNhaps",
+                            new
+                            {
+                                loaiPhieu = 3,
+                                searchTen = ViewBag.CurrentFilterTen,
+                                searchSoPhieu = ViewBag.CurrentFilterSoPhieu,
+                                searchMaThuoc = ViewBag.CurrentFilterMaThuoc,
+                                searchTenNhanVien = ViewBag.CurrentFilterTenNhanVien,
+                                searchDienGiai = ViewBag.CurrentFilterDienGiai,
+                                searchSoLo = ViewBag.CurrentFilterSoLo,
+                                searchHanDung = ViewBag.CurrentFilterHanDung,
+                                searchNgay = ViewBag.CurrentFilterNgay,
+                                khoiPhuc = ViewBag.CurrentFilterKhoiPhuc,
+                                export = 1
+                            }, new { @class = "btn btn-default" })
+                                }
+                            }
+                        </div>
+                        <div id="dvUpPhieuXuat">
+                            @if (this.HasPermisson("PhieuXuats", "Upload"))
+                            {
+                                using (Html.BeginForm("Upload", "PhieuXuats", FormMethod.Post, new { id = "form3", enctype = "multipart/form-data", @class = "upload-form" }))
+                                {
+                                    @*@: Tải Phiếu Xuất Cho Khách Hàng<br />*@
+                                    <label>Tải phiếu xuất cho khách hàng</label> <br />
+                                    <div style="display: none"> <input name="uploadFile" type="file" id="fileupload3" /><br /></div>
+                                    <input type="button" value="Tải File" title="Tải file" onclick="return OpenFileDialog(this,3);" class="btn btn-default" />
+                                    @:&nbsp;@Html.ActionLink("Xuất Excel", "Index", "PhieuNhaps",
+                            new
+                            {
+                                loaiPhieu = 2,
+                                searchTen = ViewBag.CurrentFilterTen,
+                                searchSoPhieu = ViewBag.CurrentFilterSoPhieu,
+                                searchMaThuoc = ViewBag.CurrentFilterMaThuoc,
+                                searchTenNhanVien = ViewBag.CurrentFilterTenNhanVien,
+                                searchDienGiai = ViewBag.CurrentFilterDienGiai,
+                                searchSoLo = ViewBag.CurrentFilterSoLo,
+                                searchHanDung = ViewBag.CurrentFilterHanDung,
+                                searchNgay = ViewBag.CurrentFilterNgay,
+                                khoiPhuc = ViewBag.CurrentFilterKhoiPhuc,
+                                export = 1
+                            }, new { @class = "btn btn-default" })
+                                }
+                            }
+                        </div>
+                        <div id="dvUpPhieuXuat2">
+                            @if (this.HasPermisson("PhieuNhaps", "Upload"))
+                            {
+
+                                using (Html.BeginForm("Upload2", "PhieuXuats", FormMethod.Post, new { id = "form4", enctype = "multipart/form-data", @class = "upload-form" }))
+                                {
+                                    @*@: Tải Phiếu Xuất Về Nhà Cung Cấp<br />*@
+                                    <label>Tải phiếu xuất trả nhà cung cấp</label> <br />
+                                    <div style="display: none"> <input name="uploadFile" type="file" id="fileupload4" /><br /></div>
+                                    <input type="button" value="Tải File" title="Tải file" onclick="return OpenFileDialog(this,4);" class="btn btn-default" />
+
+                                    @:&nbsp;@Html.ActionLink("Xuất Excel", "Index", "PhieuNhaps",
+                                new
+                                {
+                                    loaiPhieu = 4,
+                                    searchTen = ViewBag.CurrentFilterTen,
+                                    searchSoPhieu = ViewBag.CurrentFilterSoPhieu,
+                                    searchMaThuoc = ViewBag.CurrentFilterMaThuoc,
+                                    searchTenNhanVien = ViewBag.CurrentFilterTenNhanVien,
+                                    searchDienGiai = ViewBag.CurrentFilterDienGiai,
+                                    searchSoLo = ViewBag.CurrentFilterSoLo,
+                                    searchHanDung = ViewBag.CurrentFilterHanDung,
+                                    searchNgay = ViewBag.CurrentFilterNgay,
+                                    khoiPhuc = ViewBag.CurrentFilterKhoiPhuc,
+                                    export = 1
+                                }, new { @class = "btn btn-default" })
+                                }
+                            }
+                        </div>
+                        if (TempData["ImportErr"] != null)
+                        {
+                            var errList = (Med.Web.Controllers.ImportError)TempData["ImportErr"];
+                            var sb = new StringBuilder();
+
+                            if (errList.ErrNhaCungCap.Count > 0)
+                            {
+                                sb.AppendLine("Có lỗi nhà cung cấp ở các hàng [" + string.Join(",", errList.ErrNhaCungCap.ToArray()) + "]" + "<br/>");
+                            }
+                            if (errList.ErrKhachHang.Count > 0)
+                            {
+                                sb.AppendLine("Có lỗi khách hàng ở các hàng [" + string.Join(",", errList.ErrKhachHang.ToArray()) + "]" + "<br/>");
+                            }
+                            if (errList.ErrThoiGianNhap.Count > 0)
+                            {
+                                sb.AppendLine("Có lỗi thời gian nhập ở các hàng [" + string.Join(",", errList.ErrThoiGianNhap.ToArray()) + "]" + "<br/>");
+                            }
+                            if (errList.ErrThuoc.Count > 0)
+                            {
+                                sb.AppendLine("Có lỗi mã thuốc ở các hàng [" + string.Join(",", errList.ErrThuoc.ToArray()) + "]");
+                            }
+                            <div style="color: red">
+                                Đã có lỗi xảy ra:
+                                <br />
+                                @Html.Raw(@sb.ToString())
+                            </div>
+                        }
+                    }
+                }
+            </div>
+        }
+    </div>
+    <div class="col-md-9">
+        <div class="baocao-container">
+            @if (Model.PhieuNhaps.Any())
+            {
+                if (ViewBag.CurrentFilterLP == 1)
+                {
+                    <label>Danh sách phiếu nhập hàng</label>
+                }
+                else
+                {
+                    <label>Danh sách phiếu khách trả lại hàng</label>
+                }
+
+
+                <table class="table table-responsive table-bordered">
+                    <tr>
+                        <th style="background-color:darkgray">
+                            @Html.DisplayNameFor(model => model.PhieuNhaps[0].SoPhieuNhap)
+                        </th>
+                        <th style="background-color:darkgray">
+                            @Html.DisplayNameFor(model => model.PhieuNhaps[0].NgayNhap)
+
+                        </th>
+                        <th style="background-color:darkgray">
+                            Nhân viên
+                        </th>
+                        <th style="background-color:darkgray">
+                            @if (ViewBag.CurrentFilterLP == 1)
+                            {
+                                @Html.DisplayNameFor(model => model.PhieuNhaps[0].NhaCungCap.TenNhaCungCap)
+                            }
+                            else
+                            {
+                                @Html.DisplayNameFor(model => model.PhieuNhaps[0].KhachHang.TenKhachHang)
+                            }
+                        </th>
+                        <th style="background-color:darkgray">
+                            Diễn giải
+                        </th>
+                        <th style="background-color:darkgray">
+                            @Html.DisplayNameFor(model => model.PhieuNhaps[0].TongTien)
+                        </th>
+                        <th style="background-color:darkgray;text-align:right;width:90px"></th>
+                    </tr>
+                    @foreach (var item in Model.PhieuNhaps)
+                    {
+                    <tr>
+                        <td>
+                            @Html.ActionLink(item.SoPhieuNhap.ToString(), "Details", new { id = item.MaPhieuNhap })
+                        </td>
+
+                        <td>
+                            @string.Format("{0:dd/MM/yyyy}", item.NgayNhap)
+                        </td>
+
+                        <td>
+                            @Html.DisplayFor(modelItem => item.CreatedBy.TenDayDu)
+                        </td>
+                        <td>
+                            @if (ViewBag.CurrentFilterLP == 1)
+                            {
+                                @Html.DisplayFor(modelItem => item.NhaCungCap.TenNhaCungCap)
+                            }
+                            else
+                            {
+                                @Html.DisplayFor(modelItem => item.KhachHang.TenKhachHang)
+                            }
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DienGiai)
+                        </td>
+                        @if (ViewBag.CurrentFilterLP == 1 && !this.HasPermisson("thuocs", "ViewPriceInput"))
+                        {
+
+                            <td style="text-align:right">
+                               ***
+                            </td>
+                        }
+                        else
+                        {
+
+                            <td style="text-align:right">
+                                @string.Format("{0:0,###}", Math.Round(item.TongTien, 0))
+                            </td>
+                        }
+
+
+                        <td style="text-align:right">
+                            @if (ViewBag.CurrentFilterKhoiPhuc > 0)
+                            {
+                                @Html.ActionLink("Khôi phục", "restore", new { id = item.MaPhieuNhap }, null)
+                                @:| @Html.ActionLink("Xóa", "Delete4ever", new { id = item.MaPhieuNhap }, new { @title = "Xóa vĩnh viễn", @data_type = ViewBag.CurrentFilterLP, @data_id = item.MaPhieuNhap, @class = "btn-delete4ever" })
+                            }
+                            else
+                            {
+                                @Html.ActionLink("Sửa", "Edit", new { id = item.MaPhieuNhap })
+                                @:| @Html.ActionLink("Xóa", "Delete", new { id = item.MaPhieuNhap }, new { @data_type = ViewBag.CurrentFilterLP, @data_id = item.MaPhieuNhap, @class = "btn-delete" })
+                            }
+                        </td>
+                    </tr>
+                    }
+                </table>
+                @*<br />*@
+                @:Trang @(Model.PhieuNhaps.PageCount < Model.PhieuNhaps.PageNumber ? 0 : Model.PhieuNhaps.PageNumber) trong @Model.PhieuNhaps.PageCount
+                @Html.PagedListPager(Model.PhieuNhaps, page => Url.Action("Index",
+                new
+                {
+                    page,
+                    loaiPhieu = ViewBag.CurrentFilterLP,
+                    searchTen = ViewBag.CurrentFilterTen,
+                    searchSoPhieu = ViewBag.CurrentFilterSoPhieu,
+                    searchMaThuoc = ViewBag.CurrentFilterMaThuoc,
+                    searchTenNhanVien = ViewBag.CurrentFilterTenNhanVien,
+                    searchDienGiai = ViewBag.CurrentFilterDienGiai,
+                    searchSoLo = ViewBag.CurrentFilterSoLo,
+                    searchHanDung = ViewBag.CurrentFilterHanDung,
+                    searchNgay = ViewBag.CurrentFilterNgay,
+                    khoiPhuc = ViewBag.CurrentFilterKhoiPhuc
+                }), PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new AjaxOptions() { HttpMethod = "GET" }))
+            }
+
+            @if (Model.PhieuXuats.Any())
+            {
+                if (ViewBag.CurrentFilterLP == 2)
+                {
+                    <label>Danh sách phiếu xuất bán</label>
+                }
+                else
+                {
+                    <label>Danh sách phiếu trả lại nhà cung cấp</label>
+                }
+                <table class="table table-responsive table-bordered">
+                    <tr>
+                        <th style="background-color:darkgray">
+                            @Html.DisplayNameFor(model => model.PhieuXuats[0].SoPhieuXuat)
+                        </th>
+                        <th style="background-color:darkgray">
+                            @Html.DisplayNameFor(model => model.PhieuXuats[0].NgayXuat)
+
+                        </th>
+                        <th style="background-color:darkgray">
+                            Nhân viên
+                        </th>
+                        <th style="background-color:darkgray">
+                            @if (ViewBag.CurrentFilterLP == 2)
+                            {
+                                @Html.DisplayNameFor(model => model.PhieuXuats[0].KhachHang.TenKhachHang)
+                            }
+                            else
+                            {
+                                @Html.DisplayNameFor(model => model.PhieuXuats[0].NhaCungCap.TenNhaCungCap)
+                            }
+
+                        </th>
+                        <th style="background-color:darkgray">
+                            Diễn giải
+                        </th>
+                        <th style="background-color:darkgray">
+                            @Html.DisplayNameFor(model => model.PhieuXuats[0].TongTien)
+                        </th>
+                        <th style="background-color:darkgray;text-align:right;width:120px"></th>
+                    </tr>
+
+                    @foreach (var item in Model.PhieuXuats)
+                    {
+                        <tr>
+                            <td>
+                                @*@Html.DisplayFor(modelItem => item.SoPhieuXuat)*@
+                                @Html.ActionLink(item.SoPhieuXuat.ToString(), "Details", "PhieuXuats", new { id = item.MaPhieuXuat }, null)
+                            </td>
+                            <td>
+                                @*@Html.DisplayFor(modelItem => item.NgayXuat)*@
+                                @string.Format("{0:dd/MM/yyyy}", item.NgayXuat)
+                            </td>
+                            <td>
+                                @*@Html.DisplayFor(modelItem => item.CreatedBy.UserName)*@
+                                @Html.DisplayFor(modelItem => item.CreatedBy.TenDayDu)
+                            </td>
+
+                            <td>
+                                @if (ViewBag.CurrentFilterLP == 2)
+                                {
+                                    @Html.DisplayFor(modelItem => item.KhachHang.TenKhachHang)
+                                }
+                                else
+                                {
+                                    @Html.DisplayFor(modelItem => item.NhaCungCap.TenNhaCungCap)
+                                }
+
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.DienGiai)
+                            </td>
+                            <td style="text-align:right">
+                                @string.Format("{0:0,###}", item.TongTien)
+                            </td>
+                            <td style="text-align:right">
+
+                                @*@if (canModify)
+                                    {*@
+
+                                @if (ViewBag.CurrentFilterKhoiPhuc > 0)
+                                {
+                                    @Html.ActionLink("Khôi phục", "restore", "PhieuXuats", new { id = item.MaPhieuXuat }, null)
+                                    @:| @Html.ActionLink("Xóa", "Delete4ever", "PhieuXuats", new { id = item.MaPhieuXuat }, new { @title = "Xóa vĩnh viễn", @data_type = ViewBag.CurrentFilterLP, @data_id = item.MaPhieuXuat, @class = "btn-delete4ever" })
+                                }
+                                else
+                                {
+
+                                    @Html.ActionLink("Sửa", "Edit", "PhieuXuats", new { id = item.MaPhieuXuat }, null)
+                                    @:| @Html.ActionLink("Xóa", "Delete", "PhieuXuats", new { id = item.MaPhieuXuat }, new { @data_type = ViewBag.CurrentFilterLP, @data_id = item.MaPhieuXuat, @class = "btn-delete" })
+                                }
+
+                                @*}*@
+                            </td>
+                        </tr>
+                    }
+                </table>
+                @*<br />*@
+                @:Trang @(Model.PhieuXuats.PageCount < Model.PhieuXuats.PageNumber ? 0 : Model.PhieuXuats.PageNumber) trong @Model.PhieuXuats.PageCount
+                @Html.PagedListPager(Model.PhieuXuats, page => Url.Action("Index",
+                                    new
+                                    {
+                                        page,
+                                        loaiPhieu = ViewBag.CurrentFilterLP,
+                                        searchTen = ViewBag.CurrentFilterTen,
+                                        searchSoPhieu = ViewBag.CurrentFilterSoPhieu,
+                                        searchMaThuoc = ViewBag.CurrentFilterMaThuoc,
+                                        searchTenNhanVien = ViewBag.CurrentFilterTenNhanVien,
+                                        searchDienGiai = ViewBag.CurrentFilterDienGiai,
+                                        searchSoLo = ViewBag.CurrentFilterSoLo,
+                                        searchHanDung = ViewBag.CurrentFilterHanDung,
+                                        searchNgay = ViewBag.CurrentFilterNgay,
+                                        khoiPhuc = ViewBag.CurrentFilterKhoiPhuc,
+                                        export = 0
+                                    }))
+            }
+            @if (!Model.PhieuNhaps.Any() && !Model.PhieuXuats.Any())
+            {
+                <p class="text-danger"><b>Không tìm thấy dữ liệu</b></p>
+            }
+        </div>
+
+    </div>
+</div>
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/datepicker-vi.js"></script>
+    <script type="text/javascript">
+        var cache = {};
+        var currentTerm = "";
+
+        $(function () {
+            //bind date
+            var datefield = $(".datefield");
+            datefield.removeClass('hasDatepicker');
+            datefield.datepicker({
+                dateFormat: "dd/mm/yy",
+                changeMonth: true,
+                changeYear: true,
+                onClose: function () {
+                    $(this).parent().parent().find('input.save-thuoc').focus();
+                }
+            });
+
+            $("#slType").off("change");
+            $("#slType").on("change", function () {
+                if ($(this).val() > 0) {
+                    ChangeEditValue($(this).val());
+                }
+            }).trigger('change');
+
+
+            //Show/hide the upload
+            $("#dvUpPhieuXuat").hide();
+            $("#dvUpPhieuNhap2").hide();
+            $("#dvUpPhieuXuat2").hide();
+            $("#loaiPhieu").change(function () {
+                var type = $(this).val();
+                BindAutocomplete($("#searchSoPhieu"), "soPhieu", type);
+
+                changingLoaiPhieu($(this).val());
+            });
+            changingLoaiPhieu($("#loaiPhieu").val());
+
+            InitAutocomplete();
+        });
+
+        function checkchangeLoaPhieu(val) {
+
+            //bind select
+            var checkinital = true;
+
+            if (getUrlParameter("searchMaThuoc") != "") {
+                $("#slType").val(2);
+                ChangeEditValue(2);
+                checkinital = false;
+            }
+            if (getUrlParameter("searchSoPhieu") != "") {
+                $("#slType").val(1);
+                ChangeEditValue(1);
+                checkinital = false;
+            }
+            if (getUrlParameter("searchTenNhanVien") != "") {
+                $("#slType").val(3);
+                ChangeEditValue(3);
+                checkinital = false;
+            }
+            if (getUrlParameter("searchDienGiai") != "") {
+                $("#slType").val(4);
+                ChangeEditValue(4);
+                checkinital = false;
+            }
+            if (val == 1) {
+                if (getUrlParameter("searchSoLo") != "") {
+                    $("#slType").val(5);
+                    ChangeEditValue(5);
+                    checkinital = false;
+                }
+                if (getUrlParameter("searchHanDung") != "") {
+                    $("#slType").val(6);
+                    ChangeEditValue(6);
+                    checkinital = false;
+                }
+            }
+            //nếu chưa có dữ liệu tìm kiềm thì mặc định là 2
+            if (checkinital) {
+                $("#slType").val(2);
+                ChangeEditValue(2);
+            }
+
+        }
+
+        function changingLoaiPhieu(val) {
+            var selectbox = document.getElementById("slType");
+            if (val == 1) {
+                $("#dvUpPhieuXuat").hide();
+                $("#dvUpPhieuXuat2").hide();
+                $("#dvUpPhieuNhap2").hide();
+                $("#dvUpPhieuNhap").show();
+                //
+                $('#ten-khachang-nhacc').text('Tên Nhà Cung Cấp:');
+                //
+                var checkSoLo = false;
+                var checkHanDung = false;
+                for (var i = 0; i < selectbox.options.length; i++) {
+                    if (selectbox.options[i].value == '5')
+                        checkSoLo = true;
+                    if (selectbox.options[i].value == '6')
+                        checkHanDung = true;
+                }
+                if (!checkSoLo) {
+                    var solo = document.createElement("option");
+                    solo.text = "Số lô";
+                    solo.value = "5";
+                    selectbox.add(solo);
+                }
+                if (!checkHanDung) {
+                    var handung = document.createElement("option");
+                    handung.text = "Hạn dùng";
+                    handung.value = "6";
+                    selectbox.add(handung);
+                }
+                checkchangeLoaPhieu(1);
+            } else if (val == 2) {
+                $("#dvUpPhieuXuat").show();
+                $("#dvUpPhieuNhap").hide();
+                $("#dvUpPhieuNhap2").hide();
+                $("#dvUpPhieuXuat2").hide();
+                $('#ten-khachang-nhacc').text('Tên Khách Hàng:');
+                //
+                for (var i = 0; i < selectbox.options.length; i++) {
+                    if (selectbox.options[i].value == '5')
+                        selectbox.remove(i);
+                    if (selectbox.options[i].value == '6')
+                        selectbox.remove(i);
+                }
+                //
+                checkchangeLoaPhieu(2);
+            } else if (val == 3) {
+                $("#dvUpPhieuXuat").hide();
+                $("#dvUpPhieuNhap").hide();
+                $("#dvUpPhieuNhap2").show();
+                $("#dvUpPhieuXuat2").hide();
+                $('#ten-khachang-nhacc').text('Tên Khách Hàng:');
+                //
+
+                for (var i = 0; i < selectbox.options.length; i++) {
+                    if (selectbox.options[i].value == '5')
+                        selectbox.remove(i);
+                    if (selectbox.options[i].value == '6')
+                        selectbox.remove(i);
+                }
+                //
+                checkchangeLoaPhieu(3);
+            } else if (val == 4) {
+                $("#dvUpPhieuXuat").hide();
+                $("#dvUpPhieuNhap").hide();
+                $("#dvUpPhieuNhap2").hide();
+                $("#dvUpPhieuXuat2").show();
+                $('#ten-khachang-nhacc').text('Tên Nhà Cung Cấp:');
+                //
+                //
+                for (var i = 0; i < selectbox.options.length; i++) {
+                    if (selectbox.options[i].value == '5')
+                        selectbox.remove(i);
+                    if (selectbox.options[i].value == '6')
+                        selectbox.remove(i);
+                }
+                //
+                checkchangeLoaPhieu(4);
+            } else {
+                $("#dvUpPhieuXuat").hide();
+                $("#dvUpPhieuNhap").hide();
+            }
+        }
+
+        //Change the show/hide of the value textbox
+
+        function ChangeEditValue(type) {
+            if (type == 1) {
+                $("#searchSoPhieu").show();
+                $("#searchMaThuoc").val("");
+                $("#searchMaThuoc").hide();
+                $("#searchTenNhanVien").val("");
+                $("#searchTenNhanVien").hide();
+                $("#searchDienGiai").val("");
+                $("#searchDienGiai").hide();
+                $("#searchSoLo").val("");
+                $("#searchSoLo").hide();
+                $("#searchHanDung").val("");
+                $("#searchHanDung").hide();
+            } else if (type == 2) {
+                $("#searchMaThuoc").show();
+                $("#searchSoPhieu").val("");
+                $("#searchSoPhieu").hide();
+                $("#searchTenNhanVien").val("");
+                $("#searchTenNhanVien").hide();
+                $("#searchDienGiai").val("");
+                $("#searchDienGiai").hide();
+                $("#searchSoLo").val("");
+                $("#searchSoLo").hide();
+                $("#searchHanDung").val("");
+                $("#searchHanDung").hide();
+            } else if (type == 3) {
+                $("#searchTenNhanVien").show();
+                $("#searchSoPhieu").val("");
+                $("#searchSoPhieu").hide();
+                $("#searchMaThuoc").val("");
+                $("#searchMaThuoc").hide();
+                $("#searchDienGiai").val("");
+                $("#searchDienGiai").hide();
+                $("#searchSoLo").val("");
+                $("#searchSoLo").hide();
+                $("#searchHanDung").val("");
+                $("#searchHanDung").hide();
+            } else if (type == 4) {
+                $("#searchDienGiai").show();
+                $("#searchSoPhieu").val("");
+                $("#searchSoPhieu").hide();
+                $("#searchMaThuoc").val("");
+                $("#searchMaThuoc").hide();
+                $("#searchTenNhanVien").val("");
+                $("#searchTenNhanVien").hide();
+                $("#searchSoLo").val("");
+                $("#searchSoLo").hide();
+                $("#searchHanDung").val("");
+                $("#searchHanDung").hide();
+            } else if (type == 5) {
+                $("#searchSoLo").show();
+                $("#searchDienGiai").hide();
+                $("#searchDienGiai").val("");
+                $("#searchSoPhieu").val("");
+                $("#searchSoPhieu").hide();
+                $("#searchMaThuoc").val("");
+                $("#searchMaThuoc").hide();
+                $("#searchTenNhanVien").val("");
+                $("#searchTenNhanVien").hide();
+                $("#searchHanDung").val("");
+                $("#searchHanDung").hide();
+            } else if (type == 6) {
+                $("#searchHanDung").show();
+                $("#searchSoLo").val("");
+                $("#searchSoLo").hide();
+                $("#searchDienGiai").hide();
+                $("#searchDienGiai").val("");
+                $("#searchSoPhieu").val("");
+                $("#searchSoPhieu").hide();
+                $("#searchMaThuoc").val("");
+                $("#searchMaThuoc").hide();
+                $("#searchTenNhanVien").val("");
+                $("#searchTenNhanVien").hide();
+
+            }
+        }
+
+        function getUrlParameter(sParam) {
+            var sPageURL = window.location.search.substring(1);
+            var sURLVariables = sPageURL.split('&');
+            for (var i = 0; i < sURLVariables.length; i++) {
+                var sParameterName = sURLVariables[i].split('=');
+                if (sParameterName[0] == sParam) {
+                    return decodeURIComponent(sParameterName[1]);
+                }
+            }
+            return "";
+        }
+
+        //Upload the excel file
+        $('.upload-form').on('submit', function (event) {
+            var check = CheckFileName($(this));
+            if (!check) {
+                event.preventDefault();
+            }
+        });
+
+        function OpenFileDialog(sender, type) {
+            $("#fileupload" + type).trigger('click');
+
+        }
+
+        $('input[name=uploadFile]').on('change', function () {
+            $(this).parents('.upload-form').trigger('submit');
+        });
+        function CheckFileName(el) {
+            var fileName = el.find("input[name=uploadFile]").val();
+            //debugger;
+            var fileExtension = fileName.split(".");
+            fileExtension = fileExtension[fileExtension.length - 1];
+            if (fileName == "") {
+                alert("Chưa chọn tệp tin Excel tải lên");
+                return false;
+
+            } else if (fileExtension.toUpperCase() == "XLS" || fileExtension.toUpperCase() == "XLSX")
+                return true;
+            else {
+                alert("Tên file " + fileName.split(".")[1] + " không đúng. Cần tải file có đuôi xls/xlsx");
+                return false;
+            }
+            return true;
+        }
+
+        //Autocomplete init
+        function InitAutocomplete() {
+            var type = $("#loaiPhieu").val();
+            BindAutocomplete($("#searchMaThuoc"), "maThuoc", 0);
+            BindAutocomplete($("#searchSoPhieu"), "soPhieu", type);
+            BindAutocomplete($("#searchTenNhanVien"), "tenNhanVien", 0);
+        }
+
+
+        function BindAutocomplete(selectorElem, selectorOutput, type) {
+            var url = $('input[name=baseUrl]').val() + "PhieuNhaps/GetMaSoPhieu";
+            if (selectorOutput == "maThuoc") {
+                url = $('input[name=baseUrl]').val() + "Thuocs/GetThuocsByMaOrTen";
+            }
+            $(selectorElem).autocomplete({
+                minLength: 2,
+                source: function (request, response) {
+                    var term = request.term;
+                    currentTerm = selectorElem + term;
+                    if (term in cache) {
+                        response(cache[selectorElem + term]);
+                        return;
+                    }
+                    $.getJSON(url, request, function (data, status, xhr) {
+                        cache[selectorElem + term] = data;
+                        response(data);
+                    });
+                },
+                messages: {
+                    noResults: "Không tìm thấy"//,
+                    // results: ""
+                },
+                focus: function (event, ui) {
+                    $(this).val(ui.item.maThuoc);
+                    return false;
+                },
+                select: function (event, ui) {
+                    $(this).val(ui.item.maThuoc);
+                    $(selectorOutput).val(ui.item.value);
+                    return false;
+                }
+            }).each(function () {
+                $(this).autocomplete('instance')._renderItem = function (ul, item) {
+                    return $("<li>")
+                        .append("<a>" + item.desc + "</a>")
+                        .append('<input type="hidden" name="price" value="' + item.price + '"/>')
+                        .append('<input type="hidden" name="unit" value="' + item.unit + '"/>')
+                        .appendTo(ul);
+                };
+            });
+        }
+    </script>
+}

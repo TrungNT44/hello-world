@@ -1,0 +1,380 @@
+﻿@using System.Globalization
+@using Med.Web.Controllers
+@using sThuoc.Models
+@model sThuoc.Models.PhieuXuatEditModel
+@using MedMan.App_Start
+@{
+    ViewBag.Title = "Sửa phiếu xuất";
+    var ngayXuat = Model.NgayXuat ?? DateTime.Now;
+}
+<link href="~/Content/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="~/Content/phieuStyle.css" rel="stylesheet" />
+<link href="~/Content/selectize.bootstrap3.css" rel="stylesheet" />
+@using (Html.BeginForm("Edit", "PhieuXuats", new { loaiPhieu = ViewBag.LoaiPhieu }, FormMethod.Post, new { id = "frmPhieuXuat", onkeydown = "return event.keyCode!=13" }))
+{
+    @Html.AntiForgeryToken()
+    var title = "PHIẾU XUẤT HÀNG";
+    if (ViewBag.LoaiPhieu == 4)
+    {
+        title = "TRẢ LẠI HÀNG NHÀ CUNG CẤP";
+    }
+    <div class="form-horizontal" ng-controller="DeliveryNoteController" id="create-delivery-note" ng-cloak>
+        <h2 style="font-size: 30px; text-align: center;color: coral">@title</h2>
+        <div class="input-group margin-bottom-sm">
+            @Html.TextBox("maThuoc", null, htmlAttributes: new { @class = "form-control", placeholder = "Nhập mã hoặc tên thuốc vào đây..." })
+            <span class="input-group-btn">
+                <button class=" btn btn-default"><i class="fa fa-barcode" style="font-size:larger"></i></button>
+            </span>
+        </div><!-- /input-group -->
+        <table class="table-condensed table-responsive display" id="tblCt">
+            <thead>
+                <tr>
+                    <th style="width: 50px"></th>
+                    <th style="width: 30px">#</th>
+                    <th style="width: 80px">Mã</th>
+                    <th>Tên Hàng</th>
+                    <th style="width: 70px">Đơn Vị</th>
+                    <th style="width: 55px">SL</th>
+                    <th style="width: 80px">Đơn Giá</th>
+                    <th style="width: 45px">C.K</th>
+                    <th style="width: 80px;text-align: right;">Thành tiền</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.PhieuXuatChiTiets != null)
+                {
+                    for (var i = Model.PhieuXuatChiTiets.Count - 1; i >= 0; i--)
+                    {
+                        <tr>
+                            <td style="padding: 10px 0">
+                                @Html.HiddenFor(model => Model.PhieuXuatChiTiets[i].MaPhieuXuatCt)
+                                @Html.HiddenFor(model => Model.PhieuXuatChiTiets[i].MaPhieuXuat)
+
+                                <a class="edit-thuoc display-mode" style="cursor: pointer" id="0" title="Sửa"><i class="glyphicon glyphicon-pencil"></i></a>
+                                <a class="save-thuoc edit-mode text-success" style="cursor: pointer" id="0" title="Lưu"><i class="glyphicon glyphicon-ok"></i></a>&nbsp;
+
+                                <a class="delete-thuoc edit-mode text-danger" style="cursor: pointer" id="0" title="Xóa"><i class="glyphicon glyphicon-trash"></i></a>&nbsp;
+                            </td>
+
+                            <td><a href="javascript:void(0)" action="/Thuocs/DialogDetail?id=@(Model.PhieuXuatChiTiets[i].ThuocId)" class="a_view"><span id="dSTT_@(i)__Sp" class="stt">@(Model.PhieuXuatChiTiets.Count - i)</span></a></td>
+                            <td>
+                                <span class="" id="dMaThuoc@(i)">@Html.DisplayFor(model => Model.PhieuXuatChiTiets[i].MaThuoc)</span>                                
+                                @Html.TextBoxFor(model => Model.PhieuXuatChiTiets[i].MaThuoc, new { @class = "form-control drug-code", style = "display:none" })
+                            </td>
+                            <td>
+                                <span class="" id="PhieuXuatChiTiets_@(i)__TenSp">@Html.DisplayFor(model => Model.PhieuXuatChiTiets[i].TenThuoc)</span>
+                                <input class="form-control thuocFinder drug-name" type="text" id="PhieuXuatChiTiets_@(i)__TenThuoc" value="@Model.PhieuXuatChiTiets[i].TenThuoc" style="display:none">
+                                @Html.HiddenFor(model => Model.PhieuXuatChiTiets[i].ThuocId)
+                            </td>
+                            <td>
+                                <span class="display-mode" id="PhieuXuatChiTiets_@(i)__MaDonViTinhSp">@Html.DisplayFor(model => Model.PhieuXuatChiTiets[i].TenDonViTinh)</span>
+                                <input type="hidden" id="_@(i)__HaiDonViTinh" value="@(Model.PhieuXuatChiTiets[i].MaDonViTinhLe + ";" + Model.PhieuXuatChiTiets[i].MaDonViTinhThuNguyen)" />
+
+                                @Html.DropDownListFor(model => Model.PhieuXuatChiTiets[i].MaDonViTinh, new SelectList(ViewBag.MaDonViTinh, "MaDonViTinh", "TenDonViTinh", Model.PhieuXuatChiTiets[i].MaDonViTinh), htmlAttributes: new { @class = "form-control edit-mode drug-unit" })
+                                @Html.HiddenFor(model => model.PhieuXuatChiTiets[i].MaDonViTinh)
+                            </td>
+                            <td>
+                                <span class="display-mode pNumber" id="PhieuXuatChiTiets_@(i)__SoLuongSp">@Html.DisplayFor(model => Model.PhieuXuatChiTiets[i].SoLuong)</span>
+                                @Html.EditorFor(model => Model.PhieuXuatChiTiets[i].SoLuong, new { htmlAttributes = new { @class = "form-control edit-mode", format = "number" } })
+                            </td>
+                            <td>
+                                @*<span class="display-mode pNumber" id="PhieuXuatChiTiets_@(i)__GiaXuatSp">@Html.DisplayFor(model => Model.PhieuXuatChiTiets[i].GiaXuat)</span>
+                                @Html.EditorFor(model => Model.PhieuXuatChiTiets[i].GiaXuat, new { htmlAttributes = new { @class = "form-control edit-mode", format = "number", @data_inputmask = "'alias': 'numeric', 'groupSeparator': ',', 'autoGroup': true, 'digits': 0, 'digitsOptional': false, 'suffix': '', 'placeholder': '0'" } })*@
+                                <div class="input-group">
+                                    <span class="display-mode pNumber" id="PhieuXuatChiTiets_@(i)__GiaXuatSp">
+                                        @Html.DisplayFor(model => Model.PhieuXuatChiTiets[i].GiaXuat)
+                                    </span>
+
+                                    @Html.EditorFor(model => Model.PhieuXuatChiTiets[i].GiaXuat, new { htmlAttributes = new { @class = "form-control edit-mode pNumber drug-price", format = "number", @data_inputmask = "\'alias\': \'numeric\', \'groupSeparator\': \',\', \'autoGroup\': true, \'digits\': 0, \'digitsOptional\': false, \'suffix\': \'\'" } })
+                                    @if (ViewBag.LoaiPhieu != 4)
+                                    {
+                                        <span class="input-group-btn " id="phieuxuatchitiets_@(i)__icongiaxuat" onclick="event.preventDefault();"><button class="btn" ng-click="updateOutPrice($event); $event.preventDefault();"><a style="cursor: pointer;" id="luuGiaXuatId" title="Cập nhật giá xuất"><i class="glyphicon glyphicon-edit"></i></a></button></span>
+                                    }
+                                </div>
+                            </td>
+                            <td>
+                                <span class="display-mode pNumber" id="PhieuXuatChiTiets_@(i)__ChietKhauSp">
+                                    @Html.DisplayFor(model => Model.PhieuXuatChiTiets[i].ChietKhau) <label>%</label>
+                                </span>
+                                @Html.EditorFor(model => Model.PhieuXuatChiTiets[i].ChietKhau, new { htmlAttributes = new { @class = "form-control edit-mode", @data_inputmask = "'alias': 'numeric', 'groupSeparator': ',', 'autoGroup': true, 'digits': 0, 'digitsOptional': false, 'suffix': ' %', 'placeholder': '0'" } })
+                            </td>
+
+
+                            <td>
+                                <input type="hidden" value="@(Model.PhieuXuatChiTiets[i].HeSo)" id="PhieuXuatChiTiets_@(i)__HeSo" />
+                                <input type="hidden" value="@(Model.PhieuXuatChiTiets[i].MaDonViTinhLe)" id="PhieuXuatChiTiets_@(i)__DVX" />
+                                <input type="hidden" value="@(Model.PhieuXuatChiTiets[i].MaDonViTinhThuNguyen)" id="PhieuXuatChiTiets_@(i)__DVTN" />
+                                <b class="pNumber" name="miniSum">
+
+                                </b>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        @*Thông tin thanh toán*@
+        <table style="width:100%">
+            <tr>
+                <b>Thông tin thanh toán</b>
+            </tr>
+            <tr>
+                <td style="width:95px">
+                    Tổng số tiền
+                </td>
+                <td id="spanSumAll">
+                    @Html.HiddenFor(model => model.TongTien)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="checkbox" id="ckVAT" @(Model.VAT > 0 ? "checked=checked" : "") />&nbsp;@Html.LabelFor(model => model.VAT) &nbsp;
+                </td>
+                <td>
+                    @if (Model.VAT > 0)
+                    {
+                        <div class="input-group margin-bottom-sm">
+                            @Html.TextBoxFor(model => model.VAT, new { @data_inputmask = "'alias': 'numeric', 'groupSeparator': ',', 'autoGroup': true, 'digits': 0, 'digitsOptional': false, 'suffix': '%', 'placeholder': '0'", size = 1 })
+                            <span style="font-weight: bold" id="spSumfinal">
+                            </span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="input-group margin-bottom-sm">
+                            @Html.TextBoxFor(model => model.VAT, new { size = 1, @Value = 0, style = "display: none", @data_inputmask = "'alias': 'numeric', 'groupSeparator': ',', 'autoGroup': true, 'digits': 0, 'digitsOptional': false, 'suffix': '%', 'placeholder': '0'" }) &nbsp; &nbsp;
+                            <span style="font-weight: bold" id="spSumfinal">
+                            </span>
+                        </div>
+
+                    }
+                </td>
+            </tr>
+            <tr @(ViewBag.LoaiPhieu.ToString() == "4" ? "style=display:none" : "")>
+                <td>
+                    Trả
+                </td>
+                <td>
+                    <div class="input-group margin-bottom-sm">
+                        @Html.TextBoxFor(model => model.DaTra, new { size = 10, @data_inputmask = "'alias': 'numeric', 'groupSeparator': ',', 'autoGroup': true, 'digits': 0, 'digitsOptional': false, 'suffix': '', 'placeholder': '0'" })
+                        <input type="button" value="F" title="Ấn vào đây để trả đủ số tiền" id="btnFull" /> &nbsp;
+                        <span id="spDebt" style="color: red">Còn nợ: @string.Format("{0:#,##0}", Model.TongTien - Model.DaTra)</span>
+                    </div>
+                </td>
+
+            </tr>
+        </table>
+        <br />
+        @*Thông tin phiếu*@
+        <table style="width:100%">
+
+            <tr>
+                <b>Thông tin phiếu nhập</b>
+            </tr>
+
+            <tr>
+                <td style="width:95px">
+                    Mã số
+                </td>
+                <td>
+                    <strong>@ViewBag.SoPhieu</strong>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Ngày
+                </td>
+                <td id="dvNgayXuat">
+                    <div class="clickable-text daterange-picker daterange-picker">
+                        @*<input type="text" id="inputDatePicker" /> <span id="inputDate" style="width: 10%">Ngày @ngayXuat.Day/@ngayXuat.Month/@ngayXuat.Year</span>*@
+                        <input type="text" id="inputDatePicker" /><span id="inputDate" style="width: 10%">@ngayXuat.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)</span>
+                    </div>
+                </td>
+            </tr>
+            @*@Html.HiddenFor(model => model.NgayXuat, new { @Value = @DateTime.Now.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture) })*@
+            @Html.HiddenFor(model => model.NgayXuat, new { @Value = ngayXuat.ToString("dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture) })
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+            @*<tr>
+           <td>
+               Nhân viên
+           </td>
+           <td>
+               @Html.DisplayFor(model => model.NguoiLapPhieu)
+           </td>
+        </tr>*@
+
+            @Html.HiddenFor(model => model.MaPhieuXuat)
+            @Html.HiddenFor(model => model.MaLoaiXuatNhap, new { @Value = ViewBag.LoaiPhieu })
+
+            @if (ViewBag.LoaiPhieu == 2)
+            {
+                <tr>
+                    <td style="text-align: left;width:100px">
+                        Khách hàng
+                    </td>
+                    <td>
+                        @Html.DropDownList("MaKhachHang", (SelectList)ViewBag.KhachHangs, htmlAttributes: new { @class = "form-control khachang-item" })
+                        @Html.ValidationMessageFor(model => model.MaKhachHang, "", new { @class = "text-danger" })
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        Bác sỹ
+                    </td>
+                    <td>
+                        @Html.DropDownList("MaBacSy", null, htmlAttributes: new { @class = "form-control" }, optionLabel: "Chọn bác sỹ")
+                        @Html.ValidationMessageFor(model => model.MaBacSy, "", new { @class = "text-danger" })
+                    </td>
+                </tr>
+            }
+            else if (ViewBag.LoaiPhieu == 4)
+            {
+                <tr>
+                    <td>
+                        <label class="control-label">Nhà cung cấp</label>
+                    </td>
+                    <td>
+                        @Html.DropDownList("MaNhaCungCap", null, htmlAttributes: new { @class = "form-control" }, optionLabel: "Chọn nhà cung cấp")
+                        @Html.ValidationMessageFor(model => model.MaNhaCungCap, "Chưa chọn nhà cung cấp", new { @class = "text-danger" })
+                    </td>
+                </tr>
+
+            }
+            <tr>
+                <td>Diễn giải</td>
+                <td>
+                    @Html.EditorFor(model => model.DienGiai, new { htmlAttributes = new { @class = "form-control", placeholder = "Nhập diễn giải..." } })
+                    @Html.ValidationMessageFor(model => model.DienGiai, "", new { @class = "text-danger" })
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:left; font-weight: normal; color:GrayText">
+                    <label class="control-label" style="font-weight: normal">Người lập: </label>
+
+                </td>
+                <td style="text-align:left; font-weight: normal; color:GrayText">
+                    <label class="control-label" style="font-weight: normal">@Html.DisplayFor(model => model.NguoiLapPhieu)</label>
+                </td>
+
+            </tr>
+            <tr>
+                <td style="text-align:left; font-weight: normal; color:GrayText">
+                    <label class="control-label" style="font-weight: normal">Ngày lập: </label>
+                </td>
+                <td style="text-align:left; font-weight: normal; color:GrayText">
+                    <label class="control-label" style="font-weight: normal">@Model.NgayLapPhieu.Value.ToString("dd/MM/yyyy")</label>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <br />
+                    @Html.HiddenFor(model => model.Xoa, new { @Value = "False" })
+                    <div class="input-group margin-bottom-sm">
+                        <label class="control-label"></label>
+                        <div class="form-inline">
+
+                            @Html.ActionLink("Quay lại", "Index", "PhieuNhaps", new { loaiPhieu = ViewBag.LoaiPhieu }, new { @class = "btn btn-default" })
+                            <span class="btn-separator"></span>
+                            @if (Model.Locked.HasValue && Model.Locked.Value.Equals(true))
+                            {
+                                <input type="submit" value="Ghi Phiếu" onclick="return fnCheckStatusTable();" class="btn btn-default disabled" />
+                                <span>&nbsp;</span>
+                                @Html.ActionLink("Xóa", "delete", "PhieuXuats", new { id = Model.MaPhieuXuat }, new { @class = "btn btn-default btn-danger disabled" })
+                                if (Context.User.IsInRole(Constants.Security.Roles.SuperUser.Value) || Context.User.IsInRole(Constants.Security.Roles.Admin.Value))
+                                {
+                                    <span>&nbsp;</span>
+                                    <a href=@Url.Action("UnLock", "PhieuXuats", new { id = Model.MaPhieuXuat }) class="btn btn-default"><i class="fa fa-lock fa-lg"></i></a>
+                                }
+                                else
+                                {
+                                    <span>&nbsp;</span>
+                                    <a href=@Url.Action("UnLock", "PhieuXuats", new { id = Model.MaPhieuXuat }) class="btn btn-default disabled"><i class="fa fa-lock fa-lg"></i></a>
+                                }
+
+                            }
+                            else
+                            {
+                                <input type="submit" value="Ghi Phiếu" onclick="return fnCheckStatusTable();" class="btn btn-default" />
+                                <span>&nbsp;</span>
+                                @Html.ActionLink("Xóa", "delete", "PhieuXuats", new { id = Model.MaPhieuXuat }, new { @class = "btn btn-default btn-danger" })
+                                if (Context.User.IsInRole(Constants.Security.Roles.SuperUser.Value) || Context.User.IsInRole(Constants.Security.Roles.Admin.Value))
+                                {
+                                    <span>&nbsp;</span>
+                                    <a href=@Url.Action("Lock", "PhieuXuats", new { id = Model.MaPhieuXuat }) class="btn btn-default"><i class="fa fa-unlock fa-lg"></i></a>
+                                }
+
+                            }
+
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+    @Html.Partial("~/Areas/Production/Views/Drug/Partial/UpdateDrugOutPriceDialog.cshtml")
+}
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/datepicker-vi.js"></script>
+    <script src="~/Scripts/Custom/PhieuXuatMobile.js"></script>
+    <script src="~/Scripts/jquery.inputmask/inputmask.js"></script>
+    <script src="~/Scripts/jquery.inputmask/jquery.inputmask.js"></script>
+    <script src="~/Scripts/jquery.inputmask/inputmask.numeric.extensions.js"></script>
+    <script src="~/Scripts/jquery.selectize.js"></script>
+    <script type="text/javascript">
+        $.validator.methods["date"] = function(value, element) { return true; };
+
+        $(document).ready(function () {
+            createDonViTinh();
+            InitHelper();
+            $("#maThuoc").focus();
+            //Form submit function
+            $('#frmPhieuXuat').submit(function (event) {
+                //    event.preventDefault();
+                //    //Remove the test row
+                //    $($("thead")[0]).children()[1].remove();
+                BindSoLuong(true);
+
+                //    $('#frmPhieuNhap').unbind('submit').submit();
+            });
+            // input masks
+            inputmask.extendDefaults({
+                'autoUnmask': true,
+                'removeMaskOnSubmit':true
+            });
+            $(":input,span").inputmask();
+            $('.a_view').unbind().on('click', function () {
+                $.get($(this).attr("action")).done(function (data) {
+                    if (data) {
+                        $(data).hide().appendTo(document.body).on('hide.bs.modal', function () { $('.modal-backdrop').remove(); }).modal();
+                    }
+                });
+            });
+        });
+
+        //Create a blank row
+        function createDonViTinh() {
+            var slDvt = '<select class="form-control edit-mode valid drug-unit" data-val="true" data-val-number="The field MaDonViTinh must be a number." data-val-required="The MaDonViTinh field is required." id="PhieuXuatChiTiets_-1__MaDonViTinh" name="PhieuXuatChiTiets[-1].MaDonViTinh">';
+            var slData = @Html.Raw(
+                Json.Encode(
+              ((IEnumerable<DonViTinh>)ViewBag.MaDonViTinh).Select(dvt => new
+                    {
+                        maDvt = dvt.MaDonViTinh,
+                        tenDvt = dvt.TenDonViTinh
+                    })
+                )
+            );
+            for(var key in slData) {
+                slDvt += "<option value=" + slData[key].maDvt + ">" + slData[key].tenDvt + "</option>";
+            }
+            slDvt += "</select>";
+            CreateInsertRow("@(ViewBag.MaNhaThuoc)",0,slDvt);
+        }
+
+    </script>
+}

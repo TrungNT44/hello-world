@@ -8,9 +8,9 @@
 
     public interface IBackgroundService
     {
-        void UpdateDrugExpiredDate4InitInventory(string drugStoreCode, int drugId);
-        void UpdateLastInventoryQuantity4CacheDrugs(string drugStoreCode, int[] drugIds);
-        void UpdateExtraInfo4DeliveryNotes(string drugStoreCode, params int[] noteIds);
-        void UpdateExtraInfo4ReceiptNotes(string drugStoreCode, params int[] noteIds);
+        void MakeAffectedChangesRelatedDeliveryNotes(string drugStoreID, params int[] noteIds);
+        void MakeAffectedChangesRelatedReceiptNotes(string drugStoreID, params int[] noteIds);
+        void MakeAffectedChangesByUpdatedDrugs(string drugStoreID, params int[] drugIds);
+        void DeleteForeverDrugs(string drugStoreID, params int[] drugIds);
     }
 }

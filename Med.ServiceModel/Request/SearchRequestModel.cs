@@ -11,5 +11,6 @@ namespace Med.ServiceModel.Request
     {
         public int searchType { get; set; }
         public string searchText { get; set; }
+        public string searchForDrugStore { get; set; }
     }
 }
