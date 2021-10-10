@@ -1,3 +1,3 @@
 # hello-world
 
-test lan 1
+test lan 2
